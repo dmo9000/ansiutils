@@ -23,7 +23,7 @@ int main(int argc, char *argv[])
     uint8_t namelen = 0;
     uint32_t reserved1 = 0;
     uint32_t current_offset = 0;
-    int ii = 0;
+    int ii = 0, jj = 0;
     bool all_fonts_loaded = false;
     int selected_font = 1;
     bool unicode_output = false;
@@ -32,8 +32,10 @@ int main(int argc, char *argv[])
     char *message = NULL;
     TDFFont *render_font = NULL;
     int debug_level = 0;
+    bool vertical = false;
+    TDFCanvas *my_canvas = NULL;
 
-    while ((c = getopt (argc, argv, "f:uo:d")) != -1) {
+    while ((c = getopt (argc, argv, "f:uo:dv")) != -1) {
         switch (c)
         {
         case 'd':
@@ -41,12 +43,17 @@ int main(int argc, char *argv[])
                 debug_level++;
             }
             break;
+        case 'v':
+            vertical = true;
+            break;
         case 'f':
             selected_font = atoi(optarg);
             break;
         case 'u':
             /* enable UNICODE. Otherwise we default to CP437 */
             unicode_output = true;
+            printf("UNICODE output not currently supported.\n");
+            exit(1);
             break;
         case 'o':
             /* output filename */
@@ -193,7 +200,6 @@ int main(int argc, char *argv[])
 
             assert(new_font->spacing >= 0);
             assert(new_font->spacing <= 40);
-            //printf("letter spacing = %u\n", new_font->spacing);
 
             if (fread(&new_font->blocksize, sizeof(uint16_t), 1, my_tdf.fh) != 1) {
                 printf("couldn't read blocksize\n");
@@ -208,7 +214,6 @@ int main(int argc, char *argv[])
             assert(new_font->blocksize >= 0);
             assert(new_font->blocksize <= 65535);
 
-            // printf("blocksize = %u\n", new_font->blocksize);
             /* store the location of the data segment */
 
             for (ii = 0 ; ii < TDF_MAXCHAR; ii++) {
@@ -217,20 +222,23 @@ int main(int argc, char *argv[])
                     printf("failed to get character %u offset\n", ii);
                     exit(1);
                 }
+                /* setup empty rasters */
+                for (jj = 0; jj < MAX_LINES; jj++) {
+                    new_font->characters[ii].rasters[jj] = malloc(sizeof(TDFRaster));
+                    new_font->characters[ii].rasters[jj]->bytes = 0;
+                    new_font->characters[ii].rasters[jj]->data = NULL;
+
+                }
                 if (new_font->characters[ii].offset == 0xFFFF) {
                     //printf("character %u '%c' is not defined\n", ii, new_font->characters[ii].ascii_value);
                 } else {
-                    /*
-                    printf("character %u '%c' is defined at offset 0x%04x\n", ii,
-                            new_font->characters[ii].ascii_value,
-                            new_font->characters[ii].offset);
-                    */
                     new_font->references++;
                 }
                 new_font->characters[ii].ascii_value = 33 + ii;
                 /* don't read font data now, we'll do it lazily when we render the glyph */
                 new_font->characters[ii].fontdata = NULL;
                 new_font->characters[ii].parent_font = new_font;
+                new_font->characters[ii].rendered = false;
             }
             //printf("+ Loaded %u character references\n", new_font->references);
             /* store the location of the data segment */
@@ -268,24 +276,124 @@ int main(int argc, char *argv[])
             exit(1);
         }
 
+        /* prerender all required glyphs */
+
         for (ii = 0; ii < strlen(message) ; ii++)  {
             render_glyph(render_font, message[ii]);
         }
+
+
+        my_canvas = new_canvas(15);
+        for (ii = 0; ii < strlen(message); ii++) {
+            assert(push_glyph(my_canvas, render_font, message[ii]));
+        }
+
     }
 
     fclose(my_tdf.fh);
-    
+
     /* reset colours */
 
-    printf("\x1b\x5b""0m\n");
+    printf("\x1b\x5b""0m");
 
     exit(0);
 
 }
 
-bool render_glyph(TDFFont *render_font, unsigned c)
+
+bool push_glyph(TDFCanvas *my_canvas, TDFFont *tdf, uint8_t c)
+{
+    TDFCharacter *tdc = NULL;
+    TDFRaster *src_raster = NULL;
+    TDFRaster *dst_raster = NULL;
+
+    int ii = 0;
+    c -= 33;
+    assert(c >= 0 && c <= 93);
+    tdc = &tdf->characters[c];
+
+    /* make sure character will fit on canvas vertically */
+
+    assert(tdc->height <= my_canvas->lines);
+
+    for (ii = 0; ii < tdc->height; ii++) {
+        src_raster = tdc->rasters[ii];
+        dst_raster = my_canvas->rasters[ii];
+        raster_append_bytes(dst_raster, src_raster->data, src_raster->bytes);
+        /* TODO: add spacing */
+    }
+
+}
+
+bool display_glyph(TDFFont *tdf, uint8_t c)
+{
+    TDFCharacter *tdc = NULL;
+    TDFRaster *tdr = NULL;
+    int ii = 0;
+
+    if (tdf->parent_tdf->debug_level) {
+        printf("display_glyph('%c')\n", c);
+    }
+
+    if (!tdf) return false;
+
+    c -= 33;
+    assert(c >= 0 && c <= 93);
+    tdc = &tdf->characters[c];
+
+    assert(tdc);
+    assert(tdc->rendered);
+
+    /* get correct character */
+    for (ii = 0; ii < tdc->height; ii++) {
+        assert (ii < MAX_LINES);
+        tdr = tdc->rasters[ii];
+        assert(tdr);
+        printf("%s\n", tdr->data);
+    }
+
+    return true;
+}
+
+
+bool raster_append_byte(TDFRaster *r, unsigned char data)
+{
+    TDFRaster *tdr = r;
+
+    if (!tdr->bytes) {
+        tdr->bytes++;
+        tdr->data = malloc(2);
+        tdr->data[0] = data;
+        tdr->data[1] = '\0';                            /* NULL terminate, so that the rasters can be printed with C library functions */
+    } else {
+        if (!realloc(tdr->data, tdr->bytes + 2)) {
+            perror("realloc");
+            exit(1);
+        };
+        tdr->data[tdr->bytes] = data;
+        tdr->data[tdr->bytes + 1] = '\0';               /* NULL terminate, so that the rasters can be printed with C library functions */
+        tdr->bytes++;
+    }
+
+    return true;
+}
+
+bool raster_append_bytes(TDFRaster *r, unsigned char *data, int bytes)
 {
 
+    int ii = 0;
+    for (ii = 0; ii < bytes; ii++) {
+        if (!raster_append_byte(r, data[ii])) {
+            return false;
+        };
+    }
+    return true;
+
+}
+
+bool render_glyph(TDFFont *render_font, unsigned c)
+{
+    TDFCharacter *tdc = NULL;
     unsigned char *font_data = NULL;
     uint32_t glyph_offset = 0;
     int rc = 0;
@@ -302,6 +410,14 @@ bool render_glyph(TDFFont *render_font, unsigned c)
     /* get the correct glyph index from the ASCII char value */
 
     c -= 33;
+    assert(c >= 0 && c <= 93);
+    tdc = &render_font->characters[c];
+    assert (tdc);
+
+    /* already done */
+    if (tdc->rendered) {
+        return true;
+    }
 
     /* check info */
 
@@ -335,15 +451,18 @@ bool render_glyph(TDFFont *render_font, unsigned c)
 
     //rc = fseek(render_font->parent_tdf->fh, glyph_offset, SEEK_SET);
 
-    emit_glyph(render_font, render_font->data + render_font->characters[c].offset);
+    //prerender_glyph(render_font, render_font->data + render_font->characters[c].offset);
+    prerender_glyph(render_font, c);
+
     return true;
 
 }
 
 
-bool emit_glyph(TDFFont *font, unsigned char *data)
+bool prerender_glyph(TDFFont *font, unsigned char c)
 {
-    unsigned char *ptr = data;
+    static char ansi_buffer[MAX_ANSI_SEQUENCE];
+    unsigned char *ptr = NULL;
     uint8_t width = 0;
     uint8_t height = 0;
     uint8_t type = 0;
@@ -354,9 +473,12 @@ bool emit_glyph(TDFFont *font, unsigned char *data)
     uint8_t bg = 0;
     uint8_t fg = 0;
     uint8_t x = 0;
-    uint8_t y = 1;
+    uint8_t y = 0;
     bool suppress = false;
+    TDFRaster *r = NULL;
+    TDFCharacter *tdc = &font->characters[c];
 
+    ptr = font->data + tdc->offset;
 
     width = ptr[0];
     height = ptr[1];
@@ -382,6 +504,9 @@ bool emit_glyph(TDFFont *font, unsigned char *data)
         case TYPE_BLOCK:
             byteval = ptr[0];
             x++;
+            assert(y < MAX_LINES);
+            r = tdc->rasters[y];
+            assert(r);
             if (!suppress) {
                 if (byteval >= 32) {
                     putchar(byteval);
@@ -413,14 +538,17 @@ bool emit_glyph(TDFFont *font, unsigned char *data)
             fg = ( fg & 0x0F ) % 0x0F;
             //printf("fg >= 0x08 = %d\n", fg);
 
+            assert (y < MAX_LINES);
+            r = tdc->rasters[y];
+            assert(r);
             if (fg >= 0x08) {
-                fg -= 0x08; 
-                /* hi intensity */
-                printf("\x1b\x5b""1m");
-                } else {
-                /* normal intensity */
-                printf("\x1b\x5b""21m");
-                }
+                fg -= 0x08;
+                /* ANSI control code - hi intensity */
+                raster_append_bytes(r, (char *) "\x1b\x5b""1m", 4);
+            } else {
+                /* ANSI control code - normal intensity */
+                raster_append_bytes(r, (char *) "\x1b\x5b""21m", 5);
+            }
 
             assert(fg >= 0 && fg <= 7);
             bg = color;
@@ -432,9 +560,11 @@ bool emit_glyph(TDFFont *font, unsigned char *data)
 //            printf("[0x%02x][0x%02x] [%02x][%02x] %c\n", byteval, color, bg, fg, byteval);
             if (!suppress) {
                 if (byteval >= 32) {
-                //printf("^[%u;%um",40 + bg, 30 + fg); 
-                 printf("\x1b\x5b""%u;%um", 40 + bg, 30 + fg); 
-                    putchar(byteval);
+                    //printf("^[%u;%um",40 + bg, 30 + fg);
+                    snprintf((char *) &ansi_buffer, MAX_ANSI_SEQUENCE, "\x1b\x5b""%u;%um", 40 + bg, 30 + fg);
+                    raster_append_bytes(r, (char *) &ansi_buffer, strlen(ansi_buffer));
+                    //putchar(byteval);
+                    raster_append_byte(r, byteval);
                     ptr += 2;
                     offset += 2;
                 } else {
@@ -450,7 +580,7 @@ bool emit_glyph(TDFFont *font, unsigned char *data)
             }
             if (x > width) {
                 //printf("<H>\n");
-                printf("\n");
+                //printf("\n");
                 x = 0;
                 y++;
                 suppress = false;
@@ -463,7 +593,10 @@ bool emit_glyph(TDFFont *font, unsigned char *data)
         }
     }
 
-    printf("\n");
+    y++;
+    tdc->height = height;
+    tdc->width = width;
+    tdc->rendered = true;
     if (font->parent_tdf->debug_level) {
         printf("(%d bytes; %d lines)\n", offset, y);
     }
@@ -541,4 +674,27 @@ const char *get_font_type(int type)
     }
 
     return (const char *) "BADFONTTYPE";
+}
+
+TDFCanvas *new_canvas(int lines)
+{
+
+    int ii = 0;
+    TDFCanvas *canvas = NULL;
+    canvas = malloc(sizeof(TDFCanvas));
+    assert(canvas);
+    assert(lines);
+
+    memset(canvas, 0, sizeof(TDFCanvas));
+    canvas->lines = lines;
+    canvas->rasters = malloc(lines * sizeof(TDFRaster));
+    assert(canvas->rasters);
+
+    for (ii = 0; ii < lines; ii++) {
+        canvas->rasters[ii]->bytes = 0;
+        canvas->rasters[ii]->data = NULL;
+    }
+
+    return canvas;
+
 }

@@ -11,10 +11,25 @@
 #define TYPE_COLOR              2
 
 #define MAX_NAMELEN             12
+#define MAX_LINES               12  /* we'll see */
+#define MAX_ANSI_SEQUENCE       32
 
+struct tdf_raster;
+struct tdf_canvas;
 struct tdf_char;
 struct tdf_font;
 struct tdf;
+
+
+struct tdf_raster {
+    uint16_t bytes;
+    unsigned char *data;
+};
+
+struct tdf_canvas {
+    int lines;
+    struct tdf_raster *rasters[];
+    };
 
 struct tdf_char {
     uint8_t ascii_value;
@@ -22,9 +37,11 @@ struct tdf_char {
     unsigned char *fontdata;
     uint16_t datasize;
     struct tdf_font *parent_font;
-    uint8_t width; 
+    uint8_t width;
     uint8_t height;
     uint8_t type;
+    struct tdf_raster *rasters[MAX_LINES];
+    bool rendered;
 };
 
 
@@ -50,9 +67,11 @@ struct tdf {
     int debug_level;
 };
 
-typedef struct tdf_char TDFCharacter;
-typedef struct tdf_font TDFFont;
-typedef struct tdf      TDFHandle;
+typedef struct tdf_raster   TDFRaster;
+typedef struct tdf_canvas   TDFCanvas;
+typedef struct tdf_char     TDFCharacter;
+typedef struct tdf_font     TDFFont;
+typedef struct tdf          TDFHandle;
 
 
 int ansi_color_map[8] = {
@@ -63,6 +82,10 @@ bool push_font(struct tdf *my_tdf, struct tdf_font *new_font);
 const char *get_font_name(struct tdf *my_tdf, int id);
 struct tdf_font* getfont_by_id(struct tdf *my_tdf, int id);
 bool render_glyph(struct tdf_font *render_font, unsigned c);
-bool emit_glyph(struct tdf_font *font, unsigned char *data);
+bool prerender_glyph(TDFFont *font, unsigned char c);
 const char *get_font_type(int type);
-
+bool display_glyph(TDFFont *tdf, uint8_t c);
+bool raster_append_byte(TDFRaster *r, unsigned char data);
+bool raster_append_bytes(TDFRaster *r, unsigned char *data, int bytes);
+TDFCanvas *new_canvas(int lines);
+bool push_glyph(TDFCanvas *my_canvas, TDFFont *tdf, uint8_t c);
