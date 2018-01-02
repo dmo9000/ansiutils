@@ -41,6 +41,7 @@ struct tdf_char {
     struct tdf_font *parent_font;
     uint8_t width;
     uint8_t height;
+    uint8_t discovered_height;
     uint8_t type;
     bool rendered;
     bool undefined;
@@ -60,6 +61,7 @@ struct tdf_font {
     struct tdf_font *next_font;
     struct tdf *parent_tdf;
     uint8_t average_width; 
+    uint8_t average_height; 
     uint8_t defined_characters;
 };
 
