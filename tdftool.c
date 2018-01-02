@@ -23,7 +23,6 @@ int main(int argc, char *argv[])
     uint8_t namelen = 0;
     uint32_t reserved1 = 0;
     uint32_t current_offset = 0;
-    uint32_t max_offset = 0;
     int ii = 0;
     bool all_fonts_loaded = false;
     int selected_font = 1;
@@ -31,6 +30,7 @@ int main(int argc, char *argv[])
     char *output_filename = NULL;
     int8_t c = 0;
     char *message = NULL;
+    struct tdf_font *render_font = NULL;
 
     while ((c = getopt (argc, argv, "f:uo:")) != -1) {
         switch (c)
@@ -103,26 +103,28 @@ int main(int argc, char *argv[])
         exit(1);
     }
 
+    my_tdf.fh = tdf_file;
+
     my_tdf.first_font = NULL;
 
     /* get size, then rewind to start */
 
-    fseek(tdf_file, 0, SEEK_END);
-    max_offset = ftell(tdf_file);
-    fseek(tdf_file, TDF_MAGIC_SIZE, SEEK_SET);
+    fseek(my_tdf.fh, 0, SEEK_END);
+    my_tdf.limit = ftell(my_tdf.fh);
+    fseek(my_tdf.fh, TDF_MAGIC_SIZE, SEEK_SET);
 
     while (!all_fonts_loaded) {
         /* should be at byte 20 byte by now */
-        current_offset = ftell(tdf_file);
+        current_offset = ftell(my_tdf.fh);
 
-        if (current_offset >= max_offset) {
+        if (current_offset >= my_tdf.limit) {
             all_fonts_loaded = true;
             break;
         }
 
         //printf("* current offset = 0x%04x/0x%04x, checking for font header\n", current_offset, max_offset);
 
-        if (fread((uint32_t*) &font_sequence_marker, TDF_FONTMARKER_SIZE, 1, tdf_file) != 1) {
+        if (fread((uint32_t*) &font_sequence_marker, TDF_FONTMARKER_SIZE, 1, my_tdf.fh) != 1) {
             printf("Couldn't read font sequence marker at offset 0x%04x.\n", current_offset);
             exit(1);
         } else {
@@ -134,12 +136,14 @@ int main(int argc, char *argv[])
             //printf("FSM = 0x%04x\n", font_sequence_marker);
             my_tdf.fontcount++;
             new_font = create_new_font();
+            new_font->data = NULL;
+            new_font->parent_tdf = &my_tdf;
             new_font->next_font = NULL;
 
             assert(new_font);
             assert(font_sequence_marker == 0x55aa00ff);
 
-            if (fread((uint8_t*) &namelen, 1, 1, tdf_file) != 1) {
+            if (fread((uint8_t*) &namelen, 1, 1, my_tdf.fh) != 1) {
                 printf("Couldn't read font name length.\n");
                 exit(1);
             };
@@ -151,13 +155,13 @@ int main(int argc, char *argv[])
             new_font->name = malloc(namelen+1);
             memset(new_font->name, 0, namelen+1);
 
-            if (fread(new_font->name, MAX_NAMELEN, 1, tdf_file) != 1) {
+            if (fread(new_font->name, MAX_NAMELEN, 1, my_tdf.fh) != 1) {
                 printf("Error reading font name (%u bytes)\n", namelen);
                 exit(1);
             }
 
             printf("  %2u [%-12s]\n", my_tdf.fontcount, new_font->name);
-            if (fread(&reserved1, sizeof(uint32_t), 1, tdf_file) != 1) {
+            if (fread(&reserved1, sizeof(uint32_t), 1, my_tdf.fh) != 1) {
                 printf("Failure reading reserved1\n");
                 exit(1);
             }
@@ -166,14 +170,14 @@ int main(int argc, char *argv[])
 
             //printf("reserved1 ok\n");
 
-            if (fread(&new_font->type, sizeof(uint8_t), 1, tdf_file) != 1) {
+            if (fread(&new_font->type, sizeof(uint8_t), 1, my_tdf.fh) != 1) {
                 printf("couldn't read font type\n");
             }
             assert(new_font->type >= 0);
             assert(new_font->type <= 2);
             //printf("font type = %u\n", new_font->type);
 
-            if (fread(&new_font->spacing, sizeof(uint8_t), 1, tdf_file) != 1) {
+            if (fread(&new_font->spacing, sizeof(uint8_t), 1, my_tdf.fh) != 1) {
                 printf("couldn't read spacing\n");
             }
 
@@ -181,7 +185,7 @@ int main(int argc, char *argv[])
             assert(new_font->spacing <= 40);
             //printf("letter spacing = %u\n", new_font->spacing);
 
-            if (fread(&new_font->blocksize, sizeof(uint16_t), 1, tdf_file) != 1) {
+            if (fread(&new_font->blocksize, sizeof(uint16_t), 1, my_tdf.fh) != 1) {
                 printf("couldn't read blocksize\n");
             }
 
@@ -195,10 +199,12 @@ int main(int argc, char *argv[])
             assert(new_font->blocksize <= 65535);
 
             // printf("blocksize = %u\n", new_font->blocksize);
+            /* store the location of the data segment */
+            new_font->offset = ftell(my_tdf.fh);
 
             for (ii = 0 ; ii < TDF_MAXCHAR; ii++) {
                 new_font->characters[ii].ascii_value = 33 + ii;
-                if (fread((uint16_t*) &new_font->characters[ii].offset, sizeof(uint16_t), 1, tdf_file) != 1) {
+                if (fread((uint16_t*) &new_font->characters[ii].offset, sizeof(uint16_t), 1, my_tdf.fh) != 1) {
                     printf("failed to get character %u offset\n", ii);
                     exit(1);
                 }
@@ -213,6 +219,9 @@ int main(int argc, char *argv[])
                     new_font->references++;
                 }
                 new_font->characters[ii].ascii_value = 33 + ii;
+                /* don't read font data now, we'll do it lazily when we render the glyph */
+                new_font->characters[ii].fontdata = NULL;
+                new_font->characters[ii].parent_font = new_font;
             }
             //printf("+ Loaded %u character references\n", new_font->references);
             if (!push_font(&my_tdf, new_font)) {
@@ -222,12 +231,10 @@ int main(int argc, char *argv[])
         }
         /* seek to next font, repeat */
         //printf("... skipping %u bytes ...\n", new_font->blocksize);
-        fseek(tdf_file, new_font->blocksize, SEEK_CUR);
+        fseek(my_tdf.fh, new_font->blocksize, SEEK_CUR);
     }
 
     //printf("\n* %u fonts/variations found\n", my_tdf.fontcount);
-
-    fclose(tdf_file);
 
     if (!(selected_font > 0 && selected_font <= my_tdf.fontcount)) {
         printf("Selected font number %d is invalid.\n", selected_font);
@@ -238,10 +245,77 @@ int main(int argc, char *argv[])
     if (message) {
         /* render glyphs */
         printf("Message to display: %s\n", message);
-        printf("Using font: %s\n", get_font_name(&my_tdf, selected_font));
+        render_font = getfont_by_id(&my_tdf, selected_font);
+        if (render_font) {
+            printf("Using font: %s\n", render_font->name);
+        } else {
+            printf("Couldn't get font for rendering\n");
+            exit(1);
+        }
+
+        render_glyph(render_font, 'A');
     }
 
+    fclose(my_tdf.fh);
+
 }
+
+bool render_glyph(struct tdf_font *render_font, unsigned c)
+{
+
+    unsigned char *font_data = NULL;
+    uint32_t glyph_offset = 0;
+    int rc = 0;
+
+    if (!render_font) {
+        return false;
+    }
+
+    if (!(c>= TDF_ASCII_LO && c<= TDF_ASCII_HI)) {
+        /* glyph index is out of range for a TDF font */
+        return false;
+    }
+
+    /* get the correct glyph index from the ASCII char value */
+
+    c -= 33;
+
+    /* check info */
+
+    printf(" glyph ascii char: %c\n", render_font->characters[c].ascii_value);
+    printf(" font data offset: %u\n", render_font->offset);
+    printf("glyph data offset: %u\n", render_font->characters[c].offset);
+
+    glyph_offset = (uint32_t) (render_font->offset + ((uint32_t) render_font->characters[c].offset));
+
+    printf("      data offset: %u + %u = %u\n",
+           render_font->offset, (uint32_t) render_font->characters[c].offset, glyph_offset);
+
+    if (!render_font->data) {
+        /* load the font from the file now */
+        rc = fseek(render_font->parent_tdf->fh,render_font->offset, SEEK_SET);
+        printf("file position is now: %ld\n", ftell(render_font->parent_tdf->fh));
+        assert (rc != -1);
+        render_font->data = malloc(render_font->blocksize);
+        rc = fread(render_font->data, render_font->blocksize, 1, render_font->parent_tdf->fh);
+        assert(rc == 1);
+    }
+
+    //rc = fseek(render_font->parent_tdf->fh, glyph_offset, SEEK_SET);
+
+    emit_glyph(render_font->data + render_font->characters[c].offset, render_font->parent_tdf->limit);
+    return true;
+
+}
+
+
+bool emit_glyph(unsigned char *data, uint32_t limit)
+{
+
+
+
+}
+
 
 const char *get_font_name(struct tdf *my_tdf, int id)
 {
@@ -263,7 +337,7 @@ struct tdf_font* getfont_by_id(struct tdf *my_tdf, int id)
     while (fontptr && icount <= my_tdf->fontcount) {
         if (icount == id) {
             return fontptr;
-            }
+        }
         fontptr = fontptr->next_font;
         icount++;
     }
