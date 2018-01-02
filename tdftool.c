@@ -10,15 +10,15 @@
 #include "osdep.h"
 
 
-#define create_new_font() malloc(sizeof(struct tdf_font))
+#define create_new_font() malloc(sizeof(TDFFont))
 
 int main(int argc, char *argv[])
 {
     FILE *tdf_file = NULL;
     char *input_filename = NULL;
-    struct tdf_font *new_font = NULL;
+    TDFFont *new_font = NULL;
     int rd = 0;
-    struct tdf my_tdf;
+    TDFHandle my_tdf;
     uint32_t font_sequence_marker;
     uint8_t namelen = 0;
     uint32_t reserved1 = 0;
@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
     char *output_filename = NULL;
     int8_t c = 0;
     char *message = NULL;
-    struct tdf_font *render_font = NULL;
+    TDFFont *render_font = NULL;
     int debug_level = 0;
 
     while ((c = getopt (argc, argv, "f:uo:d")) != -1) {
@@ -283,7 +283,7 @@ int main(int argc, char *argv[])
 
 }
 
-bool render_glyph(struct tdf_font *render_font, unsigned c)
+bool render_glyph(TDFFont *render_font, unsigned c)
 {
 
     unsigned char *font_data = NULL;
@@ -341,7 +341,7 @@ bool render_glyph(struct tdf_font *render_font, unsigned c)
 }
 
 
-bool emit_glyph(struct tdf_font *font, unsigned char *data)
+bool emit_glyph(TDFFont *font, unsigned char *data)
 {
     unsigned char *ptr = data;
     uint8_t width = 0;
@@ -354,7 +354,7 @@ bool emit_glyph(struct tdf_font *font, unsigned char *data)
     uint8_t bg = 0;
     uint8_t fg = 0;
     uint8_t x = 0;
-    uint8_t y = 0;
+    uint8_t y = 1;
     bool suppress = false;
 
 
@@ -465,17 +465,17 @@ bool emit_glyph(struct tdf_font *font, unsigned char *data)
 
     printf("\n");
     if (font->parent_tdf->debug_level) {
-        printf("(%d bytes)\n", offset);
+        printf("(%d bytes; %d lines)\n", offset, y);
     }
     return true;
 
 }
 
 
-const char *get_font_name(struct tdf *my_tdf, int id)
+const char *get_font_name(TDFHandle *my_tdf, int id)
 {
 
-    struct tdf_font *fontptr = getfont_by_id(my_tdf, id);
+    TDFFont *fontptr = getfont_by_id(my_tdf, id);
     if (!fontptr) {
         return "MISSING FONT";
     }
@@ -484,10 +484,10 @@ const char *get_font_name(struct tdf *my_tdf, int id)
 }
 
 
-struct tdf_font* getfont_by_id(struct tdf *my_tdf, int id)
+TDFFont* getfont_by_id(TDFHandle *my_tdf, int id)
 {
     int icount = 1;
-    struct tdf_font *fontptr = my_tdf->first_font;
+    TDFFont *fontptr = my_tdf->first_font;
 
     while (fontptr && icount <= my_tdf->fontcount) {
         if (icount == id) {
@@ -500,10 +500,10 @@ struct tdf_font* getfont_by_id(struct tdf *my_tdf, int id)
     return fontptr;
 }
 
-bool push_font(struct tdf *my_tdf, struct tdf_font *new_font)
+bool push_font(TDFHandle *my_tdf, TDFFont *new_font)
 {
-    struct tdf_font *last_fontptr = NULL;
-    struct tdf_font *next_fontptr = NULL;
+    TDFFont *last_fontptr = NULL;
+    TDFFont *next_fontptr = NULL;
     int count = 1;
 
     if (my_tdf && new_font) {

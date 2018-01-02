@@ -50,6 +50,10 @@ struct tdf {
     int debug_level;
 };
 
+typedef struct tdf_char TDFCharacter;
+typedef struct tdf_font TDFFont;
+typedef struct tdf      TDFHandle;
+
 
 int ansi_color_map[8] = {
                         0, 4, 2, 6, 1, 5, 3, 7
