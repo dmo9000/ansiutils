@@ -299,7 +299,9 @@ bool render_glyph(struct tdf_font *render_font, unsigned c)
     if (!render_font->data) {
         /* load the font from the file now */
         rc = fseek(render_font->parent_tdf->fh,render_font->offset, SEEK_SET);
-        printf("file position is now: %ld\n", ftell(render_font->parent_tdf->fh));
+        printf("file position is now: %ld (0x%04x)\n",
+               ftell(render_font->parent_tdf->fh),
+               ftell(render_font->parent_tdf->fh));
         assert (rc != -1);
         render_font->data = malloc(render_font->blocksize);
         rc = fread(render_font->data, render_font->blocksize, 1, render_font->parent_tdf->fh);
@@ -334,7 +336,7 @@ bool emit_glyph(struct tdf_font *font, unsigned char *data)
     width = ptr[0];
     height = ptr[1];
     type = font->type;
-    ptr +=3;
+    ptr +=2;
 
     printf("[width = %u, height = %u, type = %u (%s)]\n", width, height, type, get_font_type(type));
 
@@ -353,62 +355,61 @@ bool emit_glyph(struct tdf_font *font, unsigned char *data)
         case TYPE_BLOCK:
             byteval = ptr[0];
             x++;
-            //printf("<%d>", x);
             if (!suppress) {
                 if (byteval >= 32) {
                     putchar(byteval);
-                    putchar(' ');
+                    ptr ++;
+                    offset ++;
                 } else {
-                    if (byteval != 0x0D) {
-                        printf("%02x", byteval);
+                    if (byteval == 0x0D) {
+                        suppress = true;
+                        ptr ++;
+                        offset ++;
+                    } else {
+                        assert (byteval >= 32 && byteval <= 255);
                     }
                 }
             }
             if (x > width) {
-                //printf("<H>\n");
-                printf("\n"); 
+                printf("\n");
                 x = 0;
                 y++;
+                suppress = false;
             }
-            if (byteval == 0x0d) {
-                //printf("<S>");
-            }
-
-            ptr++;
-            offset++;
             break;
 
         case TYPE_COLOR:
             byteval = ptr[0];
+            x++;
             color = ptr[1];
             bg = color;
             bg = bg & 0x0F;
             fg = color;
             fg = (fg & 0xF0) % 0x0F;
-//                printf("[0x%02x][0x%02x] [%02x][%02x] %c\n", byteval, color, bg, fg)
-            if (byteval >= 33) {
-                putchar(byteval);
-                putchar(' ');
-            } else {
-                if (byteval != 0x0D) {
-                    printf("%02x", byteval);
+//            printf("[0x%02x][0x%02x] [%02x][%02x] %c\n", byteval, color, bg, fg, byteval);
+            if (!suppress) {
+                if (byteval >= 32) {
+                    putchar(byteval);
+                    ptr += 2;
+                    offset += 2;
+                } else {
+                    if (byteval == 0x0D) {
+                        //printf("<S>");
+                        suppress = true;
+                        ptr ++;
+                        offset ++;
+                    } else {
+                        assert (byteval >= 32 && byteval <= 255);
+                    }
                 }
-                //putchar(' ');
             }
-            x++;
-            if (x >= width) {
-                printf("<H>\n");
-                suppress = false;
+            if (x > width) {
+                //printf("<H>\n");
+                printf("\n");
                 x = 0;
                 y++;
+                suppress = false;
             }
-            if (byteval == 0x0d) {
-                printf("<S>\n");
-                suppress = true;
-            }
-
-            ptr += 2;
-            offset +=2;
             break;
         default:
             printf("+ Unhandled font_type = %d\n", type);
