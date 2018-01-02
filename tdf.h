@@ -24,11 +24,13 @@ struct tdf;
 struct tdf_raster {
     uint16_t bytes;
     unsigned char *data;
+    struct tdf_raster *next_raster;     /* not required, but handy */
+    uint16_t index;
 };
 
 struct tdf_canvas {
     int lines;
-    struct tdf_raster *rasters[];
+    struct tdf_raster *first_raster;
     };
 
 struct tdf_char {
@@ -40,8 +42,9 @@ struct tdf_char {
     uint8_t width;
     uint8_t height;
     uint8_t type;
-    struct tdf_raster *rasters[MAX_LINES];
     bool rendered;
+    bool undefined;
+    struct tdf_raster *rasters[MAX_LINES];
 };
 
 
@@ -56,6 +59,8 @@ struct tdf_font {
     struct tdf_char characters[TDF_MAXCHAR];
     struct tdf_font *next_font;
     struct tdf *parent_tdf;
+    uint8_t average_width; 
+    uint8_t defined_characters;
 };
 
 struct tdf {
@@ -85,7 +90,10 @@ bool render_glyph(struct tdf_font *render_font, unsigned c);
 bool prerender_glyph(TDFFont *font, unsigned char c);
 const char *get_font_type(int type);
 bool display_glyph(TDFFont *tdf, uint8_t c);
-bool raster_append_byte(TDFRaster *r, unsigned char data);
-bool raster_append_bytes(TDFRaster *r, unsigned char *data, int bytes);
-TDFCanvas *new_canvas(int lines);
+bool raster_append_byte(TDFRaster *r, unsigned char data, bool debug);
+bool raster_append_bytes(TDFRaster *r, unsigned char *data, int bytes, bool debug);
+TDFCanvas *new_canvas();
 bool push_glyph(TDFCanvas *my_canvas, TDFFont *tdf, uint8_t c);
+TDFRaster *canvas_get_raster(TDFCanvas *canvas, int line);
+TDFRaster *canvas_add_raster(TDFCanvas *canvas);
+bool canvas_output(TDFCanvas *canvas);
