@@ -47,8 +47,13 @@ struct tdf {
     struct tdf_font *first_font;
     FILE *fh;
     off_t limit;
+    int debug_level;
 };
 
+
+int ansi_color_map[8] = {
+                        0, 4, 2, 6, 1, 5, 3, 7
+                        };
 
 bool push_font(struct tdf *my_tdf, struct tdf_font *new_font);
 const char *get_font_name(struct tdf *my_tdf, int id);

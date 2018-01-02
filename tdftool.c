@@ -31,10 +31,16 @@ int main(int argc, char *argv[])
     int8_t c = 0;
     char *message = NULL;
     struct tdf_font *render_font = NULL;
+    int debug_level = 0;
 
-    while ((c = getopt (argc, argv, "f:uo:")) != -1) {
+    while ((c = getopt (argc, argv, "f:uo:d")) != -1) {
         switch (c)
         {
+        case 'd':
+            if (debug_level < 4) {
+                debug_level++;
+            }
+            break;
         case 'f':
             selected_font = atoi(optarg);
             break;
@@ -104,6 +110,7 @@ int main(int argc, char *argv[])
     }
 
     my_tdf.fh = tdf_file;
+    my_tdf.debug_level = debug_level;
 
     my_tdf.first_font = NULL;
 
@@ -160,7 +167,10 @@ int main(int argc, char *argv[])
                 exit(1);
             }
 
-            printf("  %2u [%-12s]\n", my_tdf.fontcount, new_font->name);
+            if (my_tdf.debug_level) {
+                printf("  %2u [%-12s]\n", my_tdf.fontcount, new_font->name);
+            }
+
             if (fread(&reserved1, sizeof(uint32_t), 1, my_tdf.fh) != 1) {
                 printf("Failure reading reserved1\n");
                 exit(1);
@@ -245,23 +255,31 @@ int main(int argc, char *argv[])
 
     if (message) {
         /* render glyphs */
-        printf("Message to display: %s\n", message);
+        if (my_tdf.debug_level) {
+            printf("Message to display: %s\n", message);
+        }
         render_font = getfont_by_id(&my_tdf, selected_font);
         if (render_font) {
-            printf("Using font: %s\n", render_font->name);
+            if (my_tdf.debug_level) {
+                printf("Using font: %s\n", render_font->name);
+            }
         } else {
             printf("Couldn't get font for rendering\n");
             exit(1);
         }
 
-        render_glyph(render_font, 'A');
-        render_glyph(render_font, 'B');
-        render_glyph(render_font, 'C');
-        render_glyph(render_font, 'D');
-        render_glyph(render_font, 'E');
+        for (ii = 0; ii < strlen(message) ; ii++)  {
+            render_glyph(render_font, message[ii]);
+        }
     }
 
     fclose(my_tdf.fh);
+    
+    /* reset colours */
+
+    printf("\x1b\x5b""0m\n");
+
+    exit(0);
 
 }
 
@@ -287,21 +305,28 @@ bool render_glyph(struct tdf_font *render_font, unsigned c)
 
     /* check info */
 
-    printf(" glyph ascii char: %c\n", render_font->characters[c].ascii_value);
-    printf(" font data offset: %u\n", render_font->offset);
-    printf("glyph data offset: %u\n", render_font->characters[c].offset);
+    if (render_font->parent_tdf->debug_level) {
+        printf(" glyph ascii char: %c\n", render_font->characters[c].ascii_value);
+        printf(" font data offset: %u\n", render_font->offset);
+        printf("glyph data offset: %u\n", render_font->characters[c].offset);
+    }
 
     glyph_offset = (uint32_t) (render_font->offset + ((uint32_t) render_font->characters[c].offset));
 
-    printf("      data offset: %u + %u = %u\n",
-           render_font->offset, (uint32_t) render_font->characters[c].offset, glyph_offset);
+
+    if (render_font->parent_tdf->debug_level) {
+        printf("      data offset: %u + %u = %u\n",
+               render_font->offset, (uint32_t) render_font->characters[c].offset, glyph_offset);
+    }
 
     if (!render_font->data) {
         /* load the font from the file now */
         rc = fseek(render_font->parent_tdf->fh,render_font->offset, SEEK_SET);
-        printf("file position is now: %ld (0x%04x)\n",
-               ftell(render_font->parent_tdf->fh),
-               ftell(render_font->parent_tdf->fh));
+        if (render_font->parent_tdf->debug_level) {
+            printf("file position is now: %ld (0x%04x)\n",
+                   ftell(render_font->parent_tdf->fh),
+                   ftell(render_font->parent_tdf->fh));
+        }
         assert (rc != -1);
         render_font->data = malloc(render_font->blocksize);
         rc = fread(render_font->data, render_font->blocksize, 1, render_font->parent_tdf->fh);
@@ -338,7 +363,9 @@ bool emit_glyph(struct tdf_font *font, unsigned char *data)
     type = font->type;
     ptr +=2;
 
-    printf("[width = %u, height = %u, type = %u (%s)]\n", width, height, type, get_font_type(type));
+    if (font->parent_tdf->debug_level) {
+        printf("[width = %u, height = %u, type = %u (%s)]\n", width, height, type, get_font_type(type));
+    }
 
     assert(1 <= width <= 30);
     assert(1 <= height <= 12);
@@ -382,13 +409,31 @@ bool emit_glyph(struct tdf_font *font, unsigned char *data)
             byteval = ptr[0];
             x++;
             color = ptr[1];
-            bg = color;
-            bg = bg & 0x0F;
             fg = color;
-            fg = (fg & 0xF0) % 0x0F;
+            fg = ( fg & 0x0F ) % 0x0F;
+            //printf("fg >= 0x08 = %d\n", fg);
+
+            if (fg >= 0x08) {
+                fg -= 0x08; 
+                /* hi intensity */
+                printf("\x1b\x5b""1m");
+                } else {
+                /* normal intensity */
+                printf("\x1b\x5b""21m");
+                }
+
+            assert(fg >= 0 && fg <= 7);
+            bg = color;
+            bg = ((bg & 0xF0) >> 4) % 0x08;
+            assert(bg >= 0 && bg <= 7);
+            fg = ansi_color_map[fg];
+            bg = ansi_color_map[bg];
+
 //            printf("[0x%02x][0x%02x] [%02x][%02x] %c\n", byteval, color, bg, fg, byteval);
             if (!suppress) {
                 if (byteval >= 32) {
+                //printf("^[%u;%um",40 + bg, 30 + fg); 
+                 printf("\x1b\x5b""%u;%um", 40 + bg, 30 + fg); 
                     putchar(byteval);
                     ptr += 2;
                     offset += 2;
@@ -419,7 +464,9 @@ bool emit_glyph(struct tdf_font *font, unsigned char *data)
     }
 
     printf("\n");
-    printf("(%d bytes)\n", offset);
+    if (font->parent_tdf->debug_level) {
+        printf("(%d bytes)\n", offset);
+    }
     return true;
 
 }
