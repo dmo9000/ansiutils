@@ -614,7 +614,7 @@ bool prerender_glyph(TDFFont *font, unsigned char c)
 
         switch(type) {
         case TYPE_OUTLINE:
-            printf("+ Unhandled font_type = %d\n", type);
+            //printf("+ Unhandled font_type = %d\n", type);
             assert(type != TYPE_OUTLINE); 
             return false;
             break;
@@ -709,7 +709,7 @@ bool prerender_glyph(TDFFont *font, unsigned char c)
             }
             break;
         default:
-            printf("+ Unhandled font_type = %d\n", type);
+            printf("+ Unhandled font_type = %d?? Not expected to reach here.\n", type);
             return false;
             break;
         }
