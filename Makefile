@@ -7,4 +7,4 @@ clean:
 	rm -f tdftool
 
 test:
-	./tdftool data/DARKSUNX.TDF "HI" 
+	./tdftool CYBSMALL.TDF "HI" 

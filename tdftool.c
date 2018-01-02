@@ -255,6 +255,10 @@ int main(int argc, char *argv[])
         }
 
         render_glyph(render_font, 'A');
+        render_glyph(render_font, 'B');
+        render_glyph(render_font, 'C');
+        render_glyph(render_font, 'D');
+        render_glyph(render_font, 'E');
     }
 
     fclose(my_tdf.fh);
@@ -318,20 +322,101 @@ bool emit_glyph(struct tdf_font *font, unsigned char *data)
     uint8_t type = 0;
     off_t offset = 0;
     uint32_t limit = font->parent_tdf->limit;
-    
+    uint8_t byteval = 0;
+    uint8_t color = 0;
+    uint8_t bg = 0;
+    uint8_t fg = 0;
+    uint8_t x = 0;
+    uint8_t y = 0;
+    bool suppress = false;
+
+
     width = ptr[0];
     height = ptr[1];
     type = font->type;
     ptr +=3;
 
-    printf("[width = %u, height = %u, type = %u]\n", width, height, type);
+    printf("[width = %u, height = %u, type = %u (%s)]\n", width, height, type, get_font_type(type));
+
+    assert(1 <= width <= 30);
+    assert(1 <= height <= 12);
+
     while (ptr[0] != '\0' && offset < limit) {
-    //    printf("[%02x]", ptr[0]); 
-        putchar(ptr[0]); 
-        ptr++;
-        offset++;
+
+        switch(type) {
+        case TYPE_OUTLINE:
+            printf("+ Unhandled font_type = %d\n", type);
+            return false;
+            ptr++;
+            offset++;
+            break;
+        case TYPE_BLOCK:
+            byteval = ptr[0];
+            x++;
+            //printf("<%d>", x);
+            if (!suppress) {
+                if (byteval >= 32) {
+                    putchar(byteval);
+                    putchar(' ');
+                } else {
+                    if (byteval != 0x0D) {
+                        printf("%02x", byteval);
+                    }
+                }
+            }
+            if (x > width) {
+                //printf("<H>\n");
+                printf("\n"); 
+                x = 0;
+                y++;
+            }
+            if (byteval == 0x0d) {
+                //printf("<S>");
+            }
+
+            ptr++;
+            offset++;
+            break;
+
+        case TYPE_COLOR:
+            byteval = ptr[0];
+            color = ptr[1];
+            bg = color;
+            bg = bg & 0x0F;
+            fg = color;
+            fg = (fg & 0xF0) % 0x0F;
+//                printf("[0x%02x][0x%02x] [%02x][%02x] %c\n", byteval, color, bg, fg)
+            if (byteval >= 33) {
+                putchar(byteval);
+                putchar(' ');
+            } else {
+                if (byteval != 0x0D) {
+                    printf("%02x", byteval);
+                }
+                //putchar(' ');
+            }
+            x++;
+            if (x >= width) {
+                printf("<H>\n");
+                suppress = false;
+                x = 0;
+                y++;
+            }
+            if (byteval == 0x0d) {
+                printf("<S>\n");
+                suppress = true;
+            }
+
+            ptr += 2;
+            offset +=2;
+            break;
+        default:
+            printf("+ Unhandled font_type = %d\n", type);
+            return false;
+            break;
         }
-    
+    }
+
     printf("\n");
     printf("(%d bytes)\n", offset);
     return true;
@@ -396,15 +481,15 @@ const char *get_font_type(int type)
 {
 
     switch(type) {
-        case 0:
-            return (const char *) "TYPE_OUTLINE";
-            break;
-        case 1:
-            return (const char *) "TYPE_BLOCK";
-            break;
-        case 2:
-            return (const char *) "TYPE_COLOR";
-            break;
+    case 0:
+        return (const char *) "TYPE_OUTLINE";
+        break;
+    case 1:
+        return (const char *) "TYPE_BLOCK";
+        break;
+    case 2:
+        return (const char *) "TYPE_COLOR";
+        break;
     }
 
     return (const char *) "BADFONTTYPE";

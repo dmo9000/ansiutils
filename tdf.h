@@ -55,3 +55,5 @@ const char *get_font_name(struct tdf *my_tdf, int id);
 struct tdf_font* getfont_by_id(struct tdf *my_tdf, int id);
 bool render_glyph(struct tdf_font *render_font, unsigned c);
 bool emit_glyph(struct tdf_font *font, unsigned char *data);
+const char *get_font_type(int type);
+
