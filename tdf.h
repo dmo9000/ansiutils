@@ -6,6 +6,9 @@
 #define TDF_ASCII_LO            33
 #define TDF_ASCII_HI            126
 
+#define TYPE_OUTLINE            0
+#define TYPE_BLOCK              1
+#define TYPE_COLOR              2
 
 #define MAX_NAMELEN             12
 
@@ -19,6 +22,9 @@ struct tdf_char {
     unsigned char *fontdata;
     uint16_t datasize;
     struct tdf_font *parent_font;
+    uint8_t width; 
+    uint8_t height;
+    uint8_t type;
 };
 
 
@@ -48,5 +54,4 @@ bool push_font(struct tdf *my_tdf, struct tdf_font *new_font);
 const char *get_font_name(struct tdf *my_tdf, int id);
 struct tdf_font* getfont_by_id(struct tdf *my_tdf, int id);
 bool render_glyph(struct tdf_font *render_font, unsigned c);
-bool emit_glyph(unsigned char *data, uint32_t limit);
-
+bool emit_glyph(struct tdf_font *font, unsigned char *data);

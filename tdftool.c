@@ -200,7 +200,6 @@ int main(int argc, char *argv[])
 
             // printf("blocksize = %u\n", new_font->blocksize);
             /* store the location of the data segment */
-            new_font->offset = ftell(my_tdf.fh);
 
             for (ii = 0 ; ii < TDF_MAXCHAR; ii++) {
                 new_font->characters[ii].ascii_value = 33 + ii;
@@ -224,6 +223,8 @@ int main(int argc, char *argv[])
                 new_font->characters[ii].parent_font = new_font;
             }
             //printf("+ Loaded %u character references\n", new_font->references);
+            /* store the location of the data segment */
+            new_font->offset = ftell(my_tdf.fh);
             if (!push_font(&my_tdf, new_font)) {
                 printf("! error storing font reference\n");
                 exit(1);
@@ -303,16 +304,37 @@ bool render_glyph(struct tdf_font *render_font, unsigned c)
 
     //rc = fseek(render_font->parent_tdf->fh, glyph_offset, SEEK_SET);
 
-    emit_glyph(render_font->data + render_font->characters[c].offset, render_font->parent_tdf->limit);
+    emit_glyph(render_font, render_font->data + render_font->characters[c].offset);
     return true;
 
 }
 
 
-bool emit_glyph(unsigned char *data, uint32_t limit)
+bool emit_glyph(struct tdf_font *font, unsigned char *data)
 {
+    unsigned char *ptr = data;
+    uint8_t width = 0;
+    uint8_t height = 0;
+    uint8_t type = 0;
+    off_t offset = 0;
+    uint32_t limit = font->parent_tdf->limit;
+    
+    width = ptr[0];
+    height = ptr[1];
+    type = font->type;
+    ptr +=3;
 
-
+    printf("[width = %u, height = %u, type = %u]\n", width, height, type);
+    while (ptr[0] != '\0' && offset < limit) {
+    //    printf("[%02x]", ptr[0]); 
+        putchar(ptr[0]); 
+        ptr++;
+        offset++;
+        }
+    
+    printf("\n");
+    printf("(%d bytes)\n", offset);
+    return true;
 
 }
 
@@ -369,3 +391,21 @@ bool push_font(struct tdf *my_tdf, struct tdf_font *new_font)
     return false;
 }
 
+
+const char *get_font_type(int type)
+{
+
+    switch(type) {
+        case 0:
+            return (const char *) "TYPE_OUTLINE";
+            break;
+        case 1:
+            return (const char *) "TYPE_BLOCK";
+            break;
+        case 2:
+            return (const char *) "TYPE_COLOR";
+            break;
+    }
+
+    return (const char *) "BADFONTTYPE";
+}
