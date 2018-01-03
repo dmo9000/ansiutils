@@ -639,6 +639,8 @@ bool prerender_glyph(TDFFont *font, unsigned char c)
                         assert (byteval >= 32 && byteval <= 255);
                     }
                 }
+            } else {
+                raster_append_byte(r, ' ', false);
             }
             if (x > width) {
                 //printf("\n");
@@ -692,8 +694,9 @@ bool prerender_glyph(TDFFont *font, unsigned char c)
                         if (!suppress) {
                         /* reset to transparent */
                         raster_append_bytes(r, (char *) "\x1b\x5b""40;37m", 8, false);
-                            } 
+                        } 
                         suppress = true;
+                        //raster_append_byte(r, ' ', false);
                         ptr ++;
                         offset ++;
                     } else {

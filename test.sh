@@ -10,6 +10,7 @@ runtest () {
 
     for TDFFILE in ../THEDRAWFONTS/*.TDF; do 
         BASENAME=`basename ${TDFFILE}`
+        OUTNAME=`echo ${BASENAME} | tr "[:upper:]" "[:lower:]"`
         rm -f output.ans
         #printf "-> [%04u/%04u] %s" $testcount $TESTTOTAL $TDFFILE
         echo "-> [$testcount/$TESTTOTAL] $TDFFILE" 
@@ -17,7 +18,7 @@ runtest () {
         ./tdftool ../THEDRAWFONTS/${TDFFILE} "TEST" 1>output.ans 2>output.ans
         STATUS=$?
         if [ ${STATUS} == 0 ]; then
-            mv output.ans tests/pass/${BASENAME}.ans ;
+            mv output.ans tests/pass/${OUTNAME}.ans ;
             let passed=passed+1
             else 
             mv output.ans tests/fail/${BASENAME}.ans ;
