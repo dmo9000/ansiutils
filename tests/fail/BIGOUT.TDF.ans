@@ -1,1 +1,0 @@
-tdftool: tdftool.c:618: prerender_glyph: Assertion `type != TYPE_OUTLINE' failed.
