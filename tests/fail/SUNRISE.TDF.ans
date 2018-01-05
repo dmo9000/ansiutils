@@ -1,1 +1,0 @@
-tdftool: tdftool.c:473: raster_append_byte: Assertion `!tdr->data' failed.

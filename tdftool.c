@@ -469,8 +469,9 @@ bool raster_append_byte(TDFRaster *r, unsigned char data, bool debug)
     TDFRaster *tdr = r;
     unsigned char *raster_realloc = NULL;
 
+    assert(r);
+
     if (!tdr->bytes) {
-        assert(!tdr->data);
         tdr->bytes = 1;
         tdr->data = malloc(tdr->bytes+1);
         tdr->data[0] = data;
@@ -839,7 +840,7 @@ TDFRaster* canvas_get_raster(TDFCanvas *canvas, int line)
         raster_count++;
     }
     //assert (!r->next_raster);
-    assert(!r);
+    //assert(!r);
     /* not found */
     return NULL;
 }
@@ -857,6 +858,7 @@ TDFRaster *canvas_add_raster(TDFCanvas *canvas)
         canvas->first_raster = create_new_raster();
         canvas->first_raster->index = raster_count;
         canvas->lines ++;
+        canvas->first_raster->next_raster = NULL;
         return canvas->first_raster;
     }
 
@@ -872,6 +874,7 @@ TDFRaster *canvas_add_raster(TDFCanvas *canvas)
     assert(!r->next_raster);
 
     r->next_raster = create_new_raster();
+    assert(r->next_raster);
     r->next_raster->index = raster_count + 1;
     r->next_raster->next_raster = NULL;
     canvas->lines++;
