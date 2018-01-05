@@ -45,7 +45,7 @@ hopefully be supported in a future version. Unfortunately there are not a lot of
 TYPE_OUTLINE fonts in the collection (I only count four). 
 
 This should be considered very early alpha code, do not use anywhere near production. 
-There are still assert() macros all over the place to help with debugging and there
+There are still assert() all over the place to help with debugging and there
 are some known issues with realloc() here and there. I will fix these as I can get
 time to work on them. 
 
