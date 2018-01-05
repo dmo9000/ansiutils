@@ -856,6 +856,9 @@ TDFRaster *canvas_add_raster(TDFCanvas *canvas)
     if (!r) {
         /* no rasters */
         canvas->first_raster = create_new_raster();
+        assert(canvas->first_raster);
+        canvas->first_raster->bytes = 0;
+        canvas->first_raster->data = NULL;
         canvas->first_raster->index = raster_count;
         canvas->lines ++;
         canvas->first_raster->next_raster = NULL;
@@ -875,6 +878,8 @@ TDFRaster *canvas_add_raster(TDFCanvas *canvas)
 
     r->next_raster = create_new_raster();
     assert(r->next_raster);
+    r->next_raster->bytes = 0;
+    r->next_raster->data = NULL;
     r->next_raster->index = raster_count + 1;
     r->next_raster->next_raster = NULL;
     canvas->lines++;
