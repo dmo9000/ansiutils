@@ -49,4 +49,4 @@ export MALLOC_CHECK_=0
 
 echo "Running tests ..."
 runtest 2>/dev/null
-cat tests/fail/*.ans | sort | uniq -c | sort -n -r
+cat tests/fail/*.ans | sort | uniq -c | sort -n -r | tee testresults.log
