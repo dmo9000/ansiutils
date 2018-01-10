@@ -1,1 +1,0 @@
-tdftool: tdftool.c:411: push_glyph: Assertion `!tdc->undefined' failed.

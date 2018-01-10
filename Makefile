@@ -7,8 +7,9 @@ clean:
 	rm -f tdftool
 
 veryclean: clean
-	rm -rf tests/pass/*
-	rm -rf tests/fail/*
+	rm -rf tests/pass/*.ans
+	rm -rf tests/fail/*.ans
+	rm -rf tests/pass/utf8/*.ans
 
 
 install:
