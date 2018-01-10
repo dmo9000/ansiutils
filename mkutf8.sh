@@ -1,4 +1,4 @@
-mkdir -p test/pass/utf8
+mkdir -p tests/pass/utf8
 
 for ANS in `ls -1 tests/pass/*.ans`; do 
 		BASENAME=`basename $ANS`
