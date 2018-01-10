@@ -10,12 +10,11 @@
 #include "tdf.h"
 #include "osdep.h"
 
-/* a handful of hacks to clean up later */
 
-#define IS_BIG_ENDIAN (*(uint16_t *)"\0\xff" < 0x100)
+static int ansi_color_map[8] = {
+    0, 4, 2, 6, 1, 5, 3, 7
+    };
 
-#define create_new_font()   malloc(sizeof(TDFFont))
-#define create_new_raster() malloc(sizeof(TDFRaster))
 
 int main(int argc, char *argv[])
 {
@@ -42,10 +41,6 @@ int main(int argc, char *argv[])
     uint16_t running_average_width = 0;
     uint16_t running_average_height = 0;
 
-    if (IS_BIG_ENDIAN) {
-        printf("Sorry, big endian systems not supported right now.\n");
-        exit(1);
-        }
 
     while ((c = getopt (argc, argv, "f:uo:dv")) != -1) {
         switch (c)
@@ -184,8 +179,6 @@ int main(int argc, char *argv[])
                 exit(1);
             }
 
-
-
             assert(font_sequence_marker == 0x55aa00ff);
 
             if (fread((uint8_t*) &namelen, 1, 1, my_tdf.fh) != 1) {
@@ -268,7 +261,7 @@ int main(int argc, char *argv[])
                 for (jj = 0; jj < MAX_LINES; jj++) {
                     new_font->characters[ii].rasters[jj] = create_new_raster();
                     new_font->characters[ii].rasters[jj]->bytes = 0;
-                    new_font->characters[ii].rasters[jj]->data = NULL;
+                    new_font->characters[ii].rasters[jj]->chardata = NULL;
 
                 }
 
@@ -455,7 +448,7 @@ bool push_glyph(TDFCanvas *my_canvas, TDFFont *tdf, uint8_t c)
         assert(src_raster);
 
 
-        if ((!src_raster->data || !src_raster->bytes)) {
+        if ((!src_raster->chardata || !src_raster->bytes)) {
             /* the glyph is prerendered, and not a space character,
             	 but this particular raster doesn't have any data.
             	 we fill it with dummy spacing data instead */
@@ -474,11 +467,11 @@ bool push_glyph(TDFCanvas *my_canvas, TDFFont *tdf, uint8_t c)
             return true;
         }
 
-        assert(src_raster->data);
+        assert(src_raster->chardata);
         assert(src_raster->bytes);
         //printf("dst_raster->bytes = %u\n", dst_raster->bytes);
         //printf("src_raster->bytes = %u\n", src_raster->bytes);
-        assert(raster_append_bytes(dst_raster, src_raster->data, src_raster->bytes, false));
+        assert(raster_append_bytes(dst_raster, src_raster->chardata, src_raster->bytes, false));
         assert(raster_append_bytes(dst_raster, (char*) &dummy_spacing, tdf->spacing, false));
     }
     return true;
@@ -516,8 +509,8 @@ bool display_glyph(TDFFont *tdf, uint8_t c)
         tdr = tdc->rasters[ii];
         assert(tdr);
         assert(tdr->bytes);
-        assert(tdr->data);
-        printf("%s (%u,%d)\n", tdr->data, tdr->bytes, (tdr->bytes ? strlen(tdr->data): -1));
+        assert(tdr->chardata);
+        printf("%s (%u,%d)\n", tdr->chardata, tdr->bytes, (tdr->bytes ? strlen(tdr->chardata): -1));
     }
 
     return true;
@@ -533,21 +526,22 @@ bool raster_append_byte(TDFRaster *r, unsigned char data, bool debug)
 
     if (!tdr->bytes) {
         tdr->bytes = 1;
-        tdr->data = malloc(tdr->bytes+1);
-        tdr->data[0] = data;
-        tdr->data[1] = '\0';                            /* NULL terminate, so that the rasters can be printed with C library functions */
+        tdr->chardata = malloc(tdr->bytes+1);
+        tdr->chardata[0] = data;
+        tdr->chardata[1] = '\0';                            /* NULL terminate, so that the rasters can be printed with C library functions */
         return true;
     } else {
-        assert(tdr->data);
+        assert(tdr->chardata);
         assert(tdr->bytes);
         tdr->bytes ++;
         if (debug) {
-            //    printf("realloc(), tdr->bytes = %d, address = 0x%08x\n", tdr->bytes+1, tdr->data);
+            //    printf("realloc(), tdr->bytes = %d, address = 0x%08x\n", tdr->bytes+1, tdr->chardata);
         }
-        raster_realloc = realloc(tdr->data, tdr->bytes+1);
-        tdr->data = raster_realloc;
-        tdr->data[tdr->bytes-1] = data;
-        tdr->data[tdr->bytes] = '\0';
+        raster_realloc = realloc(tdr->chardata, tdr->bytes+1);
+        assert(raster_realloc);
+        tdr->chardata = raster_realloc;
+        tdr->chardata[tdr->bytes-1] = data;
+        tdr->chardata[tdr->bytes] = '\0';
     }
 
     return true;
@@ -924,7 +918,7 @@ TDFRaster *canvas_add_raster(TDFCanvas *canvas)
         canvas->first_raster = create_new_raster();
         assert(canvas->first_raster);
         canvas->first_raster->bytes = 0;
-        canvas->first_raster->data = NULL;
+        canvas->first_raster->chardata = NULL;
         canvas->first_raster->index = raster_count;
         canvas->lines ++;
         canvas->first_raster->next_raster = NULL;
@@ -945,7 +939,7 @@ TDFRaster *canvas_add_raster(TDFCanvas *canvas)
     r->next_raster = create_new_raster();
     assert(r->next_raster);
     r->next_raster->bytes = 0;
-    r->next_raster->data = NULL;
+    r->next_raster->chardata = NULL;
     r->next_raster->index = raster_count + 1;
     r->next_raster->next_raster = NULL;
     canvas->lines++;
@@ -962,8 +956,8 @@ bool canvas_output(TDFCanvas *my_canvas)
     for (ii = 0; ii < my_canvas->lines ; ii++) {
         r = canvas_get_raster(my_canvas, ii);
         assert(r);
-        assert(r->data);
-        printf("%s\n", r->data);
+        assert(r->chardata);
+        printf("%s\n", r->chardata);
     }
 
     return (true);

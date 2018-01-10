@@ -1,4 +1,6 @@
+#include <stdio.h>
 #include <stdint.h>
+#include <stdbool.h>
 
 #define TDF_MAGIC_SIZE          20
 #define TDF_FONTMARKER_SIZE     4
@@ -23,7 +25,9 @@ struct tdf;
 
 struct tdf_raster {
     uint16_t bytes;
-    unsigned char *data;
+    unsigned char *chardata;
+	unsigned char *fgcolor;
+	unsigned char *bgcolor;
     struct tdf_raster *next_raster;     /* not required, but handy */
     uint16_t index;
 };
@@ -81,9 +85,7 @@ typedef struct tdf_font     TDFFont;
 typedef struct tdf          TDFHandle;
 
 
-int ansi_color_map[8] = {
-                        0, 4, 2, 6, 1, 5, 3, 7
-                        };
+
 
 bool push_font(struct tdf *my_tdf, struct tdf_font *new_font);
 const char *get_font_name(struct tdf *my_tdf, int id);
@@ -99,3 +101,5 @@ bool push_glyph(TDFCanvas *my_canvas, TDFFont *tdf, uint8_t c);
 TDFRaster *canvas_get_raster(TDFCanvas *canvas, int line);
 TDFRaster *canvas_add_raster(TDFCanvas *canvas);
 bool canvas_output(TDFCanvas *canvas);
+TDFRaster *create_new_raster();
+TDFFont *create_new_font();

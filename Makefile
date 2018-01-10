@@ -3,9 +3,10 @@ CFLAGS = -g -ggdb
 
 all: tdftool
 
+tdftool: tdftool.o tdffont.o tdfraster.o 
+
 clean:
-	rm -f tdftool
-	rm -f *.core
+	rm -f tdftool *.o *.core
 
 veryclean: clean
 	rm -rf tests/pass/*.ans
