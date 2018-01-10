@@ -1,0 +1,1 @@
+tdftool: tdftool.c:698: prerender_glyph: Assertion `y < MAX_LINES' failed.
