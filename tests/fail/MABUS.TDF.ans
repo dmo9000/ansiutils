@@ -1,1 +1,0 @@
-tdftool: tdftool.c:676: prerender_glyph: Assertion `byteval >= 32 && byteval <= 255' failed.

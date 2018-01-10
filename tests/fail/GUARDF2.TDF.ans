@@ -1,1 +1,0 @@
-tdftool: tdftool.c:171: main: Assertion `font_sequence_marker == 0x55aa00ff' failed.

@@ -5,6 +5,7 @@ all: tdftool
 
 clean:
 	rm -f tdftool
+	rm -f *.core
 
 veryclean: clean
 	rm -rf tests/pass/*.ans
