@@ -16,5 +16,6 @@ veryclean: clean
 install:
 	sudo cp tdftool /usr/bin/tdftool
 
-test:
+test: tdftool
 	./test.sh
+	./mkutf8.sh

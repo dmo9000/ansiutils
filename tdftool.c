@@ -10,6 +10,9 @@
 #include "tdf.h"
 #include "osdep.h"
 
+/* a handful of hacks to clean up later */
+
+#define IS_BIG_ENDIAN (*(uint16_t *)"\0\xff" < 0x100)
 
 #define create_new_font()   malloc(sizeof(TDFFont))
 #define create_new_raster() malloc(sizeof(TDFRaster))
@@ -38,6 +41,11 @@ int main(int argc, char *argv[])
     TDFCanvas *my_canvas = NULL;
     uint16_t running_average_width = 0;
     uint16_t running_average_height = 0;
+
+    if (IS_BIG_ENDIAN) {
+        printf("Sorry, big endian systems not supported right now.\n");
+        exit(1);
+        }
 
     while ((c = getopt (argc, argv, "f:uo:dv")) != -1) {
         switch (c)
