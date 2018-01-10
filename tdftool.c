@@ -6,6 +6,7 @@
 #include <arpa/inet.h>
 #include <getopt.h>
 #include <ctype.h>
+#include <libgen.h>
 #include "tdf.h"
 #include "osdep.h"
 
@@ -168,6 +169,15 @@ int main(int argc, char *argv[])
 
 
             assert(new_font);
+
+            if (font_sequence_marker != 0x55aa00ff) {
+                printf("%s: at font %u, expected 0x55aa00ff, but got 0x%08x\n",
+                       basename(input_filename),  my_tdf.fontcount, font_sequence_marker);
+                exit(1);
+            }
+
+
+
             assert(font_sequence_marker == 0x55aa00ff);
 
             if (fread((uint8_t*) &namelen, 1, 1, my_tdf.fh) != 1) {
@@ -193,6 +203,12 @@ int main(int argc, char *argv[])
 
             if (fread(&reserved1, sizeof(uint32_t), 1, my_tdf.fh) != 1) {
                 printf("Failure reading reserved1\n");
+                exit(1);
+            }
+
+            if (reserved1) {
+                printf("%s: at font %u, reserved1=0x0, but got 0x%08x\n",
+                       basename(input_filename),  my_tdf.fontcount, reserved1);
                 exit(1);
             }
 
@@ -408,11 +424,11 @@ bool push_glyph(TDFCanvas *my_canvas, TDFFont *tdf, uint8_t c)
 
     /* make sure character will fit on canvas vertically */
 
-		if (tdc->undefined) {
-			/* if the glyph is undefined, just skip it */
-			return true;
-			}
-				
+    if (tdc->undefined) {
+        /* if the glyph is undefined, just skip it */
+        return true;
+    }
+
 
     assert(!tdc->undefined);
     assert(tdc->prerendered);
@@ -673,7 +689,8 @@ bool prerender_glyph(TDFFont *font, unsigned char c)
                         ptr ++;
                         offset ++;
                     } else {
-                        assert (byteval >= 32 && byteval <= 255);
+                        /* disabled for now, but not sure about this ... */
+                        //assert (byteval >= 32 && byteval <= 255);
                     }
                 }
             } else {
@@ -737,11 +754,11 @@ bool prerender_glyph(TDFFont *font, unsigned char c)
                     ptr ++;
                     offset ++;
                 } else {
-										/* ok it's strange but some fonts seem to have sub-ASCII values */
-										//if (!(byteval >= 32 && byteval <= 255)) {
-											//printf("prerender_glyph: byteval = %u (0x%02x)\n", byteval);
-											//exit(1);
-											//}
+                    /* ok it's strange but some fonts seem to have sub-ASCII values */
+                    //if (!(byteval >= 32 && byteval <= 255)) {
+                    //printf("prerender_glyph: byteval = %u (0x%02x)\n", byteval);
+                    //exit(1);
+                    //}
                     //assert (byteval >= 32 && byteval <= 255);
                 }
             }
