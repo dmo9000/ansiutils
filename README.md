@@ -26,13 +26,15 @@ on a UNIX/Linux terminal, rather than on DOS you'll need to convert them with ic
 
     ./tdftool ../THEDRAWFONTS/DUNGEON2.TDF HELLO | iconv -f CP437 -t UTF8 
 
-To display them on Windows there seems to be a few solutions: 
+To display them on Windows there seems to be a few solutions, although I haven't
+tested these yet: 
 
     https://github.com/peteri/Ansi-Cat
 
     https://github.com/adoxa/ansicon/
 
-And of course you should be able to load them into PabloDraw as an .ANS file. 
+And of course you should be able to load them into PabloDraw as an .ANS file, or
+use the output from iconv. 
 
 This utility can render over 1,000 of them, although the accuracy of the results
 has not been completely verified. I'm working on resolving the issues with the ~120
@@ -47,7 +49,9 @@ TYPE_OUTLINE fonts in the collection (I only count four).
 This should be considered very early alpha code, do not use anywhere near production. 
 There are still assert() all over the place to help with debugging and there
 are some known issues with realloc() here and there. I will fix these as I can get
-time to work on them. 
+time to work on them. Some fonts do not yet render correctly (other than the 
+aforementioned TYPE_OUTLINE) and I am keeping a list of those I've observed in the 
+KNOWNBAD file.  
 
 Many thanks to Roy for collecting the fonts and providing workable specifications for the
 font format on his site. 
