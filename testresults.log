@@ -1,6 +1,5 @@
-     14 tdftool: tdftool.c:734: prerender_glyph: Assertion `byteval >= 32 && byteval <= 255' failed.
-     13 tdftool: tdftool.c:411: push_glyph: Assertion `!tdc->undefined' failed.
-      4 tdftool: tdftool.c:649: prerender_glyph: Assertion `type != TYPE_OUTLINE' failed.
-      3 tdftool: tdftool.c:670: prerender_glyph: Assertion `byteval >= 32 && byteval <= 255' failed.
+     14 tdftool: tdftool.c:698: prerender_glyph: Assertion `y < MAX_LINES' failed.
+      4 tdftool: tdftool.c:655: prerender_glyph: Assertion `type != TYPE_OUTLINE' failed.
+      3 tdftool: tdftool.c:676: prerender_glyph: Assertion `byteval >= 32 && byteval <= 255' failed.
       1 tdftool: tdftool.c:199: main: Assertion `!reserved1' failed.
       1 tdftool: tdftool.c:171: main: Assertion `font_sequence_marker == 0x55aa00ff' failed.

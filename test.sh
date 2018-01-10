@@ -1,8 +1,9 @@
 
 runtest () {
-    rm -rf tests
-    mkdir -p tests/pass
-    mkdir -p tests/fail
+    rm -rf tests/pass/*.ans
+    rm -rf tests/fail/*.ans
+    mkdir -p tests/pass/
+    mkdir -p tests/fail/
     let testcount=1;
     let passed=0;
     let failed=0;

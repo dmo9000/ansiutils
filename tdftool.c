@@ -408,6 +408,12 @@ bool push_glyph(TDFCanvas *my_canvas, TDFFont *tdf, uint8_t c)
 
     /* make sure character will fit on canvas vertically */
 
+		if (tdc->undefined) {
+			/* if the glyph is undefined, just skip it */
+			return true;
+			}
+				
+
     assert(!tdc->undefined);
     assert(tdc->prerendered);
 
@@ -731,7 +737,12 @@ bool prerender_glyph(TDFFont *font, unsigned char c)
                     ptr ++;
                     offset ++;
                 } else {
-                    assert (byteval >= 32 && byteval <= 255);
+										/* ok it's strange but some fonts seem to have sub-ASCII values */
+										//if (!(byteval >= 32 && byteval <= 255)) {
+											//printf("prerender_glyph: byteval = %u (0x%02x)\n", byteval);
+											//exit(1);
+											//}
+                    //assert (byteval >= 32 && byteval <= 255);
                 }
             }
             if (x > width) {
