@@ -1,6 +1,6 @@
-     51 tdftool: tdftool.c:417: push_glyph: Assertion `src_raster->bytes' failed.
-     14 tdftool: tdftool.c:704: prerender_glyph: Assertion `byteval >= 32 && byteval <= 255' failed.
-      4 tdftool: tdftool.c:619: prerender_glyph: Assertion `type != TYPE_OUTLINE' failed.
-      3 tdftool: tdftool.c:640: prerender_glyph: Assertion `byteval >= 32 && byteval <= 255' failed.
-      1 tdftool: tdftool.c:193: main: Assertion `!reserved1' failed.
-      1 tdftool: tdftool.c:165: main: Assertion `font_sequence_marker == 0x55aa00ff' failed.
+     14 tdftool: tdftool.c:734: prerender_glyph: Assertion `byteval >= 32 && byteval <= 255' failed.
+     13 tdftool: tdftool.c:411: push_glyph: Assertion `!tdc->undefined' failed.
+      4 tdftool: tdftool.c:649: prerender_glyph: Assertion `type != TYPE_OUTLINE' failed.
+      3 tdftool: tdftool.c:670: prerender_glyph: Assertion `byteval >= 32 && byteval <= 255' failed.
+      1 tdftool: tdftool.c:199: main: Assertion `!reserved1' failed.
+      1 tdftool: tdftool.c:171: main: Assertion `font_sequence_marker == 0x55aa00ff' failed.

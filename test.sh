@@ -46,7 +46,6 @@ if [ ! -r ./tdftool ]; then
 
 export MALLOC_CHECK_=0 
 
-
 echo "Running tests ..."
 runtest 2>/dev/null
 [ -r testresults.log ] && mv testresults.log testresults.log.last

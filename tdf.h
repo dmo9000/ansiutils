@@ -43,7 +43,7 @@ struct tdf_char {
     uint8_t height;
     uint8_t discovered_height;
     uint8_t type;
-    bool rendered;
+    bool prerendered;
     bool undefined;
     struct tdf_raster *rasters[MAX_LINES];
 };
