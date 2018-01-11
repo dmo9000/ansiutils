@@ -40,6 +40,7 @@ bool raster_append_byte(TDFRaster *r, unsigned char data, ansicolor_t fg, ansico
 
     if (data < 0x20) {
             /* use 'X' instead */
+						printf("%s: value below 0x20 found\n", 
             data = 'X';
     }
 

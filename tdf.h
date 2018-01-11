@@ -38,8 +38,8 @@ typedef color_t ansicolor_t;
 struct tdf_raster {
     uint16_t bytes;
     unsigned char *chardata;
-	ansicolor_t *fgcolor;
-	ansicolor_t *bgcolor;
+    ansicolor_t *fgcolor;
+    ansicolor_t *bgcolor;
     struct tdf_raster *next_raster;     /* not required, but handy */
     uint16_t index;
 };
@@ -47,7 +47,7 @@ struct tdf_raster {
 struct tdf_canvas {
     uint64_t lines;
     struct tdf_raster *first_raster;
-    };
+};
 
 struct tdf_char {
     uint8_t ascii_value;
@@ -76,8 +76,8 @@ struct tdf_font {
     struct tdf_char characters[TDF_MAXCHAR];
     struct tdf_font *next_font;
     struct tdf *parent_tdf;
-    uint8_t average_width; 
-    uint8_t average_height; 
+    uint8_t average_width;
+    uint8_t average_height;
     uint8_t defined_characters;
 };
 
