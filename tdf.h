@@ -1,6 +1,14 @@
+#include <stdlib.h>
 #include <stdio.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include <string.h>
+#include <assert.h>
+
+
+
+#define NO_ANSI_IN_RASTER
+
 
 #define TDF_MAGIC_SIZE          20
 #define TDF_FONTMARKER_SIZE     4

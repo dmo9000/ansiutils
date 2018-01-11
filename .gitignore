@@ -1,3 +1,4 @@
 tdftool
 output.ans
 tests/
+*.o
