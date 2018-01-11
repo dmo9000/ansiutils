@@ -96,3 +96,108 @@ bool canvas_output(TDFCanvas *my_canvas)
 
     return (true);
 }
+
+bool push_glyph(TDFCanvas *my_canvas, TDFFont *tdf, uint8_t c)
+{
+    unsigned char dummy_spacing[30];
+    TDFCharacter *tdc = NULL;
+    TDFRaster *src_raster = NULL;
+    TDFRaster *dst_raster = NULL;
+    bool is_space = false;
+    int ii = 0;
+
+    assert(my_canvas);
+    assert(tdf);
+
+    /* special handling for space! */
+
+
+    if (c == 32) {
+        is_space = true;
+        memset(&dummy_spacing, 0, 30);
+        assert(1 <= tdf->spacing <= 30);
+        memset(&dummy_spacing, ' ', tdf->average_width);
+
+        /* fake it, baby */
+
+        assert(tdf->average_height);
+
+        for (ii = 0; ii < tdf->average_height; ii++) {
+            dst_raster = canvas_get_raster(my_canvas, ii);
+
+            while (!dst_raster) {
+                dst_raster = canvas_add_raster(my_canvas);
+            }
+            assert(dst_raster);
+            assert(ii == dst_raster->index);
+            assert(ii <= my_canvas->lines);
+            assert(tdf);
+            assert(tdf->average_width);
+
+            assert(raster_append_bytes(dst_raster, (char*) &dummy_spacing, tdf->average_width, false));
+        }
+        return true;
+    }
+
+    memset(&dummy_spacing, 0, 30);
+    assert(1 <= tdf->spacing <= 30);
+    memset(&dummy_spacing, ' ', tdf->spacing);
+
+    c -= 33;
+    assert(c >= 0 && c <= 93);
+    tdc = &tdf->characters[c];
+
+    /* make sure character will fit on canvas vertically */
+
+    if (tdc->undefined) {
+        /* if the glyph is undefined, just skip it */
+        return true;
+    }
+
+
+    assert(!tdc->undefined);
+    assert(tdc->prerendered);
+
+    for (ii = 0; ii < tdc->height; ii++) {
+        src_raster = tdc->rasters[ii];
+        //dst_raster = my_canvas->rasters[ii];
+        dst_raster = canvas_get_raster(my_canvas, ii);
+        while (!dst_raster) {
+            dst_raster = canvas_add_raster(my_canvas);
+        }
+        assert(dst_raster);
+        //printf("writing line %u, canvas->lines = %u, dst_raster->index = %u\n", ii, my_canvas->lines, dst_raster->index);
+        assert(ii == dst_raster->index);
+        assert(ii <= my_canvas->lines);
+        assert(src_raster);
+
+
+        if ((!src_raster->chardata || !src_raster->bytes)) {
+            /* the glyph is prerendered, and not a space character,
+            	 but this particular raster doesn't have any data.
+            	 we fill it with dummy spacing data instead */
+            //printf("push_glyph: empty raster %u/%u !!\n", ii, tdc->height);
+            //exit(1);
+            memset(&dummy_spacing, 0, 30);
+            assert(1 <= tdc->width <= 30);
+            memset(&dummy_spacing, ' ', tdc->width);
+            assert(raster_append_bytes(dst_raster, (char*) &dummy_spacing, tdf->average_width, false));
+
+            /* don't forget the font-level spacing as well */
+            memset(&dummy_spacing, 0, 30);
+            assert(1 <= tdf->spacing <= 30);
+            memset(&dummy_spacing, ' ', tdf->spacing);
+            assert(raster_append_bytes(dst_raster, (char*) &dummy_spacing, tdf->spacing, false));
+            return true;
+        }
+
+        assert(src_raster->chardata);
+        assert(src_raster->bytes);
+        //printf("dst_raster->bytes = %u\n", dst_raster->bytes);
+        //printf("src_raster->bytes = %u\n", src_raster->bytes);
+        assert(raster_append_bytes(dst_raster, src_raster->chardata, src_raster->bytes, false));
+        assert(raster_append_bytes(dst_raster, (char*) &dummy_spacing, tdf->spacing, false));
+    }
+    return true;
+
+}

@@ -1,6 +1,3 @@
-#include <stdlib.h>
-#include <string.h>
-#include <assert.h>
 #include "tdf.h"
 
 
@@ -336,4 +333,44 @@ bool prerender_glyph(TDFFont *font, unsigned char c)
     }
     return true;
 
+}
+
+/* quick and dirty way to just show a single glyph. deprecating soon */
+
+bool display_glyph(TDFFont *tdf, uint8_t c)
+{
+    TDFCharacter *tdc = NULL;
+    TDFRaster *tdr = NULL;
+    int ii = 0;
+
+    if (tdf->parent_tdf->debug_level) {
+        printf("display_glyph('%c')\n", c);
+    }
+
+    if (!tdf) return false;
+
+    c -= 33;
+    assert(c >= 0 && c <= 93);
+    tdc = &tdf->characters[c];
+
+    assert(tdc);
+
+    if (tdc->undefined) {
+        return false;
+    }
+
+    assert(!tdc->undefined);
+    assert(tdc->prerendered);
+
+    /* get correct character */
+    for (ii = 0; ii < tdc->height; ii++) {
+        assert (ii < MAX_LINES);
+        tdr = tdc->rasters[ii];
+        assert(tdr);
+        assert(tdr->bytes);
+        assert(tdr->chardata);
+        printf("%s (%u,%d)\n", tdr->chardata, tdr->bytes, (tdr->bytes ? strlen(tdr->chardata): -1));
+    }
+
+    return true;
 }
