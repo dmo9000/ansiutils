@@ -212,7 +212,8 @@ bool prerender_glyph(TDFFont *font, unsigned char c)
             if (!suppress) {
                 if (byteval >= 32) {
                     //putchar(byteval);
-                    raster_append_byte(r, byteval, false);
+                    /* TODO: the foreground and background colors should be #defined */
+                    raster_append_byte(r, byteval, 7, 0, false);
                     ptr ++;
                     offset ++;
                 } else {
@@ -226,7 +227,7 @@ bool prerender_glyph(TDFFont *font, unsigned char c)
                     }
                 }
             } else {
-                raster_append_byte(r, ' ', false);
+                raster_append_byte(r, ' ', 7, 0, false);
             }
             if (x > width) {
                 //printf("\n");
@@ -247,41 +248,21 @@ bool prerender_glyph(TDFFont *font, unsigned char c)
             assert (y < MAX_LINES);
             r = tdc->rasters[y];
             assert(r);
-            if (fg >= 0x08) {
-                fg -= 0x08;
-                /* ANSI control code - hi intensity */
 
-#ifndef NO_ANSI_IN_RASTER
-                raster_append_bytes(r, (char *) "\x1b\x5b""1m", 4, false);
-#endif /* NO_ANSI_IN_RASTER */
-            } else {
-#ifndef NO_ANSI_IN_RASTER
-                /* ANSI control code - normal intensity */
-                raster_append_bytes(r, (char *) "\x1b\x5b""21m", 5, false);
-#endif /* NO_ANSI_IN_RASTER */
-            }
-
-            assert(fg >= 0 && fg <= 7);
+            assert(fg >= 0 && fg <= 16);
             bg = color;
             bg = ((bg & 0xF0) >> 4) % 0x08;
             assert(bg >= 0 && bg <= 7);
-#ifndef NO_ANSI_IN_RASTER
+
             fg = ansi_color_map[fg];
             bg = ansi_color_map[bg];
-#endif /* NO_ANSI_IN_RASTER */
 
 //            printf("[0x%02x][0x%02x] [%02x][%02x] %c\n", byteval, color, bg, fg, byteval);
             if (byteval >= 32) {
                 //printf("^[%u;%um",40 + bg, 30 + fg);
-#ifndef NO_ANSI_IN_RASTER
-                snprintf((char *) &ansi_buffer, MAX_ANSI_SEQUENCE, "\x1b\x5b""%u;%um", 40 + bg, 30 + fg);
-
-#endif /* NO_ANSI_IN_RASTER */
-                if (!suppress) {
-#ifndef NO_ANSI_IN_RASTER                    
-                    raster_append_bytes(r, (char *) &ansi_buffer, strlen(ansi_buffer), false);
-#endif /* NO_ANSI_IN_RASTER */                    
-                    raster_append_byte(r, byteval, false);
+                if (!suppress) {                 
+                    raster_append_bytes(r, (char *) &ansi_buffer, strlen(ansi_buffer), fg, bg, false);                 
+                    raster_append_byte(r, byteval, fg, bg, false);
                 }
                 ptr += 2;
                 offset += 2;
@@ -290,9 +271,6 @@ bool prerender_glyph(TDFFont *font, unsigned char c)
                     //printf("<S>");
                     if (!suppress) {
                         /* reset to transparent */
-#ifndef NO_ANSI_IN_RASTER
-                        raster_append_bytes(r, (char *) "\x1b\x5b""40;37m", 8, false);
-#endif /* NO_ANSI_IN_RASTER */   
                     }
                     suppress = true;
                     //raster_append_byte(r, ' ', false);

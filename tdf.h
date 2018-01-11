@@ -31,17 +31,21 @@ struct tdf_font;
 struct tdf;
 
 
+typedef uint8_t color_t;
+typedef color_t ibmcolor_t;
+typedef color_t ansicolor_t;
+
 struct tdf_raster {
     uint16_t bytes;
     unsigned char *chardata;
-	unsigned char *fgcolor;
-	unsigned char *bgcolor;
+	ansicolor_t *fgcolor;
+	ansicolor_t *bgcolor;
     struct tdf_raster *next_raster;     /* not required, but handy */
     uint16_t index;
 };
 
 struct tdf_canvas {
-    int lines;
+    uint64_t lines;
     struct tdf_raster *first_raster;
     };
 
@@ -102,8 +106,12 @@ bool render_glyph(struct tdf_font *render_font, unsigned c);
 bool prerender_glyph(TDFFont *font, unsigned char c);
 const char *get_font_type(int type);
 bool display_glyph(TDFFont *tdf, uint8_t c);
-bool raster_append_byte(TDFRaster *r, unsigned char data, bool debug);
-bool raster_append_bytes(TDFRaster *r, unsigned char *data, int bytes, bool debug);
+
+bool raster_append_bytes(TDFRaster *r, unsigned char *data, uint8_t bytes, ansicolor_t fg, ansicolor_t bg, bool debug);
+bool raster_append_byte(TDFRaster *r, unsigned char data, ansicolor_t fg, ansicolor_t bg, bool debug);
+//bool raster_append_bytes(TDFRaster *r, unsigned char *data, int bytes, bool debug);
+//bool raster_append_byte(TDFRaster *r, unsigned char data, bool debug);
+
 TDFCanvas *new_canvas();
 bool push_glyph(TDFCanvas *my_canvas, TDFFont *tdf, uint8_t c);
 TDFRaster *canvas_get_raster(TDFCanvas *canvas, int line);

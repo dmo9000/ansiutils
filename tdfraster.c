@@ -12,12 +12,17 @@ TDFRaster *create_new_raster()
 }
 
 
-bool raster_append_bytes(TDFRaster *r, unsigned char *data, int bytes, bool debug)
+bool raster_append_bytes(TDFRaster *r, unsigned char *data, uint8_t bytes, ansicolor_t fg, ansicolor_t bg, bool debug)
 {
 
     int ii = 0;
+
+    /* uncomment this assert to filter some dogdy fonts, need to know why though */
+
+    //assert(strlen(data) == bytes);
+
     for (ii = 0; ii < bytes; ii++) {
-        if (!raster_append_byte(r, data[ii], debug)) {
+        if (!raster_append_byte(r, data[ii], fg, bg, debug)) {
             return false;
         };
     }
@@ -25,12 +30,20 @@ bool raster_append_bytes(TDFRaster *r, unsigned char *data, int bytes, bool debu
 
 }
 
-bool raster_append_byte(TDFRaster *r, unsigned char data, bool debug)
+bool raster_append_byte(TDFRaster *r, unsigned char data, ansicolor_t fg, ansicolor_t bg, bool debug)
 {
     TDFRaster *tdr = r;
     unsigned char *raster_realloc = NULL;
 
     assert(r);
+    /* do not push null byte, ever, since it's a string terminator  */
+
+    if (!data) {
+            /* use space instead */
+            data = ' ';
+    }
+
+    assert(data);
 
     if (!tdr->bytes) {
         tdr->bytes = 1;

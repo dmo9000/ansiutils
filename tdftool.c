@@ -211,8 +211,8 @@ int main(int argc, char *argv[])
             if (fread(&new_font->type, sizeof(uint8_t), 1, my_tdf.fh) != 1) {
                 printf("couldn't read font type\n");
             }
-            assert(new_font->type >= 0);
-            assert(new_font->type <= 2);
+            assert(new_font->type >= TYPE_OUTLINE);
+            assert(new_font->type <= TYPE_COLOR);
             //printf("font type = %u\n", new_font->type);
 
             if (fread(&new_font->spacing, sizeof(uint8_t), 1, my_tdf.fh) != 1) {
