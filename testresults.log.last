@@ -1,4 +1,3 @@
-     45 tdftool: tdfraster.c:20: raster_append_bytes: Assertion `strlen(data) == bytes' failed.
      14 tdftool: tdffont.c:248: prerender_glyph: Assertion `y < MAX_LINES' failed.
       4 tdftool: tdffont.c:203: prerender_glyph: Assertion `type != TYPE_OUTLINE' failed.
       3 tdftool: tdffont.c:209: prerender_glyph: Assertion `y < MAX_LINES' failed.

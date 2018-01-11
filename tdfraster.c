@@ -38,9 +38,9 @@ bool raster_append_byte(TDFRaster *r, unsigned char data, ansicolor_t fg, ansico
     assert(r);
     /* do not push null byte, ever, since it's a string terminator  */
 
-    if (!data) {
-            /* use space instead */
-            data = ' ';
+    if (data < 0x20) {
+            /* use 'X' instead */
+            data = 'X';
     }
 
     assert(data);
