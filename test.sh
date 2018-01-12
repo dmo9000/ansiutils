@@ -14,7 +14,7 @@ runtest () {
         OUTNAME=`echo ${BASENAME} | tr "[:upper:]" "[:lower:]"`
         rm -f output.ans
         #printf "-> [%04u/%04u] %s" $testcount $TESTTOTAL $TDFFILE
-        echo "-> [$testcount/$TESTTOTAL] $TDFFILE" 
+        #echo "-> [$testcount/$TESTTOTAL] $TDFFILE" 
         echo "-> [$testcount/$TESTTOTAL] $TDFFILE" > output.ans 
         ./tdftool ../THEDRAWFONTS/${TDFFILE} "TEST" 1>output.ans 2>output.ans
         STATUS=$?

@@ -3,7 +3,7 @@
 
 static int ansi_color_map[8] = {
     0, 4, 2, 6, 1, 5, 3, 7
-    };
+};
 
 
 
@@ -28,10 +28,18 @@ const char *get_font_type(int type)
 
 TDFFont *create_new_font()
 {
+    int ii = 0;
     TDFFont *new_font = NULL;
     new_font = malloc(sizeof(TDFFont));
     assert(new_font);
     memset(new_font, 0, sizeof(TDFFont));
+
+    /* we also need to zero out the character structures within the font */
+
+    for (ii = 0; ii < TDF_MAXCHAR; ii++) {
+        memset(&new_font->characters[ii], 0, sizeof(TDFCharacter));
+    }
+
     return new_font;
 
 }
@@ -207,7 +215,9 @@ bool prerender_glyph(TDFFont *font, unsigned char c)
             byteval = ptr[0];
             x++;
             assert(y < MAX_LINES);
-            r = tdc->rasters[y];
+            assert(tdc);
+            assert(tdc->char_rasters[y]);
+            r = tdc->char_rasters[y];
             assert(r);
             if (!suppress) {
                 if (byteval >= 32) {
@@ -246,7 +256,9 @@ bool prerender_glyph(TDFFont *font, unsigned char c)
             //printf("fg >= 0x08 = %d\n", fg);
 
             assert (y < MAX_LINES);
-            r = tdc->rasters[y];
+            assert(tdc);
+            assert(tdc->char_rasters[y]);
+            r = tdc->char_rasters[y];
             assert(r);
 
             assert(fg >= 0 && fg <= 16);
@@ -260,8 +272,8 @@ bool prerender_glyph(TDFFont *font, unsigned char c)
 //            printf("[0x%02x][0x%02x] [%02x][%02x] %c\n", byteval, color, bg, fg, byteval);
             if (byteval >= 32) {
                 //printf("^[%u;%um",40 + bg, 30 + fg);
-                if (!suppress) {                 
-                    raster_append_bytes(r, (char *) &ansi_buffer, strlen(ansi_buffer), fg, bg, false);                 
+                if (!suppress) {
+                    raster_append_bytes(r, (char *) &ansi_buffer, strlen(ansi_buffer), fg, bg, false);
                     raster_append_byte(r, byteval, fg, bg, false);
                 }
                 ptr += 2;
@@ -343,7 +355,9 @@ bool display_glyph(TDFFont *tdf, uint8_t c)
     /* get correct character */
     for (ii = 0; ii < tdc->height; ii++) {
         assert (ii < MAX_LINES);
-        tdr = tdc->rasters[ii];
+        assert(tdc);
+        assert(tdc->char_rasters[ii]);
+        tdr = tdc->char_rasters[ii];
         assert(tdr);
         assert(tdr->bytes);
         assert(tdr->chardata);

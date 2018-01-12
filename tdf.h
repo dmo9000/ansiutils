@@ -21,7 +21,9 @@
 #define TYPE_COLOR              2
 
 #define MAX_NAMELEN             12
-#define MAX_LINES               12  /* we'll see */
+//#define MAX_LINES               12  /* we'll see */
+#define MAX_LINES               13  /* this is more like it */ 
+
 #define MAX_ANSI_SEQUENCE       32
 
 struct tdf_raster;
@@ -61,7 +63,7 @@ struct tdf_char {
     uint8_t type;
     bool prerendered;
     bool undefined;
-    struct tdf_raster *rasters[MAX_LINES];
+    struct tdf_raster *char_rasters[MAX_LINES];
 };
 
 
@@ -78,6 +80,7 @@ struct tdf_font {
     struct tdf *parent_tdf;
     uint8_t average_width;
     uint8_t average_height;
+    uint8_t maximum_height;
     uint8_t defined_characters;
 };
 

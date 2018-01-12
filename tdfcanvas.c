@@ -120,9 +120,10 @@ bool push_glyph(TDFCanvas *my_canvas, TDFFont *tdf, uint8_t c)
 
         /* fake it, baby */
 
-        assert(tdf->average_height);
+//        assert(tdf->average_height);
+        assert(tdf->maximum_height);
 
-        for (ii = 0; ii < tdf->average_height; ii++) {
+        for (ii = 0; ii < tdf->maximum_height; ii++) {
             dst_raster = canvas_get_raster(my_canvas, ii);
 
             while (!dst_raster) {
@@ -139,13 +140,23 @@ bool push_glyph(TDFCanvas *my_canvas, TDFFont *tdf, uint8_t c)
         return true;
     }
 
+    /* otherwise it's not a space */
+
     memset(&dummy_spacing, 0, 30);
     assert(1 <= tdf->spacing <= 30);
     memset(&dummy_spacing, ' ', tdf->spacing);
 
+
+    //printf("c = '%c'\n", c);
+
     c -= 33;
     assert(c >= 0 && c <= 93);
     tdc = &tdf->characters[c];
+
+    //printf("tdc = 0x%08x\n", tdc);
+    //fflush(NULL);
+
+    assert(tdc);
 
     /* make sure character will fit on canvas vertically */
 
@@ -158,8 +169,19 @@ bool push_glyph(TDFCanvas *my_canvas, TDFFont *tdf, uint8_t c)
     assert(!tdc->undefined);
     assert(tdc->prerendered);
 
-    for (ii = 0; ii < tdc->height; ii++) {
-        src_raster = tdc->rasters[ii];
+    if (tdf->maximum_height > MAX_LINES) {
+        printf("%s: tdf->maximum_height = %u is larger than MAX_LINES = %u\n", tdf->name, tdf->maximum_height, MAX_LINES);
+        exit(1);
+    }
+
+    assert(tdf->maximum_height <= MAX_LINES);
+    //printf("tdf->maximum_height = %u\n", tdf->maximum_height);
+//    for (ii = 0; ii < tdc->height; ii++) {
+    for (ii = 0; ii < tdf->maximum_height; ii++) {
+        //printf("ii = %u\n", ii);
+        assert(tdc);
+        assert(tdc->char_rasters[ii]);
+        src_raster = tdc->char_rasters[ii];
         //dst_raster = my_canvas->rasters[ii];
         dst_raster = canvas_get_raster(my_canvas, ii);
         while (!dst_raster) {
@@ -181,7 +203,8 @@ bool push_glyph(TDFCanvas *my_canvas, TDFFont *tdf, uint8_t c)
             memset(&dummy_spacing, 0, 30);
             assert(1 <= tdc->width <= 30);
             memset(&dummy_spacing, ' ', tdc->width);
-            assert(raster_append_bytes(dst_raster, (char*) &dummy_spacing, tdf->average_width, 7, 0, false));
+//            assert(raster_append_bytes(dst_raster, (char*) &dummy_spacing, tdf->average_width, 7, 0, false));
+            assert(raster_append_bytes(dst_raster, (char*) &dummy_spacing, tdc->width, 7, 0, false));
 
             /* don't forget the font-level spacing as well */
             memset(&dummy_spacing, 0, 30);
@@ -196,7 +219,7 @@ bool push_glyph(TDFCanvas *my_canvas, TDFFont *tdf, uint8_t c)
         //printf("dst_raster->bytes = %u\n", dst_raster->bytes);
         //printf("src_raster->bytes = %u\n", src_raster->bytes);
 
-        /* FIXME: its seems we need a copy_raster() function that preserves fg/bg colors, as 
+        /* FIXME: its seems we need a copy_raster() function that preserves fg/bg colors, as
                 well as a raster_append_space[s]() */
 
         assert(raster_append_bytes(dst_raster, src_raster->chardata, src_raster->bytes, 7, 0, false));

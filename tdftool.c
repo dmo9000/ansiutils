@@ -250,10 +250,9 @@ int main(int argc, char *argv[])
                 }
                 /* setup empty rasters */
                 for (jj = 0; jj < MAX_LINES; jj++) {
-                    new_font->characters[ii].rasters[jj] = create_new_raster();
-                    new_font->characters[ii].rasters[jj]->bytes = 0;
-                    new_font->characters[ii].rasters[jj]->chardata = NULL;
-
+                    new_font->characters[ii].char_rasters[jj] = create_new_raster();
+                    new_font->characters[ii].char_rasters[jj]->bytes = 0;
+                    new_font->characters[ii].char_rasters[jj]->chardata = NULL;
                 }
 
 //                assert(new_font->characters[ii].offset != 0xFFFF);
@@ -313,6 +312,9 @@ int main(int argc, char *argv[])
                 /* if it was a valid glyph, add it's width to the running average */
                 running_average_width += render_font->characters[ii-33].width;
                 running_average_height += render_font->characters[ii-33].discovered_height;
+                if (render_font->characters[ii-33].discovered_height > render_font->maximum_height) {
+                    render_font->maximum_height = render_font->characters[ii-33].discovered_height;
+                }
                 /* don't trust the height value provided in the TDF file, use what we counted while pre-rendering */
                 render_font->defined_characters++;
             }
