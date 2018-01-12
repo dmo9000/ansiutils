@@ -39,8 +39,7 @@ bool raster_append_byte(TDFRaster *r, unsigned char data, ansicolor_t fg, ansico
     /* do not push null byte, ever, since it's a string terminator  */
 
     if (data < 0x20) {
-            /* use 'X' instead */
-						printf("%s: value below 0x20 found\n", 
+            /* use 'X' instead for now */
             data = 'X';
     }
 
