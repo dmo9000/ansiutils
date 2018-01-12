@@ -172,7 +172,6 @@ bool render_glyph(TDFFont *render_font, unsigned c)
 
 bool prerender_glyph(TDFFont *font, unsigned char c)
 {
-    static char ansi_buffer[MAX_ANSI_SEQUENCE];
     unsigned char *ptr = NULL;
     uint8_t width = 0;
     uint8_t height = 0;
@@ -205,6 +204,8 @@ bool prerender_glyph(TDFFont *font, unsigned char c)
 
     while (ptr[0] != '\0' && offset < limit) {
 
+        assert(y < MAX_LINES);
+
         switch(type) {
         case TYPE_OUTLINE:
             //printf("+ Unhandled font_type = %d\n", type);
@@ -214,7 +215,7 @@ bool prerender_glyph(TDFFont *font, unsigned char c)
         case TYPE_BLOCK:
             byteval = ptr[0];
             x++;
-            assert(y < MAX_LINES);
+            //assert(y < MAX_LINES);
             assert(tdc);
             assert(tdc->char_rasters[y]);
             r = tdc->char_rasters[y];
@@ -255,7 +256,7 @@ bool prerender_glyph(TDFFont *font, unsigned char c)
             fg = ( fg & 0x0F ) % 0x0F;
             //printf("fg >= 0x08 = %d\n", fg);
 
-            assert (y < MAX_LINES);
+            //assert (y < MAX_LINES);
             assert(tdc);
             assert(tdc->char_rasters[y]);
             r = tdc->char_rasters[y];
@@ -273,7 +274,6 @@ bool prerender_glyph(TDFFont *font, unsigned char c)
             if (byteval >= 32) {
                 //printf("^[%u;%um",40 + bg, 30 + fg);
                 if (!suppress) {
-                    raster_append_bytes(r, (char *) &ansi_buffer, strlen(ansi_buffer), fg, bg, false);
                     raster_append_byte(r, byteval, fg, bg, false);
                 }
                 ptr += 2;
@@ -311,6 +311,34 @@ bool prerender_glyph(TDFFont *font, unsigned char c)
             break;
         }
     }
+
+    /* check that the number of bytes in the raster is equivalent to the width - some fonts
+       seem to have a short count on the final line and need to be padded */
+
+
+    /* ensure there is no overrun */
+
+    if (r->bytes > width) {
+        if (font->parent_tdf->debug_level) {
+            printf("+ overrun, actual length = %u,  expected = %u\n", r->bytes, width);
+        }
+        width = r->bytes;
+        if (font->parent_tdf->debug_level) {
+            display_glyph(font, c);
+        }
+    }
+
+    assert(r->bytes <= width);
+
+    while (r->bytes < width) {
+        if (font->parent_tdf->debug_level) {
+            printf("+ actual length = %u,  expected = %u\n", r->bytes, width);
+            fflush(NULL);
+        }
+        raster_append_byte(r, ' ', 7, 0, false);
+    }
+
+    assert(r->bytes == width);
 
     y++;
     tdc->height = height;
