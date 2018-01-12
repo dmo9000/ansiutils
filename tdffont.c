@@ -204,7 +204,13 @@ bool prerender_glyph(TDFFont *font, unsigned char c)
 
     while (ptr[0] != '\0' && offset < limit) {
 
-        assert(y < MAX_LINES);
+        /*
+        if (!(y <= MAX_LINES)) {
+            printf("%s: y > MAX_LINES, y = %u\n", font->name, y);
+            exit(1);
+            }
+        */
+        assert(y <= MAX_LINES);
 
         switch(type) {
         case TYPE_OUTLINE:

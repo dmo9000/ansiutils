@@ -1,4 +1,19 @@
-     17 tdftool: tdffont.c:207: prerender_glyph: Assertion `y < MAX_LINES' failed.
-      4 tdftool: tdffont.c:212: prerender_glyph: Assertion `type != TYPE_OUTLINE' failed.
+      4 tdftool: tdffont.c:216: prerender_glyph: Assertion `type != TYPE_OUTLINE' failed.
+      2 mabus1: y > MAX_LINES, y = 129
+      1 User2: y > MAX_LINES, y = 129
+      1 Toxic: y > MAX_LINES, y = 129
+      1 SmAtlantis: y > MAX_LINES, y = 129
+      1 Metalal: y > MAX_LINES, y = 129
+      1 Merry: y > MAX_LINES, y = 129
+      1 KEYS: y > MAX_LINES, y = 129
+      1 Kevin3nine: y > MAX_LINES, y = 129
+      1 Kevin1: y > MAX_LINES, y = 129
       1 GUARDF2.TDF: at font 2, expected 0x55aa00ff, but got 0x1a534155
+      1 Fraktur: y > MAX_LINES, y = 129
+      1 Eco Blue: y > MAX_LINES, y = 129
+      1 DigMotion Bl: y > MAX_LINES, y = 129
+      1 Delusion: y > MAX_LINES, y = 129
+      1 Crewel Blue: y > MAX_LINES, y = 129
       1 CFH-HOER.TDF: at font 1, reserved1=0x0, but got 0x00000074
+      1 Brazen Blue: y > MAX_LINES, y = 129
+      1 AtlantisSmB: y > MAX_LINES, y = 129
