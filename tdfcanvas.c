@@ -1,7 +1,7 @@
 #include "tdf.h"
 
 static int ansi_color_map[8] = {
-    0, 4, 2, 6, 1, 5, 3, 7
+    0, 4, 2, 6, 1, 5, 3, 7 
 };
 
 
@@ -127,10 +127,6 @@ bool canvas_output(TDFCanvas *my_canvas)
                 } else {
                 printf("\x1b\x5b""21m");
                 }
-
-
-            
-
             putchar(r->chardata[jj]); 
             //printf((char *) "\x1b\x5b""%u;%um", 40, 37);
             }

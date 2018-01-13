@@ -122,3 +122,4 @@ TDFRaster *canvas_add_raster(TDFCanvas *canvas);
 bool canvas_output(TDFCanvas *canvas);
 TDFRaster *create_new_raster();
 TDFFont *create_new_font();
+bool raster_output(TDFRaster *r);

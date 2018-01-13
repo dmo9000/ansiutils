@@ -367,7 +367,7 @@ bool display_glyph(TDFFont *tdf, uint8_t c)
 {
     TDFCharacter *tdc = NULL;
     TDFRaster *tdr = NULL;
-    int ii = 0;
+    int ii = 0, jj = 0;
 
     if (tdf->parent_tdf->debug_level) {
         printf("display_glyph('%c')\n", c);
@@ -389,15 +389,24 @@ bool display_glyph(TDFFont *tdf, uint8_t c)
     assert(tdc->prerendered);
 
     /* get correct character */
-    for (ii = 0; ii < tdc->height; ii++) {
+    for (ii = 0; ii < tdc->discovered_height; ii++) {
         assert (ii < MAX_LINES);
         assert(tdc);
         assert(tdc->char_rasters[ii]);
         tdr = tdc->char_rasters[ii];
         assert(tdr);
-        assert(tdr->bytes);
-        assert(tdr->chardata);
-        printf("%s (%u,%d)\n", tdr->chardata, tdr->bytes, (tdr->bytes ? strlen(tdr->chardata): -1));
+
+        if (tdr->bytes && tdr->chardata) {
+            //printf("%s", tdr->chardata);
+            raster_output(tdr); 
+            printf(" (%u,%u/%u)\n", tdr->bytes, ii+1, tdc->discovered_height);
+            } else {
+            /* blank raster */
+            for (jj = 0; jj < tdc->width; jj++) {
+                putchar(' ');
+                } 
+            printf(" (%u,%u/%u)\n", tdr->bytes, ii+1, tdc->discovered_height);
+            }
     }
 
     return true;

@@ -1,5 +1,9 @@
 #include "tdf.h"
 
+static int ansi_color_map[8] = {
+    0, 4, 2, 6, 1, 5, 3, 7
+};
+
 
 TDFRaster *create_new_raster()
 {
@@ -39,8 +43,8 @@ bool raster_append_byte(TDFRaster *r, unsigned char data, ansicolor_t fg, ansico
     /* do not push null byte, ever, since it's a string terminator  */
 
     if (data < 0x20) {
-            /* use 'X' instead for now */
-            data = 'X';
+        /* use 'X' instead for now */
+        data = 'X';
     }
 
     assert(data);
@@ -56,7 +60,7 @@ bool raster_append_byte(TDFRaster *r, unsigned char data, ansicolor_t fg, ansico
 
         tdr->chardata[0] = data;
         tdr->fgcolors[0] = fg;
-        tdr->fgcolors[0] = bg;
+        tdr->bgcolors[0] = bg;
         tdr->chardata[1] = '\0'; /* NULL terminate, so that the rasters can be printed with C library functions */
         tdr->fgcolors[1] = '\0';
         tdr->bgcolors[1] = '\0';
@@ -91,4 +95,46 @@ bool raster_append_byte(TDFRaster *r, unsigned char data, ansicolor_t fg, ansico
     }
 
     return true;
+}
+
+bool raster_output(TDFRaster *r)
+{
+
+    int jj = 0;
+    ansicolor_t fg;
+    ansicolor_t bg;
+    bool bold = false;
+
+
+    for (jj = 0; jj < r->bytes; jj++) {
+        fg = r->fgcolors[jj];
+        bg = r->bgcolors[jj];
+
+        if (fg >= 0x08) {
+            fg -= 0x08;
+            /* ANSI control code - hi intensity */
+            bold = true;
+
+        } else {
+            /* ANSI control code - normal intensity */
+            bold = false;
+        }
+
+        fg = ansi_color_map[fg];
+        bg = ansi_color_map[bg];
+
+        printf((char *) "\x1b\x5b""%u;%um", 40 + bg, 30 + fg);
+
+        if (bold) {
+            printf("\x1b\x5b""1m");
+        } else {
+            printf("\x1b\x5b""21m");
+        }
+        putchar(r->chardata[jj]);
+        //printf("[%u/%u/%u/%u]", jj, r->chardata[jj], r->fgcolors[jj], r->bgcolors[jj]); 
+    }
+
+    printf("\x1b\x5b""0m");
+    return true;
+
 }
