@@ -99,21 +99,19 @@ bool canvas_output(TDFCanvas *my_canvas)
         assert(r);
         assert(r->chardata);
         assert(r->bytes);
+        raster_output(r);
+        /*
         for (jj = 0; jj < r->bytes; jj++) {
-            //putchar(r->chardata[jj]);
-            //printf("(%c, %u, %u)\n", r->chardata[jj], r->fgcolors[jj], r->bgcolors[jj]);
             fg = r->fgcolors[jj];
             bg = r->bgcolors[jj]; 
 
              if (fg >= 0x08) {
                 fg -= 0x08;
-                /* ANSI control code - hi intensity */
-               // printf("\x1b\x5b""1m");
+                // ANSI control code - hi intensity 
                 bold = true; 
 
             } else {
-                /* ANSI control code - normal intensity */
-                //printf("\x1b\x5b""21m");
+                // ANSI control code - normal intensity 
                 bold = false; 
             }
 
@@ -128,8 +126,8 @@ bool canvas_output(TDFCanvas *my_canvas)
                 printf("\x1b\x5b""21m");
                 }
             putchar(r->chardata[jj]); 
-            //printf((char *) "\x1b\x5b""%u;%um", 40, 37);
             }
+        */
         putchar('\n');
     }
 
