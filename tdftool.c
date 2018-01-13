@@ -1,4 +1,3 @@
-
 #include <arpa/inet.h>
 #include <getopt.h>
 #include <ctype.h>
@@ -83,6 +82,8 @@ int main(int argc, char *argv[])
         }
 
     }
+
+    /* TODO: a lot of this stuff should be moved into tdffont.c */
 
     input_filename = (char *) argv[optind];
 
@@ -199,7 +200,7 @@ int main(int argc, char *argv[])
             }
 
             if (reserved1) {
-                printf("%s: at font %u, reserved1=0x0, but got 0x%08x\n",
+                printf("%s: at font %u, expected reserved1=0x00000000, but got 0x%08x\n",
                        basename(input_filename),  my_tdf.fontcount, reserved1);
                 exit(1);
             }
@@ -229,8 +230,6 @@ int main(int argc, char *argv[])
             if (fread(&new_font->blocksize, sizeof(uint16_t), 1, my_tdf.fh) != 1) {
                 printf("couldn't read blocksize\n");
             }
-
-            /* bit naive, these will always pass */
 
             if (IS_BIG_ENDIAN) {
                 new_font->blocksize = ntohs(new_font->blocksize);
@@ -344,6 +343,9 @@ int main(int argc, char *argv[])
         }
 
         my_canvas = new_canvas();
+        my_canvas->debug_level = debug_level;
+
+
         for (ii = 0; ii < strlen(message); ii++) {
             //printf("+++++ PUSHING GLYPH %u ['%c']\n", ii, message[ii]);
             fflush(NULL);

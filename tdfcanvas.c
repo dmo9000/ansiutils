@@ -100,34 +100,6 @@ bool canvas_output(TDFCanvas *my_canvas)
         assert(r->chardata);
         assert(r->bytes);
         raster_output(r);
-        /*
-        for (jj = 0; jj < r->bytes; jj++) {
-            fg = r->fgcolors[jj];
-            bg = r->bgcolors[jj]; 
-
-             if (fg >= 0x08) {
-                fg -= 0x08;
-                // ANSI control code - hi intensity 
-                bold = true; 
-
-            } else {
-                // ANSI control code - normal intensity 
-                bold = false; 
-            }
-
-            fg = ansi_color_map[fg];
-            bg = ansi_color_map[bg];
-            
-            printf((char *) "\x1b\x5b""%u;%um", 40 + bg, 30 + fg);
-
-            if (bold) {
-                printf("\x1b\x5b""1m");
-                } else {
-                printf("\x1b\x5b""21m");
-                }
-            putchar(r->chardata[jj]); 
-            }
-        */
         putchar('\n');
     }
 
@@ -147,7 +119,7 @@ bool push_glyph(TDFCanvas *my_canvas, TDFFont *tdf, uint8_t c)
     assert(my_canvas);
     assert(tdf);
 
-    /* special handling for space! */
+    /* FIXME: special handling for space! it would be nice to handle this in a more graceful way */
 
 
     if (c == 32) {
@@ -190,9 +162,6 @@ bool push_glyph(TDFCanvas *my_canvas, TDFFont *tdf, uint8_t c)
     c -= 33;
     assert(c >= 0 && c <= 93);
     tdc = &tdf->characters[c];
-
-    //printf("tdc = 0x%08x\n", tdc);
-    //fflush(NULL);
 
     assert(tdc);
 

@@ -49,6 +49,7 @@ struct tdf_raster {
 struct tdf_canvas {
     uint64_t lines;
     struct tdf_raster *first_raster;
+    int debug_level;
 };
 
 struct tdf_char {
@@ -99,9 +100,6 @@ typedef struct tdf_char     TDFCharacter;
 typedef struct tdf_font     TDFFont;
 typedef struct tdf          TDFHandle;
 
-
-
-
 bool push_font(struct tdf *my_tdf, struct tdf_font *new_font);
 const char *get_font_name(struct tdf *my_tdf, int id);
 struct tdf_font* getfont_by_id(struct tdf *my_tdf, int id);
@@ -112,8 +110,6 @@ bool display_glyph(TDFFont *tdf, uint8_t c);
 
 bool raster_append_bytes(TDFRaster *r, unsigned char *data, uint8_t bytes, ansicolor_t fg, ansicolor_t bg, bool debug);
 bool raster_append_byte(TDFRaster *r, unsigned char data, ansicolor_t fg, ansicolor_t bg, bool debug);
-//bool raster_append_bytes(TDFRaster *r, unsigned char *data, int bytes, bool debug);
-//bool raster_append_byte(TDFRaster *r, unsigned char data, bool debug);
 
 TDFCanvas *new_canvas();
 bool push_glyph(TDFCanvas *my_canvas, TDFFont *tdf, uint8_t c);
