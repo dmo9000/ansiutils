@@ -21,8 +21,9 @@ A utility for rendering TDF ("TheDraw") fonts on a terminal.
 %build
 make
 %install
-cp tdftool RPM_BUILD_ROOT/usr/bin/tdftool
-cp tdftool-utf8.sh RPM_BUILD_ROOT/usr/bin/tdftool-utf8.sh
+mkdir -p $RPM_BUILD_ROOT/usr/bin
+cp tdftool $RPM_BUILD_ROOT/usr/bin/tdftool
+cp tdftool-utf8.sh $RPM_BUILD_ROOT/usr/bin/tdftool-utf8.sh
  
 %files
 %defattr(0755,root,root)
