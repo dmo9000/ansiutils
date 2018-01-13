@@ -5,6 +5,8 @@ static int ansi_color_map[8] = {
 };
 
 
+#define OPTIMIZE_OUTPUT
+
 TDFRaster *create_new_raster()
 {
     TDFRaster *new_raster = NULL;
@@ -101,12 +103,18 @@ bool raster_output(TDFRaster *r, bool debug_mode)
 {
 
     int jj = 0;
-    ansicolor_t fg;
-    ansicolor_t bg;
-    bool bold = false;
+    ansicolor_t fg, bg;
+    ansicolor_t last_fg, last_bg;
+    bool bold = false, last_bold = false;
 
 
     for (jj = 0; jj < r->bytes; jj++) {
+
+        last_fg = fg;
+        last_bg = bg;
+        last_bold = bold;
+
+
         fg = r->fgcolors[jj];
         bg = r->bgcolors[jj];
 
@@ -124,15 +132,33 @@ bool raster_output(TDFRaster *r, bool debug_mode)
         bg = ansi_color_map[bg];
 
         if (debug_mode) {
-            printf("[%u/%03u:%c:%X/%X]", jj, r->chardata[jj], 
-                        r->chardata[jj], r->fgcolors[jj], r->bgcolors[jj]);
+            printf("[%u/%03u:%c:%X/%X]", jj, r->chardata[jj],
+                   r->chardata[jj], r->fgcolors[jj], r->bgcolors[jj]);
         } else {
-            printf((char *) "\x1b\x5b""%u;%um", 40 + bg, 30 + fg);
+#ifdef OPTIMIZE_OUTPUT
+            if (fg != last_fg || bg != last_bg) {
+#endif /* OPTIMIZE_OUTPUT */
+                printf((char *) "\x1b\x5b""%u;%um", 40 + bg, 30 + fg);
+#ifdef OPTIMIZE_OUTPUT
+            }
+#endif /* OPTIMIZE_OUTPUT */
 
             if (bold) {
-                printf("\x1b\x5b""1m");
+#ifdef OPTIMIZE_OUTPUT
+                if (bold != last_bold) {
+#endif /* OPTIMIZE_OUTPUT */
+                    printf("\x1b\x5b""1m");
+#ifdef OPTIMIZE_OUTPUT
+                }
+#endif /* OPTIMIZE_OUTPUT */
             } else {
-                printf("\x1b\x5b""21m");
+#ifdef OPTIMIZE_OUTPUT
+                if (bold != last_bold) {
+#endif /* OPTIMIZE_OUTPUT */
+                    printf("\x1b\x5b""21m");
+#ifdef OPTIMIZE_OUTPUT
+                }
+#endif /* OPTIMIZE_OUTPUT */
             }
             putchar(r->chardata[jj]);
         }

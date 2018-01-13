@@ -11,15 +11,15 @@ static int ansi_color_map[8] = {
 bool is_block_code(uint8_t c)
 {
     switch (c) {
-        case 0xDB:
-        case 0xDC:
-        case 0xDD:
-        case 0xDE:
-        case 0xDF:
-            return true;
-        default:
-            return false;
-        }
+    case 0xDB:
+    case 0xDC:
+    case 0xDD:
+    case 0xDE:
+    case 0xDF:
+        return true;
+    default:
+        return false;
+    }
     return false;
 }
 
@@ -291,10 +291,10 @@ bool prerender_glyph(TDFFont *font, unsigned char c)
 
                     /* Ok. Here's some weirdness. Some block codes are often used with a foreground color of 0 (black)
                        which doesn't make sense since you can't see it. So if we see this combination convert the fg=0 to fg=0x0f (black to high-intensity white) */
-                       
+
                     if (is_block_code(byteval) && fg == 0x00) {
-                            fg = 0x0F;
-                            }
+                        fg = 0x0F;
+                    }
 
                     raster_append_byte(r, byteval, fg, bg, false);
                 }
