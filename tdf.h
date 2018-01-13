@@ -40,8 +40,8 @@ typedef color_t ansicolor_t;
 struct tdf_raster {
     uint16_t bytes;
     unsigned char *chardata;
-    ansicolor_t *fgcolor;
-    ansicolor_t *bgcolor;
+    ansicolor_t   *fgcolors;
+    ansicolor_t   *bgcolors;
     struct tdf_raster *next_raster;     /* not required, but handy */
     uint16_t index;
 };

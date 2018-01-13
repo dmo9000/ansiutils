@@ -1,5 +1,10 @@
 #include "tdf.h"
 
+static int ansi_color_map[8] = {
+    0, 4, 2, 6, 1, 5, 3, 7
+};
+
+
 TDFCanvas *new_canvas()
 {
 
@@ -84,14 +89,52 @@ TDFRaster *canvas_add_raster(TDFCanvas *canvas)
 bool canvas_output(TDFCanvas *my_canvas)
 {
     TDFRaster *r = NULL;
-    int ii = 0;
+    ansicolor_t fg = 0, bg = 0;
+    bool bold = false;
+    int ii = 0, jj = 0;
     assert(my_canvas);
 
     for (ii = 0; ii < my_canvas->lines ; ii++) {
         r = canvas_get_raster(my_canvas, ii);
         assert(r);
         assert(r->chardata);
-        printf("%s\n", r->chardata);
+        assert(r->bytes);
+        for (jj = 0; jj < r->bytes; jj++) {
+            //putchar(r->chardata[jj]);
+            //printf("(%c, %u, %u)\n", r->chardata[jj], r->fgcolors[jj], r->bgcolors[jj]);
+            fg = r->fgcolors[jj];
+            bg = r->bgcolors[jj]; 
+
+             if (fg >= 0x08) {
+                fg -= 0x08;
+                /* ANSI control code - hi intensity */
+               // printf("\x1b\x5b""1m");
+                bold = true; 
+
+            } else {
+                /* ANSI control code - normal intensity */
+                //printf("\x1b\x5b""21m");
+                bold = false; 
+            }
+
+            fg = ansi_color_map[fg];
+            bg = ansi_color_map[bg];
+            
+            printf((char *) "\x1b\x5b""%u;%um", 40 + bg, 30 + fg);
+
+            if (bold) {
+                printf("\x1b\x5b""1m");
+                } else {
+                printf("\x1b\x5b""21m");
+                }
+
+
+            
+
+            putchar(r->chardata[jj]); 
+            //printf((char *) "\x1b\x5b""%u;%um", 40, 37);
+            }
+        putchar('\n');
     }
 
     return (true);
@@ -105,6 +148,7 @@ bool push_glyph(TDFCanvas *my_canvas, TDFFont *tdf, uint8_t c)
     TDFRaster *dst_raster = NULL;
     bool is_space = false;
     int ii = 0;
+    int jj = 0;
 
     assert(my_canvas);
     assert(tdf);
@@ -222,7 +266,10 @@ bool push_glyph(TDFCanvas *my_canvas, TDFFont *tdf, uint8_t c)
         /* FIXME: its seems we need a copy_raster() function that preserves fg/bg colors, as
                 well as a raster_append_space[s]() */
 
-        assert(raster_append_bytes(dst_raster, src_raster->chardata, src_raster->bytes, 7, 0, false));
+        //assert(raster_append_bytes(dst_raster, src_raster->chardata, src_raster->bytes, 7, 0, false));
+        for (jj = 0; jj < src_raster->bytes ; jj++) {
+                assert(raster_append_byte(dst_raster, src_raster->chardata[jj], src_raster->fgcolors[jj], src_raster->bgcolors[jj], false));
+                } 
         assert(raster_append_bytes(dst_raster, (char*) &dummy_spacing, tdf->spacing, 7, 0, false));
     }
     return true;

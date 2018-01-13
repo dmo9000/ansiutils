@@ -1,9 +1,11 @@
 #include "tdf.h"
 
 
+/*
 static int ansi_color_map[8] = {
     0, 4, 2, 6, 1, 5, 3, 7
 };
+*/
 
 
 
@@ -273,8 +275,8 @@ bool prerender_glyph(TDFFont *font, unsigned char c)
             bg = ((bg & 0xF0) >> 4) % 0x08;
             assert(bg >= 0 && bg <= 7);
 
-            fg = ansi_color_map[fg];
-            bg = ansi_color_map[bg];
+            //fg = ansi_color_map[fg];
+            //bg = ansi_color_map[bg];
 
 //            printf("[0x%02x][0x%02x] [%02x][%02x] %c\n", byteval, color, bg, fg, byteval);
             if (byteval >= 32) {
