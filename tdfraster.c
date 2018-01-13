@@ -97,7 +97,7 @@ bool raster_append_byte(TDFRaster *r, unsigned char data, ansicolor_t fg, ansico
     return true;
 }
 
-bool raster_output(TDFRaster *r)
+bool raster_output(TDFRaster *r, bool debug_mode)
 {
 
     int jj = 0;
@@ -123,15 +123,20 @@ bool raster_output(TDFRaster *r)
         fg = ansi_color_map[fg];
         bg = ansi_color_map[bg];
 
-        printf((char *) "\x1b\x5b""%u;%um", 40 + bg, 30 + fg);
-
-        if (bold) {
-            printf("\x1b\x5b""1m");
+        if (debug_mode) {
+            printf("[%u/%03u:%c:%X/%X]", jj, r->chardata[jj], 
+                        r->chardata[jj], r->fgcolors[jj], r->bgcolors[jj]);
         } else {
-            printf("\x1b\x5b""21m");
+            printf((char *) "\x1b\x5b""%u;%um", 40 + bg, 30 + fg);
+
+            if (bold) {
+                printf("\x1b\x5b""1m");
+            } else {
+                printf("\x1b\x5b""21m");
+            }
+            putchar(r->chardata[jj]);
         }
-        putchar(r->chardata[jj]);
-        //printf("[%u/%u/%u/%u]", jj, r->chardata[jj], r->fgcolors[jj], r->bgcolors[jj]); 
+        //printf("[%u/%u/%u/%u]", jj, r->chardata[jj], r->fgcolors[jj], r->bgcolors[jj]);
     }
 
     printf("\x1b\x5b""0m");

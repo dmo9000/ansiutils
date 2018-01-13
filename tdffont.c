@@ -8,6 +8,21 @@ static int ansi_color_map[8] = {
 */
 
 
+bool is_block_code(uint8_t c)
+{
+    switch (c) {
+        case 0xDB:
+        case 0xDC:
+        case 0xDD:
+        case 0xDE:
+        case 0xDF:
+            return true;
+        default:
+            return false;
+        }
+    return false;
+}
+
 
 const char *get_font_type(int type)
 {
@@ -160,17 +175,11 @@ bool render_glyph(TDFFont *render_font, unsigned c)
         assert(rc == 1);
     }
 
-    //rc = fseek(render_font->parent_tdf->fh, glyph_offset, SEEK_SET);
-
-    //prerender_glyph(render_font, render_font->data + render_font->characters[c].offset);
     prerender_glyph(render_font, c);
 
     return true;
 
 }
-
-
-
 
 bool prerender_glyph(TDFFont *font, unsigned char c)
 {
@@ -275,13 +284,18 @@ bool prerender_glyph(TDFFont *font, unsigned char c)
             bg = ((bg & 0xF0) >> 4) % 0x08;
             assert(bg >= 0 && bg <= 7);
 
-            //fg = ansi_color_map[fg];
-            //bg = ansi_color_map[bg];
-
 //            printf("[0x%02x][0x%02x] [%02x][%02x] %c\n", byteval, color, bg, fg, byteval);
             if (byteval >= 32) {
                 //printf("^[%u;%um",40 + bg, 30 + fg);
                 if (!suppress) {
+
+                    /* Ok. Here's some weirdness. Some block codes are often used with a foreground color of 0 (black)
+                       which doesn't make sense since you can't see it. So if we see this combination convert the fg=0 to fg=0x0f (black to high-intensity white) */
+                       
+                    if (is_block_code(byteval) && fg == 0x00) {
+                            fg = 0x0F;
+                            }
+
                     raster_append_byte(r, byteval, fg, bg, false);
                 }
                 ptr += 2;
@@ -398,15 +412,15 @@ bool display_glyph(TDFFont *tdf, uint8_t c)
 
         if (tdr->bytes && tdr->chardata) {
             //printf("%s", tdr->chardata);
-            raster_output(tdr); 
+            raster_output(tdr, false);
             printf(" (%u,%u/%u)\n", tdr->bytes, ii+1, tdc->discovered_height);
-            } else {
+        } else {
             /* blank raster */
             for (jj = 0; jj < tdc->width; jj++) {
                 putchar(' ');
-                } 
-            printf(" (%u,%u/%u)\n", tdr->bytes, ii+1, tdc->discovered_height);
             }
+            printf(" (%u,%u/%u)\n", tdr->bytes, ii+1, tdc->discovered_height);
+        }
     }
 
     return true;

@@ -1,7 +1,7 @@
 #include "tdf.h"
 
 static int ansi_color_map[8] = {
-    0, 4, 2, 6, 1, 5, 3, 7 
+    0, 4, 2, 6, 1, 5, 3, 7
 };
 
 
@@ -99,8 +99,21 @@ bool canvas_output(TDFCanvas *my_canvas)
         assert(r);
         assert(r->chardata);
         assert(r->bytes);
-        raster_output(r);
+        raster_output(r, false);
         putchar('\n');
+    }
+
+    if (my_canvas->debug_level) {
+        for (ii = 0; ii < my_canvas->lines ; ii++) {
+            r = canvas_get_raster(my_canvas, ii);
+            assert(r);
+            assert(r->chardata);
+            assert(r->bytes);
+            raster_output(r, true);
+            putchar('\n');
+        }
+
+
     }
 
     return (true);
@@ -231,8 +244,8 @@ bool push_glyph(TDFCanvas *my_canvas, TDFFont *tdf, uint8_t c)
 
         //assert(raster_append_bytes(dst_raster, src_raster->chardata, src_raster->bytes, 7, 0, false));
         for (jj = 0; jj < src_raster->bytes ; jj++) {
-                assert(raster_append_byte(dst_raster, src_raster->chardata[jj], src_raster->fgcolors[jj], src_raster->bgcolors[jj], false));
-                } 
+            assert(raster_append_byte(dst_raster, src_raster->chardata[jj], src_raster->fgcolors[jj], src_raster->bgcolors[jj], false));
+        }
         assert(raster_append_bytes(dst_raster, (char*) &dummy_spacing, tdf->spacing, 7, 0, false));
     }
     return true;
