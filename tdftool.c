@@ -21,6 +21,7 @@ int main(int argc, char *argv[])
     bool all_fonts_loaded = false;
     int selected_font = 1;
     bool unicode_output = false;
+    bool list_mode = false;
     char *output_filename = NULL;
     int8_t c = 0;
     char *message = NULL;
@@ -32,9 +33,12 @@ int main(int argc, char *argv[])
     uint16_t running_average_height = 0;
 
 
-    while ((c = getopt (argc, argv, "f:uo:dv")) != -1) {
+    while ((c = getopt (argc, argv, "f:uo:dvl")) != -1) {
         switch (c)
         {
+        case 'l':
+            list_mode = true;
+            break;
         case 'd':
             if (debug_level < 4) {
                 debug_level++;
@@ -287,6 +291,15 @@ int main(int argc, char *argv[])
         printf("Selected font number %d is invalid.\n", selected_font);
         exit(1);
     }
+
+    if (list_mode) {
+        printf("Font list:\n");
+        for (ii = 1; ii <= my_tdf.fontcount; ii++) {
+            render_font = getfont_by_id(&my_tdf, ii);
+            printf("%d) %s\n", ii, render_font->name); 
+            }
+        exit(0);
+        }
 
 
     if (message) {
