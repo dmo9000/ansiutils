@@ -110,7 +110,7 @@ bool canvas_output(TDFCanvas *my_canvas)
             assert(r->chardata);
             assert(r->bytes);
             raster_output(r, true);
-            putchar('\n');
+            printf("\r\n");
         }
 
 
