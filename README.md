@@ -14,7 +14,12 @@ After running make, and assuming you have Roy's TDF files unpacked to ../THEDRAW
 
 Run:
 
-    ./tdftool ../THEDRAWFONTS/DUNGEON2.TDF HELLO 
+    ./tdftool ../THEDRAWFONTS/PLATZANG.TDF HELLO 
+
+Should give you a result looking something like this: 
+
+![platzang.png](platzang.png)
+
 
 There is a quick and dirty test suite that can be run with:
 
