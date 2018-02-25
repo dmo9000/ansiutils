@@ -3,7 +3,7 @@ CFLAGS = -g -ggdb
 
 # Enable static linking. Not generally recommended, but useful for getting started with Docker containers. 
 # For most cases this should be commented out or left empty. 
-LDFLAGS = -static
+#LDFLAGS = -static
 
 all: tdftool
 
