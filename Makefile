@@ -7,7 +7,7 @@ CFLAGS = -g -ggdb
 
 all: tdftool
 
-tdftool: tdftool.o tdffont.o tdfraster.o tdfcanvas.o
+tdftool: tdftool.o tdffont.o tdfraster.o tdfcanvas.o sauce.o
 
 clean:
 	rm -f tdftool *.o *.core
