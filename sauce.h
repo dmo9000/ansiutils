@@ -1,3 +1,7 @@
+#include <stdint.h>
+
+typedef unsigned char uchar;
+
 struct sauce_record {
     uchar id[5];
     uchar sauce_ver;
@@ -7,7 +11,7 @@ struct sauce_record {
     uchar date[8];
     int32_t length;
     uchar datatype;
-    uchar filetype'
+    uchar filetype;
     uint16_t tinfo1;
     uint16_t tinfo2;
     uint16_t tinfo3;

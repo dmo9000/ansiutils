@@ -16,7 +16,7 @@ runtest () {
         #printf "-> [%04u/%04u] %s" $testcount $TESTTOTAL $TDFFILE
         #echo "-> [$testcount/$TESTTOTAL] $TDFFILE" 
         echo "-> [$testcount/$TESTTOTAL] $TDFFILE" > output.ans 
-        ./tdftool ../THEDRAWFONTS/${TDFFILE} "TEST" 1>output.ans 2>output.ans
+        ./tdftool ../THEDRAWFONTS/${TDFFILE} "TDFTool" 1>output.ans 2>output.ans
         STATUS=$?
         if [ ${STATUS} == 0 ]; then
             mv output.ans tests/pass/${OUTNAME}.ans ;

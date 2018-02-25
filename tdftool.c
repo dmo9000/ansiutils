@@ -31,11 +31,16 @@ int main(int argc, char *argv[])
     TDFCanvas *my_canvas = NULL;
     uint16_t running_average_width = 0;
     uint16_t running_average_height = 0;
+    bool sauce = false;
 
 
-    while ((c = getopt (argc, argv, "f:uo:dvl")) != -1) {
+    while ((c = getopt (argc, argv, "f:uo:dvls")) != -1) {
         switch (c)
         {
+        case 's':
+            /* append sauce record */
+            sauce = true;
+            break;
         case 'l':
             list_mode = true;
             break;
@@ -375,6 +380,14 @@ int main(int argc, char *argv[])
     /* reset colours */
 
     printf("\x1b\x5b""0m");
+
+    if (sauce) {
+        int i = 0;
+        printf("%cSAUCE", 26);
+        for (i = 0 ; i < 123 ; i++) {
+            putchar(0x00);
+            }
+        }
 
     exit(0);
 
