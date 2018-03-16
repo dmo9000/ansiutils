@@ -1,11 +1,6 @@
 #include "tdf.h"
-
-
-/*
-static int ansi_color_map[8] = {
-    0, 4, 2, 6, 1, 5, 3, 7
-};
-*/
+#include "tdfraster.h"
+#include "tdffont.h"
 
 
 bool is_block_code(uint8_t c)

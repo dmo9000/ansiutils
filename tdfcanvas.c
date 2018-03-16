@@ -1,4 +1,6 @@
 #include "tdf.h"
+#include "tdfraster.h"
+#include "tdffont.h"
 #include "tdfcanvas.h"
 
 TDFCanvas *new_canvas()

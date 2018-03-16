@@ -3,6 +3,8 @@
 #include <ctype.h>
 #include <libgen.h>
 #include "tdf.h"
+#include "tdfraster.h"
+#include "tdffont.h"
 #include "tdfcanvas.h"
 #include "osdep.h"
 

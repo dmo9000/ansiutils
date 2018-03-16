@@ -1,4 +1,5 @@
 #include "tdf.h"
+#include "tdfraster.h"
 
 static int ansi_color_map[8] = {
     0, 4, 2, 6, 1, 5, 3, 7
