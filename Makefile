@@ -1,6 +1,6 @@
 CC=gcc
 #CC=clang
-#CFLAGS = -g -ggdb -Wall -Werror
+CFLAGS = -g -ggdb -Wall -Werror
 
 
 # Enable static linking. Not generally recommended, but useful for getting started with Docker containers. 

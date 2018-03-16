@@ -3,6 +3,7 @@
 #include <ctype.h>
 #include <libgen.h>
 #include "tdf.h"
+#include "tdfcanvas.h"
 #include "osdep.h"
 
 
@@ -20,8 +21,7 @@ int main(int argc, char *argv[])
     int ii = 0, jj = 0;
     bool all_fonts_loaded = false;
     int selected_font = 1;
-    //unsigned char *output_filename = NULL;
-    bool unicode_output = false;
+    bool use_unicode = false;
     bool list_mode = false;
     int8_t c = 0;
     char *message = NULL;
@@ -32,8 +32,6 @@ int main(int argc, char *argv[])
     uint16_t running_average_width = 0;
     uint16_t running_average_height = 0;
     bool sauce = false;
-
-    unicode_output = false;
 
 
     while ((c = getopt (argc, argv, "f:uo:dvls")) != -1) {
@@ -59,7 +57,7 @@ int main(int argc, char *argv[])
             break;
         case 'u':
             /* enable UNICODE. Otherwise we default to CP437 */
-            unicode_output = true;
+            use_unicode = true;
             printf("UNICODE output not currently supported.\n");
             exit(EXIT_FAILURE);
         case 'o':
@@ -95,9 +93,6 @@ int main(int argc, char *argv[])
 
     /* TODO: a lot of this stuff should be moved into tdffont.c */
 
-    if (unicode_output) {
-
-        }
 
     input_filename = (char *) argv[optind];
 
@@ -306,10 +301,10 @@ int main(int argc, char *argv[])
         printf("Font list:\n");
         for (ii = 1; ii <= my_tdf.fontcount; ii++) {
             render_font = getfont_by_id(&my_tdf, ii);
-            printf("%d) %s\n", ii, render_font->name); 
-            }
-        exit(0);
+            printf("%d) %s\n", ii, render_font->name);
         }
+        exit(0);
+    }
 
 
     if (message) {
@@ -376,14 +371,14 @@ int main(int argc, char *argv[])
         }
 
 
-        (void) canvas_output(my_canvas);
+        (void) canvas_output(my_canvas, use_unicode);
 
     }
 
     if (fclose(my_tdf.fh) != 0) {
         perror("fclose");
         exit(EXIT_FAILURE);
-        };
+    };
 
     /* reset colours */
 
@@ -394,8 +389,8 @@ int main(int argc, char *argv[])
         printf("%cSAUCE", 26);
         for (i = 0 ; i < 123 ; i++) {
             (void) putchar(0x00);
-            }
         }
+    }
 
     exit(0);
 

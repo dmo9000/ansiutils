@@ -4,6 +4,7 @@
 #include <stdbool.h>
 #include <string.h>
 #include <assert.h>
+#include <unistd.h>
 
 
 
@@ -21,8 +22,7 @@
 #define TYPE_COLOR              2
 
 #define MAX_NAMELEN             12
-//#define MAX_LINES               12  /* we'll see */
-#define MAX_LINES               13  /* this is more like it */ 
+#define MAX_LINES               13  /* this is more like it */
 
 #define MAX_ANSI_SEQUENCE       32
 
@@ -46,11 +46,6 @@ struct tdf_raster {
     uint16_t index;
 };
 
-struct tdf_canvas {
-    uint64_t lines;
-    struct tdf_raster *first_raster;
-    int debug_level;
-};
 
 struct tdf_char {
     uint8_t ascii_value;
@@ -95,7 +90,6 @@ struct tdf {
 };
 
 typedef struct tdf_raster   TDFRaster;
-typedef struct tdf_canvas   TDFCanvas;
 typedef struct tdf_char     TDFCharacter;
 typedef struct tdf_font     TDFFont;
 typedef struct tdf          TDFHandle;
@@ -111,11 +105,6 @@ bool display_glyph(TDFFont *tdf, uint8_t c);
 bool raster_append_bytes(TDFRaster *r, unsigned char *data, uint8_t bytes, ansicolor_t fg, ansicolor_t bg, bool debug);
 bool raster_append_byte(TDFRaster *r, unsigned char data, ansicolor_t fg, ansicolor_t bg, bool debug);
 
-TDFCanvas *new_canvas();
-bool push_glyph(TDFCanvas *my_canvas, TDFFont *tdf, uint8_t c);
-TDFRaster *canvas_get_raster(TDFCanvas *canvas, int line);
-TDFRaster *canvas_add_raster(TDFCanvas *canvas);
-bool canvas_output(TDFCanvas *canvas);
 TDFRaster *create_new_raster();
 TDFFont *create_new_font();
 bool raster_output(TDFRaster *r, bool debug);

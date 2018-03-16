@@ -1,14 +1,9 @@
 #include "tdf.h"
-
-static int ansi_color_map[8] = {
-    0, 4, 2, 6, 1, 5, 3, 7
-};
-
+#include "tdfcanvas.h"
 
 TDFCanvas *new_canvas()
 {
 
-    int ii = 0;
     TDFCanvas *canvas = NULL;
     canvas = malloc(sizeof(TDFCanvas));
     assert(canvas);
@@ -46,7 +41,6 @@ TDFRaster* canvas_get_raster(TDFCanvas *canvas, int line)
 
 TDFRaster *canvas_add_raster(TDFCanvas *canvas)
 {
-    TDFRaster *last_raster = NULL;
     TDFRaster *r = NULL;
     int raster_count = 0;
 //    printf("  canvas_add_raster()\n");
@@ -55,7 +49,7 @@ TDFRaster *canvas_add_raster(TDFCanvas *canvas)
     if (!r) {
         /* no rasters */
         canvas->first_raster = create_new_raster();
-        assert(canvas->first_raster);
+        assert((bool) canvas->first_raster);
         canvas->first_raster->bytes = 0;
         canvas->first_raster->chardata = NULL;
         canvas->first_raster->index = raster_count;
@@ -67,7 +61,6 @@ TDFRaster *canvas_add_raster(TDFCanvas *canvas)
     /* else, subsequent raster */
 
     while (r->next_raster && raster_count < canvas->lines) {
-        last_raster = r;
         r = r->next_raster;
         raster_count++;
     }
@@ -86,15 +79,12 @@ TDFRaster *canvas_add_raster(TDFCanvas *canvas)
 
 }
 
-bool canvas_output(TDFCanvas *my_canvas)
+bool canvas_output(TDFCanvas *my_canvas, bool use_unicode)
 {
     TDFRaster *r = NULL;
-    ansicolor_t fg = 0, bg = 0;
-    bool bold = false;
-    int ii = 0, jj = 0;
     assert(my_canvas);
 
-    for (ii = 0; ii < my_canvas->lines ; ii++) {
+    for (int ii = 0; ii < my_canvas->lines ; ii++) {
         r = canvas_get_raster(my_canvas, ii);
         assert(r);
         assert(r->chardata);
@@ -104,7 +94,7 @@ bool canvas_output(TDFCanvas *my_canvas)
     }
 
     if (my_canvas->debug_level) {
-        for (ii = 0; ii < my_canvas->lines ; ii++) {
+        for (int ii = 0; ii < my_canvas->lines ; ii++) {
             r = canvas_get_raster(my_canvas, ii);
             assert(r);
             assert(r->chardata);
@@ -112,8 +102,6 @@ bool canvas_output(TDFCanvas *my_canvas)
             raster_output(r, true);
             printf("\r\n");
         }
-
-
     }
 
     return (true);
@@ -125,7 +113,6 @@ bool push_glyph(TDFCanvas *my_canvas, TDFFont *tdf, uint8_t c)
     TDFCharacter *tdc = NULL;
     TDFRaster *src_raster = NULL;
     TDFRaster *dst_raster = NULL;
-    bool is_space = false;
     int ii = 0;
     int jj = 0;
 
@@ -136,9 +123,8 @@ bool push_glyph(TDFCanvas *my_canvas, TDFFont *tdf, uint8_t c)
 
 
     if (c == 32) {
-        is_space = true;
         memset(&dummy_spacing, 0, 30);
-        assert(1 <= tdf->spacing <= 30);
+        assert((bool) (1 <= tdf->spacing && tdf->spacing <= 30));
         memset(&dummy_spacing, ' ', tdf->average_width);
 
         /* fake it, baby */
@@ -158,7 +144,7 @@ bool push_glyph(TDFCanvas *my_canvas, TDFFont *tdf, uint8_t c)
             assert(tdf);
             assert(tdf->average_width);
             /* TODO: don't use constants for colors here, use #defines */
-            assert(raster_append_bytes(dst_raster, (char*) &dummy_spacing, tdf->average_width, 7, 0, false));
+            assert(raster_append_bytes(dst_raster, (unsigned char*) &dummy_spacing, tdf->average_width, 7, 0, false));
         }
         return true;
     }
@@ -166,7 +152,7 @@ bool push_glyph(TDFCanvas *my_canvas, TDFFont *tdf, uint8_t c)
     /* otherwise it's not a space */
 
     memset(&dummy_spacing, 0, 30);
-    assert(1 <= tdf->spacing <= 30);
+    assert((bool) (1 <= tdf->spacing && tdf->spacing <= 30));
     memset(&dummy_spacing, ' ', tdf->spacing);
 
 
@@ -221,16 +207,15 @@ bool push_glyph(TDFCanvas *my_canvas, TDFFont *tdf, uint8_t c)
             //printf("push_glyph: empty raster %u/%u !!\n", ii, tdc->height);
             //exit(1);
             memset(&dummy_spacing, 0, 30);
-            assert(1 <= tdc->width <= 30);
+            assert((bool) (1 <= tdc->width && tdc->width <= 30));
             memset(&dummy_spacing, ' ', tdc->width);
-//            assert(raster_append_bytes(dst_raster, (char*) &dummy_spacing, tdf->average_width, 7, 0, false));
-            assert(raster_append_bytes(dst_raster, (char*) &dummy_spacing, tdc->width, 7, 0, false));
+            assert(raster_append_bytes(dst_raster, (unsigned char*) &dummy_spacing, tdc->width, 7, 0, false));
 
             /* don't forget the font-level spacing as well */
             memset(&dummy_spacing, 0, 30);
-            assert(1 <= tdf->spacing <= 30);
+            assert((bool) (1 <= tdf->spacing && tdf->spacing <= 30));
             memset(&dummy_spacing, ' ', tdf->spacing);
-            assert(raster_append_bytes(dst_raster, (char*) &dummy_spacing, tdf->spacing, 7, 0, false));
+            assert(raster_append_bytes(dst_raster, (unsigned char*) &dummy_spacing, tdf->spacing, 7, 0, false));
             return true;
         }
 
@@ -246,7 +231,7 @@ bool push_glyph(TDFCanvas *my_canvas, TDFFont *tdf, uint8_t c)
         for (jj = 0; jj < src_raster->bytes ; jj++) {
             assert(raster_append_byte(dst_raster, src_raster->chardata[jj], src_raster->fgcolors[jj], src_raster->bgcolors[jj], false));
         }
-        assert(raster_append_bytes(dst_raster, (char*) &dummy_spacing, tdf->spacing, 7, 0, false));
+        assert(raster_append_bytes(dst_raster, (unsigned char*) &dummy_spacing, tdf->spacing, 7, 0, false));
     }
     return true;
 

@@ -18,6 +18,6 @@ struct sauce_record {
     uint16_t tinfo4;
     uchar comments;
     uchar flags;
-    uchar filler[22]; 
+    uchar filler[22];
 };
 

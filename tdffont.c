@@ -339,7 +339,9 @@ bool prerender_glyph(TDFFont *font, unsigned char c)
 
     /* ensure there is no overrun */
 
-    if (r->bytes > width) {
+    assert((bool) (r != NULL));
+
+    if (r != NULL && r->bytes > width) {
         if (font->parent_tdf->debug_level) {
             printf("+ overrun, actual length = %u,  expected = %u\n", r->bytes, width);
         }

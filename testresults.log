@@ -1,4 +1,6 @@
-     17 tdftool: tdffont.c:224: prerender_glyph: Assertion `y <= MAX_LINES' failed.
-      4 tdftool: tdffont.c:229: prerender_glyph: Assertion `type != TYPE_OUTLINE' failed.
+     17 tdftool: tdffont.c:223: prerender_glyph: Assertion `(bool)(y <= MAX_LINES)' failed.
+      4 tdftool: tdffont.c:228: prerender_glyph: Assertion `(bool)(type != TYPE_OUTLINE)' failed.
+      3 tdftool: tdfcanvas.c:155: push_glyph: Assertion `(bool) (1 <= tdf->spacing && tdf->spacing <= 30)' failed.
+      1 tdftool: tdffont.c:213: prerender_glyph: Assertion `(bool)(1 <= height && height <= 12)' failed.
       1 GUARDF2.TDF: at font 2, expected 0x55aa00ff, but got 0x1a534155
       1 CFH-HOER.TDF: at font 1, expected reserved1=0x00000000, but got 0x00000074
