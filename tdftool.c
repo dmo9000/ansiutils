@@ -20,9 +20,9 @@ int main(int argc, char *argv[])
     int ii = 0, jj = 0;
     bool all_fonts_loaded = false;
     int selected_font = 1;
+    //unsigned char *output_filename = NULL;
     bool unicode_output = false;
     bool list_mode = false;
-    char *output_filename = NULL;
     int8_t c = 0;
     char *message = NULL;
     TDFFont *render_font = NULL;
@@ -32,6 +32,8 @@ int main(int argc, char *argv[])
     uint16_t running_average_width = 0;
     uint16_t running_average_height = 0;
     bool sauce = false;
+
+    unicode_output = false;
 
 
     while ((c = getopt (argc, argv, "f:uo:dvls")) != -1) {
@@ -59,11 +61,10 @@ int main(int argc, char *argv[])
             /* enable UNICODE. Otherwise we default to CP437 */
             unicode_output = true;
             printf("UNICODE output not currently supported.\n");
-            exit(1);
-            break;
+            exit(EXIT_FAILURE);
         case 'o':
             /* output filename */
-            output_filename = strdup((char *) optarg);
+            //output_filename = strdup((char *) optarg);
             break;
         case '?':
             if (optopt == 'c') {
@@ -94,6 +95,10 @@ int main(int argc, char *argv[])
 
     /* TODO: a lot of this stuff should be moved into tdffont.c */
 
+    if (unicode_output) {
+
+        }
+
     input_filename = (char *) argv[optind];
 
     optind++;
@@ -116,7 +121,7 @@ int main(int argc, char *argv[])
 
     rd = fread((char *) &my_tdf.tdfmagic, TDF_MAGIC_SIZE, 1, tdf_file);
     if (rd != 1) {
-        printf("couldn't read %u bytes header from %s - file truncated?\n", tdf_file);
+        printf("couldn't read %u bytes header from %s - file truncated?\n", TDF_MAGIC_SIZE, input_filename);
         perror("fread");
         exit(1);
     }
@@ -347,15 +352,15 @@ int main(int argc, char *argv[])
 
         /* sanity check */
 
-        assert(render_font->defined_characters);
-        assert(render_font->average_width);
-        assert(render_font->average_height);
+        assert((bool) render_font->defined_characters);
+        assert((bool) render_font->average_width);
+        assert((bool) render_font->average_height);
 
 
         if (vertical) {
             /* FIXME: use the canvas later - this is just to test that rendering is working */
-            for (ii = 0; ii < strlen(message) ; ii++)  {
-                display_glyph(render_font, message[ii]);
+            for (ii = 0; ii < (int) strlen(message) ; ii++)  {
+                (void) display_glyph(render_font, (uint8_t) message[ii]);
             }
             exit(0);
         }
@@ -364,18 +369,21 @@ int main(int argc, char *argv[])
         my_canvas->debug_level = debug_level;
 
 
-        for (ii = 0; ii < strlen(message); ii++) {
+        for (ii = 0; ii < (int) strlen(message); ii++) {
             //printf("+++++ PUSHING GLYPH %u ['%c']\n", ii, message[ii]);
-            fflush(NULL);
-            assert(push_glyph(my_canvas, render_font, message[ii]));
+            (void) fflush(NULL);
+            assert(push_glyph(my_canvas, render_font, (uint8_t) message[ii]));
         }
 
 
-        canvas_output(my_canvas);
+        (void) canvas_output(my_canvas);
 
     }
 
-    fclose(my_tdf.fh);
+    if (fclose(my_tdf.fh) != 0) {
+        perror("fclose");
+        exit(EXIT_FAILURE);
+        };
 
     /* reset colours */
 
@@ -385,7 +393,7 @@ int main(int argc, char *argv[])
         int i = 0;
         printf("%cSAUCE", 26);
         for (i = 0 ; i < 123 ; i++) {
-            putchar(0x00);
+            (void) putchar(0x00);
             }
         }
 

@@ -48,7 +48,7 @@ TDFFont *create_new_font()
     int ii = 0;
     TDFFont *new_font = NULL;
     new_font = malloc(sizeof(TDFFont));
-    assert(new_font);
+    assert((bool)(new_font));
     memset(new_font, 0, sizeof(TDFFont));
 
     /* we also need to zero out the character structures within the font */
@@ -116,7 +116,6 @@ const char *get_font_name(TDFHandle *my_tdf, int id)
 bool render_glyph(TDFFont *render_font, unsigned c)
 {
     TDFCharacter *tdc = NULL;
-    unsigned char *font_data = NULL;
     uint32_t glyph_offset = 0;
     int rc = 0;
 
@@ -132,7 +131,7 @@ bool render_glyph(TDFFont *render_font, unsigned c)
     /* get the correct glyph index from the ASCII char value */
 
     c -= 33;
-    assert(c >= 0 && c <= 93);
+    assert((bool)(c >= 0 && c <= 93));
     tdc = &render_font->characters[c];
     assert (tdc);
 
@@ -165,14 +164,14 @@ bool render_glyph(TDFFont *render_font, unsigned c)
         /* load the font from the file now */
         rc = fseek(render_font->parent_tdf->fh,render_font->offset, SEEK_SET);
         if (render_font->parent_tdf->debug_level) {
-            printf("file position is now: %ld (0x%04x)\n",
+            printf("file position is now: %ld (0x%04lx)\n",
                    ftell(render_font->parent_tdf->fh),
                    ftell(render_font->parent_tdf->fh));
         }
         assert (rc != -1);
         render_font->data = malloc(render_font->blocksize);
         rc = fread(render_font->data, render_font->blocksize, 1, render_font->parent_tdf->fh);
-        assert(rc == 1);
+        assert((bool)(rc == 1));
     }
 
     prerender_glyph(render_font, c);
@@ -210,8 +209,8 @@ bool prerender_glyph(TDFFont *font, unsigned char c)
         printf("[width = %u, height = %u, type = %u (%s)]\n", width, height, type, get_font_type(type));
     }
 
-    assert(1 <= width <= 30);
-    assert(1 <= height <= 12);
+    assert((bool)(1 <= width && width <= 30));
+    assert((bool)(1 <= height && height <= 12));
 
     while (ptr[0] != '\0' && offset < limit) {
 
@@ -221,22 +220,22 @@ bool prerender_glyph(TDFFont *font, unsigned char c)
             exit(1);
             }
         */
-        assert(y <= MAX_LINES);
+        assert((bool)(y <= MAX_LINES));
 
         switch(type) {
         case TYPE_OUTLINE:
             //printf("+ Unhandled font_type = %d\n", type);
-            assert(type != TYPE_OUTLINE);
+            assert((bool)(type != TYPE_OUTLINE));
             return false;
             break;
         case TYPE_BLOCK:
             byteval = ptr[0];
             x++;
-            //assert(y < MAX_LINES);
-            assert(tdc);
-            assert(tdc->char_rasters[y]);
+            //assert((bool)(y < MAX_LINES));
+            assert((bool)(tdc));
+            assert((bool)(tdc->char_rasters[y]));
             r = tdc->char_rasters[y];
-            assert(r);
+            assert((bool)(r));
             if (!suppress) {
                 if (byteval >= 32) {
                     //putchar(byteval);
@@ -274,15 +273,15 @@ bool prerender_glyph(TDFFont *font, unsigned char c)
             //printf("fg >= 0x08 = %d\n", fg);
 
             //assert (y < MAX_LINES);
-            assert(tdc);
-            assert(tdc->char_rasters[y]);
+            assert((bool)(tdc));
+            assert((bool)(tdc->char_rasters[y]));
             r = tdc->char_rasters[y];
-            assert(r);
+            assert((bool)(r));
 
-            assert(fg >= 0 && fg <= 16);
+            assert((bool)(fg >= 0 && fg <= 16));
             bg = color;
             bg = ((bg & 0xF0) >> 4) % 0x08;
-            assert(bg >= 0 && bg <= 7);
+            assert((bool)(bg >= 0 && bg <= 7));
 
 //            printf("[0x%02x][0x%02x] [%02x][%02x] %c\n", byteval, color, bg, fg, byteval);
             if (byteval >= 32) {
@@ -350,7 +349,7 @@ bool prerender_glyph(TDFFont *font, unsigned char c)
         }
     }
 
-    assert(r->bytes <= width);
+    assert((bool)(r->bytes <= width));
 
     while (r->bytes < width) {
         if (font->parent_tdf->debug_level) {
@@ -360,7 +359,7 @@ bool prerender_glyph(TDFFont *font, unsigned char c)
         raster_append_byte(r, ' ', 7, 0, false);
     }
 
-    assert(r->bytes == width);
+    assert((bool)(r->bytes == width));
 
     y++;
     tdc->height = height;
@@ -369,7 +368,7 @@ bool prerender_glyph(TDFFont *font, unsigned char c)
     tdc->discovered_height = y+1;
     if (font->parent_tdf->debug_level) {
         printf("\n");
-        printf("(%d bytes; %d lines)\n", offset, y);
+        printf("(%ld bytes; %d lines)\n", offset, y);
     }
     return true;
 
@@ -390,25 +389,25 @@ bool display_glyph(TDFFont *tdf, uint8_t c)
     if (!tdf) return false;
 
     c -= 33;
-    assert(c >= 0 && c <= 93);
+    assert((bool)((c >= 0 && c <= 93)));
     tdc = &tdf->characters[c];
 
-    assert(tdc);
+    assert((bool)(tdc));
 
     if (tdc->undefined) {
         return false;
     }
 
-    assert(!tdc->undefined);
-    assert(tdc->prerendered);
+    assert((bool)(!tdc->undefined));
+    assert((bool)(tdc->prerendered));
 
     /* get correct character */
     for (ii = 0; ii < tdc->discovered_height; ii++) {
-        assert (ii < MAX_LINES);
-        assert(tdc);
-        assert(tdc->char_rasters[ii]);
+        assert ((bool) (ii < MAX_LINES));
+        assert((bool)(tdc));
+        assert((bool)(tdc->char_rasters[ii]));
         tdr = tdc->char_rasters[ii];
-        assert(tdr);
+        assert((bool)(tdr));
 
         if (tdr->bytes && tdr->chardata) {
             //printf("%s", tdr->chardata);
