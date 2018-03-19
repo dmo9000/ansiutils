@@ -127,6 +127,7 @@ bool push_glyph(TDFCanvas *my_canvas, TDFFont *tdf, uint8_t c)
     if (c == 32) {
         memset(&dummy_spacing, 0, 30);
         assert((bool) (1 <= tdf->spacing && tdf->spacing <= 30));
+        assert((bool) (1 <= tdf->average_width && tdf->average_width <= 30));
         memset(&dummy_spacing, ' ', tdf->average_width);
 
         /* fake it, baby */
