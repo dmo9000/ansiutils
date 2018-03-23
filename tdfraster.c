@@ -163,17 +163,15 @@ bool raster_output(TDFRaster *r, bool debug_mode, bool use_unicode)
 #endif /* OPTIMIZE_OUTPUT */
             }
 
-	if (use_unicode) {
-						if (r->chardata[jj] < 128) {
-            	putchar(r->chardata[jj]);
-						} else {
-							putchar(0xE2);
-							putchar(hi_cp437_to_utf8((uint8_t) r->chardata[jj]));
-							putchar(lo_cp437_to_utf8((uint8_t) r->chardata[jj]));
-							}
-		} else {
-            putchar(r->chardata[jj]);
-						}
+            if (use_unicode) {
+                if (r->chardata[jj] < 128) {
+                    putchar(r->chardata[jj]);
+                } else {
+                    printf("%s", utf8_string(r->chardata[jj]));
+                }
+            } else {
+                putchar(r->chardata[jj]);
+            }
         }
         //printf("[%u/%u/%u/%u]", jj, r->chardata[jj], r->fgcolors[jj], r->bgcolors[jj]);
     }
