@@ -342,7 +342,7 @@ bool prerender_glyph(TDFFont *font, unsigned char c)
         }
         width = r->bytes;
         if (font->parent_tdf->debug_level) {
-            display_glyph(font, c);
+            display_glyph(font, c, false);
         }
     }
 
@@ -373,7 +373,7 @@ bool prerender_glyph(TDFFont *font, unsigned char c)
 
 /* quick and dirty way to just show a single glyph. deprecating soon */
 
-bool display_glyph(TDFFont *tdf, uint8_t c)
+bool display_glyph(TDFFont *tdf, uint8_t c, bool use_unicode)
 {
     TDFCharacter *tdc = NULL;
     TDFRaster *tdr = NULL;
@@ -408,7 +408,7 @@ bool display_glyph(TDFFont *tdf, uint8_t c)
 
         if (tdr->bytes && tdr->chardata) {
             //printf("%s", tdr->chardata);
-            raster_output(tdr, false);
+            raster_output(tdr, false, use_unicode);
             printf(" (%u,%u/%u)\n", tdr->bytes, ii+1, tdc->discovered_height);
         } else {
             /* blank raster */

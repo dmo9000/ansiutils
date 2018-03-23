@@ -40,6 +40,6 @@ struct tdf_font* getfont_by_id(struct tdf *my_tdf, int id);
 bool render_glyph(struct tdf_font *render_font, unsigned c);
 bool prerender_glyph(TDFFont *font, unsigned char c);
 const char *get_font_type(int type);
-bool display_glyph(TDFFont *tdf, uint8_t c);
+bool display_glyph(TDFFont *tdf, uint8_t c, bool use_unicode);
 TDFFont *create_new_font();
 

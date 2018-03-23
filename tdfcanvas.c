@@ -91,7 +91,7 @@ bool canvas_output(TDFCanvas *my_canvas, bool use_unicode)
         assert(r);
         assert(r->chardata);
         assert(r->bytes);
-        raster_output(r, false);
+        raster_output(r, false, use_unicode);
         putchar('\n');
     }
 
@@ -101,7 +101,7 @@ bool canvas_output(TDFCanvas *my_canvas, bool use_unicode)
             assert(r);
             assert(r->chardata);
             assert(r->bytes);
-            raster_output(r, true);
+            raster_output(r, true, use_unicode);
             printf("\r\n");
         }
     }

@@ -23,7 +23,7 @@ int main(int argc, char *argv[])
     int ii = 0, jj = 0;
     bool all_fonts_loaded = false;
     int selected_font = 1;
-    bool use_unicode = false;
+    bool use_unicode = true;
     bool list_mode = false;
     int8_t c = 0;
     char *message = NULL;
@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
     bool sauce = false;
 
 
-    while ((c = getopt (argc, argv, "f:uo:dvls")) != -1) {
+    while ((c = getopt (argc, argv, "f:co:dvls")) != -1) {
         switch (c)
         {
         case 's':
@@ -57,11 +57,10 @@ int main(int argc, char *argv[])
         case 'f':
             selected_font = atoi(optarg);
             break;
-        case 'u':
+        case 'c':
             /* enable UNICODE. Otherwise we default to CP437 */
-            use_unicode = true;
-            printf("UNICODE output not currently supported.\n");
-            exit(EXIT_FAILURE);
+            use_unicode = false;
+						break;
         case 'o':
             /* output filename */
             //output_filename = strdup((char *) optarg);
@@ -357,7 +356,7 @@ int main(int argc, char *argv[])
         if (vertical) {
             /* FIXME: use the canvas later - this is just to test that rendering is working */
             for (ii = 0; ii < (int) strlen(message) ; ii++)  {
-                (void) display_glyph(render_font, (uint8_t) message[ii]);
+                (void) display_glyph(render_font, (uint8_t) message[ii], use_unicode);
             }
             exit(0);
         }

@@ -13,5 +13,5 @@ bool raster_append_bytes(TDFRaster *r, unsigned char *data, uint8_t bytes, ansic
 bool raster_append_byte(TDFRaster *r, unsigned char data, ansicolor_t fg, ansicolor_t bg, bool debug);
 
 TDFRaster *create_new_raster();
-bool raster_output(TDFRaster *r, bool debug);
+bool raster_output(TDFRaster *r, bool debug, bool use_unicode);
 

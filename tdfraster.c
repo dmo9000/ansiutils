@@ -1,5 +1,6 @@
 #include "tdf.h"
 #include "tdfraster.h"
+#include "utf8.h"
 
 static int ansi_color_map[8] = {
     0, 4, 2, 6, 1, 5, 3, 7
@@ -100,7 +101,7 @@ bool raster_append_byte(TDFRaster *r, unsigned char data, ansicolor_t fg, ansico
     return true;
 }
 
-bool raster_output(TDFRaster *r, bool debug_mode)
+bool raster_output(TDFRaster *r, bool debug_mode, bool use_unicode)
 {
 
     int jj = 0;
@@ -161,7 +162,18 @@ bool raster_output(TDFRaster *r, bool debug_mode)
                 }
 #endif /* OPTIMIZE_OUTPUT */
             }
+
+	if (use_unicode) {
+						if (r->chardata[jj] < 128) {
+            	putchar(r->chardata[jj]);
+						} else {
+							putchar(0xE2);
+							putchar(hi_cp437_to_utf8((uint8_t) r->chardata[jj]));
+							putchar(lo_cp437_to_utf8((uint8_t) r->chardata[jj]));
+							}
+		} else {
             putchar(r->chardata[jj]);
+						}
         }
         //printf("[%u/%u/%u/%u]", jj, r->chardata[jj], r->fgcolors[jj], r->bgcolors[jj]);
     }
