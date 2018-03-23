@@ -26,4 +26,3 @@ install:
 
 test: tdftool
 	./test.sh
-	./mkutf8.sh

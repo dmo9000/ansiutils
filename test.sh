@@ -2,8 +2,10 @@
 runtest () {
     rm -rf tests/pass/*.ans
     rm -rf tests/fail/*.ans
-    mkdir -p tests/pass/
-    mkdir -p tests/fail/
+    mkdir -p tests/pass/cp437
+    mkdir -p tests/pass/utf8
+    mkdir -p tests/fail/cp437
+    mkdir -p tests/fail/utf8
     let testcount=1;
     let passed=0;
     let failed=0;
@@ -15,14 +17,25 @@ runtest () {
         rm -f output.ans
         #printf "-> [%04u/%04u] %s" $testcount $TESTTOTAL $TDFFILE
         #echo "-> [$testcount/$TESTTOTAL] $TDFFILE" 
-        echo "-> [$testcount/$TESTTOTAL] $TDFFILE" > output.ans 
+        echo "-> UTF8 [$testcount/$TESTTOTAL] $TDFFILE" > output.ans 
         ./tdftool ../THEDRAWFONTS/${TDFFILE} "TDFTool" 1>output.ans 2>output.ans
         STATUS=$?
         if [ ${STATUS} == 0 ]; then
-            mv output.ans tests/pass/${OUTNAME}.ans ;
+            mv output.ans tests/pass/utf8/${OUTNAME}.ans ;
             let passed=passed+1
             else 
-            mv output.ans tests/fail/${BASENAME}.ans ;
+            mv output.ans tests/fail/utf8/${OUTNAME}.ans ;
+            let failed=failed+1
+            fi
+
+       echo "-> CP437 [$testcount/$TESTTOTAL] $TDFFILE" > output.ans
+        ./tdftool -c ../THEDRAWFONTS/${TDFFILE} "TDFTool" 1>output.ans 2>output.ans
+        STATUS=$?
+        if [ ${STATUS} == 0 ]; then
+            mv output.ans tests/pass/cp437/${OUTNAME}.ans ;
+            let passed=passed+1
+            else 
+            mv output.ans tests/fail/cp437/${OUTNAME}.ans ;
             let failed=failed+1
             fi
         
