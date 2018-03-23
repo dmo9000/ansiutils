@@ -105,7 +105,7 @@ bool raster_output(TDFRaster *r, bool debug_mode, bool use_unicode)
 {
 
     int jj = 0;
-    ansicolor_t fg = 0, bg = 0;
+    ansicolor_t fg = 0x0F, bg = 0;
     ansicolor_t last_fg, last_bg;
     bool bold = false, last_bold = false;
 
