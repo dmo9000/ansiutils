@@ -1,0 +1,20 @@
+KNOWN BUGS
+==
+
+* missing fill spans where the raster is missing for the line (eg. at the bottom of short characters
+  preceded by a taller one)
+* some fonts are still completely garbled
+* outline type fonts are not supported yet
+
+FEATURES
+==
+
+* packaging for Open/Net/FreeBSD
+* packaging for Solaris
+* packaging for Debian
+* option to pad canvas width to nearest multiple of 80
+* option to pad canvas height
+* option to justify (left, centre, right) text on canvas
+* add option to render to PNG instead of terminal using alternate color sets
+  (XT, ANSI.SYS, XTERM, etc)
+
