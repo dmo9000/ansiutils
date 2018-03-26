@@ -27,7 +27,7 @@
 #define MAX_ANSI_SEQUENCE       32
 
 struct tdf_raster;
-struct tdf_canvas;
+struct ansi_canvas;
 struct tdf_char;
 struct tdf_font;
 struct tdf;

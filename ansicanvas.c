@@ -1,20 +1,20 @@
 #include "tdf.h"
 #include "tdfraster.h"
 #include "tdffont.h"
-#include "tdfcanvas.h"
+#include "ansicanvas.h"
 
-TDFCanvas *new_canvas()
+ANSICanvas *new_canvas()
 {
 
-    TDFCanvas *canvas = NULL;
-    canvas = malloc(sizeof(TDFCanvas));
+    ANSICanvas *canvas = NULL;
+    canvas = malloc(sizeof(ANSICanvas));
     assert(canvas);
-    memset(canvas, 0, sizeof(TDFCanvas));
+    memset(canvas, 0, sizeof(ANSICanvas));
     return canvas;
 
 }
 
-TDFRaster* canvas_get_raster(TDFCanvas *canvas, int line)
+TDFRaster* canvas_get_raster(ANSICanvas *canvas, int line)
 {
     TDFRaster *r = NULL;
     int raster_count = 0;
@@ -41,7 +41,7 @@ TDFRaster* canvas_get_raster(TDFCanvas *canvas, int line)
     return NULL;
 }
 
-TDFRaster *canvas_add_raster(TDFCanvas *canvas)
+TDFRaster *canvas_add_raster(ANSICanvas *canvas)
 {
     TDFRaster *r = NULL;
     int raster_count = 0;
@@ -81,7 +81,7 @@ TDFRaster *canvas_add_raster(TDFCanvas *canvas)
 
 }
 
-bool canvas_output(TDFCanvas *my_canvas, bool use_unicode)
+bool canvas_output(ANSICanvas *my_canvas, bool use_unicode)
 {
     TDFRaster *r = NULL;
     assert(my_canvas);
@@ -109,7 +109,7 @@ bool canvas_output(TDFCanvas *my_canvas, bool use_unicode)
     return (true);
 }
 
-bool push_glyph(TDFCanvas *my_canvas, TDFFont *tdf, uint8_t c)
+bool push_glyph(ANSICanvas *my_canvas, TDFFont *tdf, uint8_t c)
 {
     unsigned char dummy_spacing[30];
     TDFCharacter *tdc = NULL;

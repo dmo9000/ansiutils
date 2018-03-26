@@ -5,7 +5,7 @@
 #include "tdf.h"
 #include "tdfraster.h"
 #include "tdffont.h"
-#include "tdfcanvas.h"
+#include "ansicanvas.h"
 #include "osdep.h"
 
 
@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
     TDFFont *render_font = NULL;
     int debug_level = 0;
     bool vertical = false;
-    TDFCanvas *my_canvas = NULL;
+    ANSICanvas *my_canvas = NULL;
     uint16_t running_average_width = 0;
     uint16_t running_average_height = 0;
     bool sauce = false;

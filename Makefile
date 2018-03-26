@@ -10,7 +10,7 @@ CFLAGS = -Wall -Werror
 
 all: tdftool
 
-tdftool: tdftool.o tdffont.o tdfraster.o tdfcanvas.o utf8.o sauce.o
+tdftool: tdftool.o tdffont.o tdfraster.o ansicanvas.o utf8.o sauce.o
 
 clean:
 	rm -f tdftool *.o *.core
