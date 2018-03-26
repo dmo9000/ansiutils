@@ -9,6 +9,7 @@
 #include "osdep.h"
 
 char *strdup(const char *s);
+int getopt(int argc, char * const argv[], const char *optstring);
 
 
 int main(int argc, char *argv[])

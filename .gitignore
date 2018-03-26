@@ -3,3 +3,4 @@ output.ans
 tests/
 *.o
 *.a
+core
