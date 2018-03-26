@@ -17,4 +17,5 @@ FEATURES
 * option to justify (left, centre, right) text on canvas
 * add option to render to PNG instead of terminal using alternate color sets
   (XT, ANSI.SYS, XTERM, etc)
+	- see https://unix4lyfe.org/cp437/ for RAW font files
 
