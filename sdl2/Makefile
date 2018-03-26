@@ -11,4 +11,4 @@ rawfont: $(OBJS)
 	$(CC) $(CFLAGS) $(LDFLAGS) -o rawfont $(OBJS) -L.. -lansicanvas
 
 clean:
-	rm -f $(OBJS) rawfont bmf/*.bmf
+	rm -f $(OBJS) rawfont 
