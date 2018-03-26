@@ -1,6 +1,6 @@
 CFLAGS=-Wall -Werror -g -ggdb --std=c99
 LDFLAGS=-lSDL2
-OBJS=rawfont.o gfx_sdl.o
+OBJS=rawfont.o gfx_sdl.o ansiload.o
 
 all: rawfont 
 
