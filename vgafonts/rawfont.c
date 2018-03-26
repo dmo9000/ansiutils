@@ -6,16 +6,16 @@
 #include <errno.h>
 #include "rawfont.h"
 
-#define MAX_CHARS 256
+#define CANVAS_WIDTH    80
+#define CANVAS_HEIGHT   24
 
 extern int gfx_main(uint16_t, uint16_t);
-extern int gfx_drawglyph(uint8_t *fontdata, uint8_t height, uint16_t px, uint16_t py, uint16_t glyph);
-
+extern int gfx_drawglyph(BitmapFont *bmf, uint8_t px, uint8_t py, uint8_t glyph);
+extern int gfx_expose();
 
 int main(int argc, char *argv[])
 {
     size_t font_len_expect;
-    size_t font_len_actual;
     uint8_t *fontdata = NULL;
     FILE *rawfont = NULL;
     char *filename = (char *) argv[1];
@@ -24,9 +24,6 @@ int main(int argc, char *argv[])
     uint16_t rd = 0, r = 0;
     BitmapFont myfont;
 
-    /* hardcoded for 8x8 font as first argument for now */
-
-    font_len_expect = (width * height * MAX_CHARS);
     rawfont = fopen(filename, "rb");
     if (!rawfont) {
         perror("fopen");
@@ -38,57 +35,61 @@ int main(int argc, char *argv[])
         exit(1);
     }
 
-    r = fread(&myfont, sizeof(BitmapFont), 1, rawfont);
+    r = fread(&myfont.header, sizeof(BitmapFontHeader), 1, rawfont);
 
     if (r != 1) {
         perror("fread() header");
         exit(1);
     }
 
-    printf("Magic:   [%c%c%c]\n", myfont.magic[0], myfont.magic[1], myfont.magic[2]);
-    printf("Version: [%u]\n", myfont.version);
-    printf("Columns: [%u]\n", myfont.px);
-    printf("Rows:    [%u]\n", myfont.py);
-    printf("Glyphs:  [%u]\n", myfont.glyphs);
+    printf("Magic:   [%c%c%c]\n", myfont.header.magic[0], myfont.header.magic[1], myfont.header.magic[2]);
+    printf("Version: [%u]\n", myfont.header.version);
+    printf("Columns: [%u]\n", myfont.header.px);
+    printf("Rows:    [%u]\n", myfont.header.py);
+    printf("Glyphs:  [%u]\n", myfont.header.glyphs);
 
-    assert(myfont.version == 0);
-    assert(myfont.px == 8);
-    assert(myfont.py == 8);
-    assert(myfont.glyphs == 256);
+    assert(myfont.header.magic[0] == 'B');
+    assert(myfont.header.magic[1] == 'M');
+    assert(myfont.header.magic[2] == 'F');
+    assert(myfont.header.version == 0);
+    assert(myfont.header.px == 8);
+    assert(myfont.header.py == 8);
+    assert(myfont.header.glyphs == 256);
 
-    font_len_actual = ftell(rawfont);
-    assert ((bool) (font_len_actual == font_len_expect));
+    font_len_expect = (myfont.header.py * myfont.header.glyphs);
 
-    fontdata = malloc(font_len_expect);
+    assert(fseek(rawfont, 0, SEEK_END) == 0);
+    myfont.size = ftell(rawfont) - sizeof(BitmapFontHeader);
+    assert ((bool) (myfont.size == font_len_expect));
+    myfont.fontdata = malloc(myfont.size);
 
-    if (!fontdata) {
+    if (!myfont.fontdata) {
         perror("malloc");
         exit(1);
     }
-    printf("expected and found %lu bytes\n", (font_len_expect));
+    printf("expected and found %lu bytes\n", (myfont.size));
+
+    assert(fseek(rawfont, sizeof(BitmapFontHeader), SEEK_SET) == 0);
 
     while (rd < font_len_expect) {
-        printf("rd = %u, reading %u\n", rd, width*height);
-        r = fread(fontdata + rd, 1, width*height, rawfont);
-        if (!r) {
+        r = fread(myfont.fontdata + rd, width*height, 1, rawfont);
+        if (r != 1) {
             perror("fread");
             for (int kk = 0; kk < width*height; kk++) {
                 printf("%02x ", fontdata[rd+kk]);
             }
             exit(1);
         }
-        printf("r = %u\n", r);
         rd += (r * (width*height));
     }
 
     printf("read %lu bytes\n", (long unsigned int) rd);
-
     fclose(rawfont);
-
-    gfx_main(height * (16*2), width * (16*2));
-
-    gfx_drawglyph(fontdata, height, 0, 0, 'A');
-
+    gfx_main((CANVAS_WIDTH*8), (CANVAS_HEIGHT*16));
+    for (int kk = 0; kk < 256; kk++) {
+        gfx_drawglyph(&myfont, (kk % CANVAS_WIDTH), (kk / CANVAS_WIDTH), kk);
+        }
+    gfx_expose();
     while (!getchar()) {
     }
     exit(0);

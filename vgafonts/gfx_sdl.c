@@ -1,27 +1,53 @@
 #include <SDL2/SDL.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include "rawfont.h"
 
 SDL_Window* window;
 SDL_Renderer* renderer;
 
-int gfx_drawglyph(uint8_t *fontdata, uint8_t height, uint16_t px, uint16_t py, uint16_t glyph)
+int gfx_expose()
 {
-		uint8_t r = 0;
-		printf("gfx_drawglyph(%u, %u, %u, '%c')\n", height, px, py, glyph);
 
-		for (int ii = 0; ii < height; ii++) {
-				for (int jj = 1; jj < 256; jj = jj << 2) {
-					printf("%u -> %u, ", r, jj);
-					r = fontdata[(glyph*height) + ii];	
-					if (r & jj) {
-							//printf("X");
-							} else {
-							//printf(" ");
-							}	
-					}
-					printf("\n");
-				}
+    SDL_RenderPresent(renderer);
+    return 0;
+}
+
+int gfx_drawglyph(BitmapFont *font, uint8_t px, uint8_t py, uint8_t glyph)
+{
+    uint8_t rx = 0;
+    uint8_t h = 0;
+    SDL_Rect r;
+    //printf("gfx_drawglyph(%u, %u, %u, %u, '%c')\n", px, py, font->header.px, font->header.py, glyph);
+
+    for (int ii = 0; ii < font->header.py; ii++) {
+        h = 0;
+        /* TODO: handle big-endian */
+        for (int jj = 128; jj >0; jj = jj >> 1) {
+
+            r.x = (px*8) + (h*1);
+            r.y = (py*16) + (ii*2);
+            r.w = 1;
+            r.h = 2;
+
+            //printf("%u -> %u, ", r, jj);
+            rx = font->fontdata[(glyph*font->header.py) + ii];
+            if (rx & jj) {
+                SDL_SetRenderDrawColor( renderer, 255, 255, 255, 255 );
+                SDL_RenderFillRect( renderer, &r );
+                //SDL_RenderDrawPoint(renderer, (px*16) + (h*2), (py*16) + (ii*2));
+                //printf("X");
+            } else {
+                SDL_SetRenderDrawColor( renderer, 0,0,0, 255 );
+                SDL_RenderFillRect( renderer, &r );
+                //SDL_RenderDrawPoint(renderer, (px*16) + (h*2), (py*16) + (ii*2));
+                //printf(" ");
+            }
+        h++;
+        }
+        //printf("\n");
+    }
+//    SDL_RenderPresent(renderer);
     return 0;
 }
 
@@ -43,7 +69,7 @@ int gfx_main(uint16_t xsize, uint16_t ysize)
 
     // Create and init the window
     // ==========================================================
-    window = SDL_CreateWindow( "Server", posX, posY, sizeX, sizeY, 0 );
+    window = SDL_CreateWindow( "Test", posX, posY, sizeX, sizeY, 0 );
 
     if ( window == NULL )
     {
