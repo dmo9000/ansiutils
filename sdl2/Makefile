@@ -1,4 +1,4 @@
-CFLAGS=-Wall -Werror -g -ggdb --std=c99
+CFLAGS=-Wall -Werror -g -ggdb --std=c99 -I..
 LDFLAGS=-lSDL2
 OBJS=rawfont.o gfx_sdl.o ansiload.o
 

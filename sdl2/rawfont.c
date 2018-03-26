@@ -5,14 +5,18 @@
 #include <assert.h>
 #include <errno.h>
 #include "rawfont.h"
+#include "../tdf.h"
+#include "../tdffont.h"
+#include "../ansiraster.h"
+#include "../ansicanvas.h"
 
 #define CANVAS_WIDTH    80
 #define CANVAS_HEIGHT   24
 
+ANSICanvas *my_canvas = NULL;
 BitmapFont *bmf_load(char *filename);
 
 extern int ansi_read(char *ansi_file_name);
-
 extern int gfx_main(uint16_t, uint16_t);
 extern int gfx_drawglyph(BitmapFont *bmf, uint8_t px, uint8_t py, uint8_t glyph);
 extern int gfx_expose();
@@ -29,6 +33,8 @@ int main(int argc, char *argv[])
             perror("bmf_load");
             exit(1);
             }
+
+    my_canvas = new_canvas(); 
 
     gfx_main((CANVAS_WIDTH*8), (CANVAS_HEIGHT*16));
 
