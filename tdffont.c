@@ -1,5 +1,5 @@
 #include "tdf.h"
-#include "tdfraster.h"
+#include "ansiraster.h"
 #include "tdffont.h"
 
 
@@ -190,7 +190,7 @@ bool prerender_glyph(TDFFont *font, unsigned char c)
     uint8_t x = 0;
     uint8_t y = 0;
     bool suppress = false;
-    TDFRaster *r = NULL;
+    ANSIRaster *r = NULL;
     TDFCharacter *tdc = &font->characters[c];
 
     ptr = font->data + tdc->offset;
@@ -376,7 +376,7 @@ bool prerender_glyph(TDFFont *font, unsigned char c)
 bool display_glyph(TDFFont *tdf, uint8_t c, bool use_unicode)
 {
     TDFCharacter *tdc = NULL;
-    TDFRaster *tdr = NULL;
+    ANSIRaster *tdr = NULL;
     int ii = 0, jj = 0;
 
     if (tdf->parent_tdf->debug_level) {

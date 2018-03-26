@@ -3,10 +3,12 @@
 #include <ctype.h>
 #include <libgen.h>
 #include "tdf.h"
-#include "tdfraster.h"
+#include "ansiraster.h"
 #include "tdffont.h"
 #include "ansicanvas.h"
 #include "osdep.h"
+
+char *strdup(const char *s);
 
 
 int main(int argc, char *argv[])
@@ -100,7 +102,7 @@ int main(int argc, char *argv[])
     optind++;
 
     if (optind < argc) {
-        message = strdup(argv[optind]);
+        message = (char *) strdup(argv[optind]);
     }
 
     /* zero the my_tdf struct as there could be anything there !*/

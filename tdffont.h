@@ -10,7 +10,7 @@ struct tdf_char {
     uint8_t type;
     bool prerendered;
     bool undefined;
-    struct tdf_raster *char_rasters[MAX_LINES];
+    struct ansi_raster *char_rasters[MAX_LINES];
 };
 
 

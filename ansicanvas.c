@@ -1,5 +1,5 @@
 #include "tdf.h"
-#include "tdfraster.h"
+#include "ansiraster.h"
 #include "tdffont.h"
 #include "ansicanvas.h"
 
@@ -14,9 +14,9 @@ ANSICanvas *new_canvas()
 
 }
 
-TDFRaster* canvas_get_raster(ANSICanvas *canvas, int line)
+ANSIRaster* canvas_get_raster(ANSICanvas *canvas, int line)
 {
-    TDFRaster *r = NULL;
+    ANSIRaster *r = NULL;
     int raster_count = 0;
 
     //printf("canvas_get_raster(%u)\n", line);
@@ -41,9 +41,9 @@ TDFRaster* canvas_get_raster(ANSICanvas *canvas, int line)
     return NULL;
 }
 
-TDFRaster *canvas_add_raster(ANSICanvas *canvas)
+ANSIRaster *canvas_add_raster(ANSICanvas *canvas)
 {
-    TDFRaster *r = NULL;
+    ANSIRaster *r = NULL;
     int raster_count = 0;
 //    printf("  canvas_add_raster()\n");
     assert(canvas);
@@ -83,7 +83,7 @@ TDFRaster *canvas_add_raster(ANSICanvas *canvas)
 
 bool canvas_output(ANSICanvas *my_canvas, bool use_unicode)
 {
-    TDFRaster *r = NULL;
+    ANSIRaster *r = NULL;
     assert(my_canvas);
 
     for (int ii = 0; ii < my_canvas->lines ; ii++) {
@@ -113,8 +113,8 @@ bool push_glyph(ANSICanvas *my_canvas, TDFFont *tdf, uint8_t c)
 {
     unsigned char dummy_spacing[30];
     TDFCharacter *tdc = NULL;
-    TDFRaster *src_raster = NULL;
-    TDFRaster *dst_raster = NULL;
+    ANSIRaster *src_raster = NULL;
+    ANSIRaster *dst_raster = NULL;
     int ii = 0;
     int jj = 0;
 

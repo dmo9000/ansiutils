@@ -1,5 +1,5 @@
 #include "tdf.h"
-#include "tdfraster.h"
+#include "ansiraster.h"
 #include "utf8.h"
 
 static int ansi_color_map[8] = {
@@ -9,18 +9,18 @@ static int ansi_color_map[8] = {
 
 #define OPTIMIZE_OUTPUT
 
-TDFRaster *create_new_raster()
+ANSIRaster *create_new_raster()
 {
-    TDFRaster *new_raster = NULL;
-    new_raster = malloc(sizeof(TDFRaster));
+    ANSIRaster *new_raster = NULL;
+    new_raster = malloc(sizeof(ANSIRaster));
     assert(new_raster);
-    memset(new_raster, 0, sizeof(TDFRaster));
+    memset(new_raster, 0, sizeof(ANSIRaster));
     return new_raster;
 
 }
 
 
-bool raster_append_bytes(TDFRaster *r, unsigned char *data, uint8_t bytes, ansicolor_t fg, ansicolor_t bg, bool debug)
+bool raster_append_bytes(ANSIRaster *r, unsigned char *data, uint8_t bytes, ansicolor_t fg, ansicolor_t bg, bool debug)
 {
 
     int ii = 0;
@@ -36,9 +36,9 @@ bool raster_append_bytes(TDFRaster *r, unsigned char *data, uint8_t bytes, ansic
 
 }
 
-bool raster_append_byte(TDFRaster *r, unsigned char data, ansicolor_t fg, ansicolor_t bg, bool debug)
+bool raster_append_byte(ANSIRaster *r, unsigned char data, ansicolor_t fg, ansicolor_t bg, bool debug)
 {
-    TDFRaster *tdr = r;
+    ANSIRaster *tdr = r;
     unsigned char *chardata_realloc = NULL;
     unsigned char *fgcolors_realloc = NULL;
     unsigned char *bgcolors_realloc = NULL;
@@ -101,7 +101,7 @@ bool raster_append_byte(TDFRaster *r, unsigned char data, ansicolor_t fg, ansico
     return true;
 }
 
-bool raster_output(TDFRaster *r, bool debug_mode, bool use_unicode)
+bool raster_output(ANSIRaster *r, bool debug_mode, bool use_unicode)
 {
 
     int jj = 0;

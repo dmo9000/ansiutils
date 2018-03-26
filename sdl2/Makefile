@@ -1,6 +1,6 @@
 CFLAGS=-Wall -Werror -g -ggdb --std=c99
 LDFLAGS=-lSDL2
-OBJS=rawfont.o gfx_sdl.o
+OBJS=rawfont.o gfx_sdl.o ../ansicanvas.o ../tdfraster.o ../utf8.o
 
 all: bmf/8x8.bmf rawfont 
 

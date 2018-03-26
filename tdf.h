@@ -5,6 +5,7 @@
 #include <string.h>
 #include <assert.h>
 #include <unistd.h>
+#include <sys/types.h>
 
 
 
@@ -26,7 +27,7 @@
 
 #define MAX_ANSI_SEQUENCE       32
 
-struct tdf_raster;
+struct ansi_raster;
 struct ansi_canvas;
 struct tdf_char;
 struct tdf_font;

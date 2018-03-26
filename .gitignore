@@ -2,3 +2,4 @@ tdftool
 output.ans
 tests/
 *.o
+*.a
