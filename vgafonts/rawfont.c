@@ -24,6 +24,11 @@ int main(int argc, char *argv[])
     uint16_t rd = 0, r = 0;
     BitmapFont myfont;
 
+    if (argc < 2) {
+            printf("*** using default font ***\n");
+            filename = "bmf/8x8.bmf";
+            }
+
     rawfont = fopen(filename, "rb");
     if (!rawfont) {
         perror("fopen");
