@@ -1,3 +1,9 @@
+#ifndef __ANSIRASTER_H__
+
+#define __ANSIRASTER_H__
+
+#include "ansicolor.h"
+
 struct ansi_raster {
     uint16_t bytes;
     unsigned char *chardata;
@@ -15,3 +21,4 @@ bool raster_append_byte(ANSIRaster *r, unsigned char data, ansicolor_t fg, ansic
 ANSIRaster *create_new_raster();
 bool raster_output(ANSIRaster *r, bool debug, bool use_unicode);
 
+#endif /* __ANSIRASTER_H__ */

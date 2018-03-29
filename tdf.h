@@ -34,9 +34,6 @@ struct tdf_font;
 struct tdf;
 
 
-typedef uint8_t color_t;
-typedef color_t ibmcolor_t;
-typedef color_t ansicolor_t;
 
 struct tdf {
     unsigned char tdfmagic[TDF_MAGIC_SIZE];

@@ -2,7 +2,7 @@
 
 #define __ANSICANVAS_H__
 
-
+#include "ansiraster.h"
 
 struct ansi_canvas {
     uint64_t lines;
