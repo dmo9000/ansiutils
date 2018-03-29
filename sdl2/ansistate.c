@@ -82,6 +82,9 @@ uint8_t paramcount = 0;
 off_t offset = 0;
 off_t current_escape_address = 0;
 
+uint16_t current_x = 0;
+uint16_t current_y = 0;
+
 ansicolor_t fgcolor = 7;
 ansicolor_t bgcolor = 0;
 
@@ -93,8 +96,6 @@ ansicolor_t bgcolor = 0;
 #define ATTRIB_BOLD				16
 
 uint8_t attributes = 0;
-
-
 
 
 int ansi_decode_cmd_m();									/* text attributes, foreground and background color handling */
@@ -150,6 +151,36 @@ void set_ansi_mode(unsigned char mode)
 
 }
 
+
+bool send_byte_to_canvas(ANSICanvas *canvas, uint16_t x, uint16_t y, unsigned char c)
+{
+    ANSIRaster *r = NULL;
+    r = canvas_get_raster(canvas, y);
+
+    while (!r) {
+        printf("send_byte_to_canvas(%u, %u): line %u does not exist, requesting new\n", x, y, y);
+        if (!canvas_add_raster(canvas)) {
+            printf("*** error adding raster to canvas (line %u)\n", y);
+            };
+        r = canvas_get_raster(canvas, y);
+        }
+
+    printf("send_byte_to_canvas(%u, %u): retrieved raster line %u (%u bytes)\n", x, y, y, r->bytes);
+    if (x > r->bytes) {
+        printf("send_byte_canvas(%u, %u): raster is too short (%u bytes)\n", x, y, r->bytes);
+        exit(1);
+        }
+    if (!raster_append_byte(r, c, 7, 0, true)) {
+        printf("send_byte_to_canvas(%u, %u): error appending byte\n", x, y);
+        exit(1);
+        };
+
+    printf("byte appended to canvas\n");
+
+    return true;
+
+}
+
 bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes)
 {
     unsigned char c = 0, last_c = 0;
@@ -167,7 +198,23 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes)
                 printf("ANSI_1B\n");
                 set_ansi_flags(FLAG_1B);
             } else {
-                printf("output character '%c'\n", c);
+                if (c == '\r' || c == '\n') {
+                    printf("LINE BREAK! (%u)\n", c);
+                    current_x = 0;
+                    current_y++;
+                
+                    if (!canvas_add_raster(canvas)) {
+                        printf("*** error adding raster to canvas (line %u)\n", current_y);
+                        exit(1);
+                    };
+                    
+                } else {
+                    printf("output character '%c'\n", c);
+                    if (!send_byte_to_canvas(canvas, current_x, current_y, c)) {
+                        printf("ERROR writing byte to canvas at (%u, %u)\n", current_x, current_y);
+                        exit(1);
+                        }                    
+                    }
             }
             break;
         case FLAG_1B:

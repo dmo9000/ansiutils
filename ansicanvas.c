@@ -88,8 +88,16 @@ bool canvas_output(ANSICanvas *my_canvas, bool use_unicode)
     for (int ii = 0; ii < my_canvas->lines ; ii++) {
         r = canvas_get_raster(my_canvas, ii);
         assert(r);
-        assert(r->chardata);
+
+        /* if we hit an empty raster, (ie. a raster with 0 bytes), 
+           assume we are done */
+
+        if (!r->bytes && !r->chardata) {
+            return true;
+            }
+
         assert(r->bytes);
+        assert(r->chardata);
         raster_output(r, false, use_unicode);
         putchar('\n');
     }

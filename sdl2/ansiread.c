@@ -65,6 +65,7 @@ int main(int argc, char *argv[])
     }
     printf("[%ld] total bytes processed\n", offset);
     fclose(ansfile);
+    canvas_output(canvas, false);
     exit (0);
 }
 

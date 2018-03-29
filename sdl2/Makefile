@@ -2,7 +2,11 @@ CFLAGS=-Wall -Werror -g -ggdb --std=c99 -I..
 LDFLAGS=-lSDL2 
 OBJS=rawfont.o gfx_sdl.o ansiload.o
 ANSIREAD_OBJS=ansiread.o ansistate.o
-TESTFILE=../tests/pass/cp437/kevin2.tdf.ans
+#TESTFILE=../tests/pass/cp437/kevin2.tdf.ans
+TESTFILE=../tests/pass/cp437/blackx.tdf.ans
+#TESTFILE=ansifiles/ftron.ans
+#TESTFILE=../tests/pass/cp437/voidx.tdf.ans
+
 
 all: rawfont ansiread 
 
