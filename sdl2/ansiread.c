@@ -27,12 +27,11 @@ bool ansi_to_canvas(ANSICanvas *c, unsigned char *buf, size_t nbytes);
 int main(int argc, char *argv[])
 {
     FILE *ansfile = NULL;
-    char *bufptr = NULL;
     size_t bytes_read = 0;
     struct stat sbuf;
     size_t total_length = 0;
-		off_t offset = 0;
-		ANSICanvas *canvas = NULL;
+    off_t offset = 0;
+    ANSICanvas *canvas = NULL;
 
 
     if (argc < 2) {
@@ -44,7 +43,7 @@ int main(int argc, char *argv[])
     printf("filesize = %lu\n", sbuf.st_size);
     assert(sbuf.st_size);
 
-		total_length = sbuf.st_size;
+    total_length = sbuf.st_size;
 
     ansfile = fopen(argv[1], "rb");
 
@@ -54,27 +53,18 @@ int main(int argc, char *argv[])
     }
 
 
-		/* create the canvas */
+    /* create the canvas */
 
-		canvas = new_canvas();
-		assert(canvas);
+    canvas = new_canvas();
+    assert(canvas);
 
     while (!feof(ansfile) && !ferror(ansfile) && offset < total_length) {
-   // 		printf("offset: %lu, total_length: %lu\n", offset, total_length);
-        bufptr = (char *) &filebuf;
-        bytes_read = fread((char *) bufptr, 1, CHUNK_SIZE, ansfile);
-  //      printf("[%ld] bytes read to buffer\n", bytes_read);
-				ansi_to_canvas(canvas, (unsigned char *) &bufptr, bytes_read);
-				offset+=bytes_read;
+        bytes_read = fread((unsigned char *) &filebuf, 1, CHUNK_SIZE, ansfile);
+        ansi_to_canvas(canvas, (unsigned char *) &filebuf, bytes_read);
+        offset+=bytes_read;
     }
-  //	printf("offset: %lu, total_length: %lu\n", offset, total_length);
     printf("[%ld] total bytes processed\n", offset);
     fclose(ansfile);
     exit (0);
 }
 
-bool ansi_to_canvas(ANSICanvas *c, unsigned char *buf, size_t nbytes)
-{
-		printf("ansi_to_canvas(%lu)\n", nbytes);
-	  return true;
-}
