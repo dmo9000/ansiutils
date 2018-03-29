@@ -156,6 +156,11 @@ bool send_byte_to_canvas(ANSICanvas *canvas, uint16_t x, uint16_t y, unsigned ch
 {
     ANSIRaster *r = NULL;
     r = canvas_get_raster(canvas, y);
+    uint8_t fg = 7, bg = 0;
+
+    fg = fgcolor + ((attributes & ATTRIB_BOLD) ? 8 : 0);
+    bg = bgcolor;
+
 
     while (!r) {
         printf("send_byte_to_canvas(%u, %u): line %u does not exist, requesting new\n", x, y, y);
@@ -170,7 +175,7 @@ bool send_byte_to_canvas(ANSICanvas *canvas, uint16_t x, uint16_t y, unsigned ch
         printf("send_byte_canvas(%u, %u): raster is too short (%u bytes)\n", x, y, r->bytes);
         exit(1);
         }
-    if (!raster_append_byte(r, c, 7, 0, true)) {
+    if (!raster_append_byte(r, c, fg, bg, true)) {
         printf("send_byte_to_canvas(%u, %u): error appending byte\n", x, y);
         exit(1);
         };

@@ -7,6 +7,7 @@ static int ansi_color_map[8] = {
 };
 
 
+
 #define OPTIMIZE_OUTPUT
 
 ANSIRaster *create_new_raster()
