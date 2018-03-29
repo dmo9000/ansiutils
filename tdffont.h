@@ -1,3 +1,5 @@
+#include "ansicanvas.h"
+
 struct tdf_char {
     uint8_t ascii_value;
     uint16_t offset;
@@ -42,4 +44,6 @@ bool prerender_glyph(TDFFont *font, unsigned char c);
 const char *get_font_type(int type);
 bool display_glyph(TDFFont *tdf, uint8_t c, bool use_unicode);
 TDFFont *create_new_font();
+bool push_glyph(ANSICanvas *my_canvas, TDFFont *tdf, uint8_t c);
+
 

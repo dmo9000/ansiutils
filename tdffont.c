@@ -1,5 +1,6 @@
 #include "tdf.h"
 #include "ansiraster.h"
+#include "ansicanvas.h"
 #include "tdffont.h"
 
 
@@ -420,4 +421,123 @@ bool display_glyph(TDFFont *tdf, uint8_t c, bool use_unicode)
     }
 
     return true;
+}
+
+bool push_glyph(ANSICanvas *my_canvas, TDFFont *tdf, uint8_t c)
+{
+    unsigned char dummy_spacing[30];
+    TDFCharacter *tdc = NULL;
+    ANSIRaster *src_raster = NULL;
+    ANSIRaster *dst_raster = NULL;
+    int ii = 0;
+    int jj = 0;
+
+    assert(my_canvas);
+    assert(tdf);
+
+    /* FIXME: special handling for space! it would be nice to handle this in a more graceful way */
+
+    if (c == 32) {
+        memset(&dummy_spacing, 0, 30);
+        assert((bool) (1 <= tdf->spacing && tdf->spacing <= 30));
+        assert((bool) (1 <= tdf->average_width && tdf->average_width <= 30));
+        memset(&dummy_spacing, ' ', tdf->average_width);
+
+        /* fake it, baby */
+
+//        assert(tdf->average_height);
+        assert(tdf->maximum_height);
+
+        for (ii = 0; ii < tdf->maximum_height; ii++) {
+            dst_raster = canvas_get_raster(my_canvas, ii);
+
+            while (!dst_raster) {
+                dst_raster = canvas_add_raster(my_canvas);
+            }
+            assert(dst_raster);
+            assert(ii == dst_raster->index);
+            assert(ii <= my_canvas->lines);
+            assert(tdf);
+            assert(tdf->average_width);
+            /* TODO: don't use constants for colors here, use #defines */
+            assert(raster_append_bytes(dst_raster, (unsigned char*) &dummy_spacing, tdf->average_width, 7, 0, false));
+        }
+        return true;
+    }
+
+    /* otherwise it's not a space */
+
+    memset(&dummy_spacing, 0, 30);
+    assert((bool) (1 <= tdf->spacing && tdf->spacing <= 30));
+    memset(&dummy_spacing, ' ', tdf->spacing);
+
+
+    //printf("c = '%c'\n", c);
+
+    c -= 33;
+    assert(c >= 0 && c <= 93);
+    tdc = &tdf->characters[c];
+
+    assert(tdc);
+
+    /* make sure character will fit on canvas vertically */
+
+    if (tdc->undefined) {
+        /* if the glyph is undefined, just skip it */
+        return true;
+    }
+
+
+    assert(!tdc->undefined);
+    assert(tdc->prerendered);
+
+    if (tdf->maximum_height > MAX_LINES) {
+        printf("%s: tdf->maximum_height = %u is larger than MAX_LINES = %u\n", tdf->name, tdf->maximum_height, MAX_LINES);
+        exit(1);
+    }
+
+    assert(tdf->maximum_height <= MAX_LINES);
+    for (ii = 0; ii < tdf->maximum_height; ii++) {
+        assert(tdc);
+        assert(tdc->char_rasters[ii]);
+        src_raster = tdc->char_rasters[ii];
+        dst_raster = canvas_get_raster(my_canvas, ii);
+        while (!dst_raster) {
+            dst_raster = canvas_add_raster(my_canvas);
+        }
+        assert(dst_raster);
+        assert(ii == dst_raster->index);
+        assert(ii <= my_canvas->lines);
+        assert(src_raster);
+
+
+        if ((!src_raster->chardata || !src_raster->bytes)) {
+            /* the glyph is prerendered, and not a space character,
+            	 but this particular raster doesn't have any data.
+            	 we fill it with dummy spacing data instead */
+            memset(&dummy_spacing, 0, 30);
+            assert((bool) (1 <= tdc->width && tdc->width <= 30));
+            memset(&dummy_spacing, ' ', tdc->width);
+            assert(raster_append_bytes(dst_raster, (unsigned char*) &dummy_spacing, tdc->width, 7, 0, false));
+            /* don't forget the font-level spacing as well */
+            memset(&dummy_spacing, 0, 30);
+            assert((bool) (1 <= tdf->spacing && tdf->spacing <= 30));
+            memset(&dummy_spacing, ' ', tdf->spacing);
+            assert(raster_append_bytes(dst_raster, (unsigned char*) &dummy_spacing, tdf->spacing, 7, 0, false));
+            return true;
+        }
+
+        assert(src_raster->chardata);
+        assert(src_raster->bytes);
+
+        /* FIXME: its seems we need a copy_raster() function that preserves fg/bg colors, as
+                well as a raster_append_space[s]() */
+
+        for (jj = 0; jj < src_raster->bytes ; jj++) {
+            assert(raster_append_byte(dst_raster, src_raster->chardata[jj], src_raster->fgcolors[jj], src_raster->bgcolors[jj], false));
+        }
+        assert(raster_append_bytes(dst_raster, (unsigned char*) &dummy_spacing, tdf->spacing, 7, 0, false));
+    }
+    return true;
+
 }
