@@ -2,14 +2,6 @@
 #include "ansiraster.h"
 #include "utf8.h"
 
-static int ansi_color_map[8] = {
-    0, 4, 2, 6, 1, 5, 3, 7
-};
-
-
-
-#define OPTIMIZE_OUTPUT
-
 ANSIRaster *create_new_raster()
 {
     ANSIRaster *new_raster = NULL;
@@ -21,14 +13,14 @@ ANSIRaster *create_new_raster()
 }
 
 
-bool raster_append_bytes(ANSIRaster *r, unsigned char *data, uint8_t bytes, ansicolor_t fg, ansicolor_t bg, bool debug)
+bool raster_append_bytes(ANSIRaster *r, unsigned char *data, uint8_t bytes, ansicolor_t fg, ansicolor_t bg, attributes_t attr, bool debug)
 {
 
     int ii = 0;
     /* uncomment this assert to filter some dogdy fonts, need to know why though */
 
     for (ii = 0; ii < bytes; ii++) {
-        if (!raster_append_byte(r, data[ii], fg, bg, debug)) {
+        if (!raster_append_byte(r, data[ii], fg, bg, attr, debug)) {
             return false;
         };
     }
@@ -41,6 +33,7 @@ bool raster_resize(ANSIRaster *r, uint16_t size)
     unsigned char *chardata_realloc = NULL;
     unsigned char *fgcolors_realloc = NULL;
     unsigned char *bgcolors_realloc = NULL;
+    unsigned char *attribs_realloc = NULL;
 
     /* raster must be valid */
     assert(r);
@@ -62,12 +55,15 @@ bool raster_resize(ANSIRaster *r, uint16_t size)
         r->chardata = malloc(2);
         r->fgcolors = malloc(2);
         r->bgcolors = malloc(2);
+        r->attribs = malloc(2);
         r->chardata[0] = 0;
         r->fgcolors[0] = 7;
         r->bgcolors[0] = 0;
+        r->attribs[0] = ATTRIB_NONE;
         r->chardata[1] = '\0'; /* NULL terminate, so that the rasters can be printed with C library functions */
         r->fgcolors[1] = '\0';
         r->bgcolors[1] = '\0';
+        r->attribs[1] = ATTRIB_NONE;
         r->bytes = 1;
         return true;
     }
@@ -86,23 +82,26 @@ bool raster_resize(ANSIRaster *r, uint16_t size)
     chardata_realloc = realloc(r->chardata, r->bytes+1);
     fgcolors_realloc = realloc(r->fgcolors, r->bytes+1);
     bgcolors_realloc = realloc(r->bgcolors, r->bytes+1);
+    attribs_realloc = realloc(r->attribs, r->bytes+1);
 
     /* ensure realloc() didn't fail */
     assert(chardata_realloc);
     assert(fgcolors_realloc);
     assert(bgcolors_realloc);
+    assert(attribs_realloc);
 
     /* assign the realloc'd regions to the relevant pointers */
     r->chardata = chardata_realloc;
     r->fgcolors = fgcolors_realloc;
     r->bgcolors = bgcolors_realloc;
+    r->attribs = attribs_realloc;
     /* ensure the new raster does not have length 0 */
     assert(r->bytes-1);
 
     return true;
 }
 
-bool raster_append_byte(ANSIRaster *r, unsigned char data, ansicolor_t fg, ansicolor_t bg, bool debug)
+bool raster_append_byte(ANSIRaster *r, unsigned char data, ansicolor_t fg, ansicolor_t bg, attributes_t attr, bool debug)
 {
     ANSIRaster *tdr = r;
 
@@ -123,99 +122,70 @@ bool raster_append_byte(ANSIRaster *r, unsigned char data, ansicolor_t fg, ansic
         tdr->chardata[0] = data;
         tdr->fgcolors[0] = fg;
         tdr->bgcolors[0] = bg;
+        tdr->attribs[0] = attr;
         tdr->chardata[1] = '\0'; /* NULL terminate, so that the rasters can be printed with C library functions */
         tdr->fgcolors[1] = '\0';
         tdr->bgcolors[1] = '\0';
+        tdr->attribs[1] = ATTRIB_NONE;
         return true;
     } else {
         raster_resize(tdr, tdr->bytes+1);
         tdr->chardata[tdr->bytes-1] = data;
         tdr->fgcolors[tdr->bytes-1] = fg;
         tdr->bgcolors[tdr->bytes-1] = bg;
+        tdr->attribs[tdr->bytes-1] = attr;
         tdr->chardata[tdr->bytes] = '\0';
         tdr->fgcolors[tdr->bytes] = '\0';
         tdr->bgcolors[tdr->bytes] = '\0';
+        tdr->attribs[tdr->bytes] = ATTRIB_NONE;
     }
 
     return true;
 }
 
-bool raster_output(ANSIRaster *r, bool debug_mode, bool use_unicode)
+bool raster_output(ANSIRaster *r, bool debug_mode, bool use_unicode, bool convert_colors, FILE *fh)
 {
 
     int jj = 0;
-    ansicolor_t fg = 0x0F, bg = 0;
-    ansicolor_t last_fg, last_bg;
-    bool bold = false, last_bold = false;
+    ansicolor_t fg = 0x0, bg = 0;
+    bool bold = false;
 
 
     for (jj = 0; jj < r->bytes; jj++) {
 
-        last_fg = fg;
-        last_bg = bg;
-        last_bold = bold;
+        bold = false;
 
 
         fg = r->fgcolors[jj];
         bg = r->bgcolors[jj];
+        bold = r->attribs[jj] & ATTRIB_BOLD;
 
-        if (fg >= 0x08) {
-            fg -= 0x08;
-            /* ANSI control code - hi intensity */
-            bold = true;
-
-        } else {
-            /* ANSI control code - normal intensity */
-            bold = false;
-        }
-
-        fg = ansi_color_map[fg];
-        bg = ansi_color_map[bg];
 
         if (debug_mode) {
-            printf("[%u/%03u:%c:%X/%X]", jj, r->chardata[jj],
-                   r->chardata[jj], r->fgcolors[jj], r->bgcolors[jj]);
+            printf("[%u/%03u:%c:%X/%X:%s]\n", jj, r->chardata[jj],
+                   r->chardata[jj], r->bgcolors[jj], r->fgcolors[jj], ((bold) ? "BOLD" : "NOBOLD"));
         } else {
-#ifdef OPTIMIZE_OUTPUT
-            if (fg != last_fg || bg != last_bg) {
-#endif /* OPTIMIZE_OUTPUT */
-                printf((char *) "\x1b\x5b""%u;%um", 40 + bg, 30 + fg);
-#ifdef OPTIMIZE_OUTPUT
-            }
-#endif /* OPTIMIZE_OUTPUT */
+            fprintf(fh, (char *) "\x1b\x5b""%u;%um", 40 + bg, 30 + fg);
 
             if (bold) {
-#ifdef OPTIMIZE_OUTPUT
-                if (bold != last_bold) {
-#endif /* OPTIMIZE_OUTPUT */
-                    printf("\x1b\x5b""1m");
-#ifdef OPTIMIZE_OUTPUT
-                }
-#endif /* OPTIMIZE_OUTPUT */
+                fprintf(fh, "\x1b\x5b""1m");
             } else {
-#ifdef OPTIMIZE_OUTPUT
-                if (bold != last_bold) {
-#endif /* OPTIMIZE_OUTPUT */
-                    printf("\x1b\x5b""21m");
-#ifdef OPTIMIZE_OUTPUT
-                }
-#endif /* OPTIMIZE_OUTPUT */
+                fprintf(fh, "\x1b\x5b""21m");
             }
 
             if (use_unicode) {
                 if (r->chardata[jj] < 128) {
-                    putchar(r->chardata[jj]);
+                    fputc(r->chardata[jj], fh);
                 } else {
-                    printf("%s", utf8_string(r->chardata[jj]));
+                    fprintf(fh, "%s", utf8_string(r->chardata[jj]));
                 }
             } else {
-                putchar(r->chardata[jj]);
+                fputc(r->chardata[jj], fh);
             }
         }
-        //printf("[%u/%u/%u/%u]", jj, r->chardata[jj], r->fgcolors[jj], r->bgcolors[jj]);
     }
 
-    printf("\x1b\x5b""0m");
+    fprintf(fh, "\x1b\x5b""0m");
     return true;
 
 }

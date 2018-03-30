@@ -1,7 +1,11 @@
+#include <math.h>
 #include "tdf.h"
 #include "ansiraster.h"
 #include "tdffont.h"
 #include "ansicanvas.h"
+#include "displaycolours.h"
+
+RGBColour rgbcolours[16];
 
 ANSICanvas *new_canvas()
 {
@@ -80,26 +84,36 @@ ANSIRaster *canvas_add_raster(ANSICanvas *canvas)
     return (r->next_raster);
 }
 
-bool canvas_output(ANSICanvas *my_canvas, bool use_unicode)
+bool canvas_output(ANSICanvas *my_canvas, bool use_unicode, bool convert_colors, char *filename)
 {
     ANSIRaster *r = NULL;
     assert(my_canvas);
+    FILE *fh = NULL;
 
-    for (int ii = 0; ii < my_canvas->lines ; ii++) {
-        r = canvas_get_raster(my_canvas, ii);
-        assert(r);
+    if (filename) {
+        fh = fopen(filename, "wb");
+        } else {
+        fh = stdout;
+        }
 
-        /* if we hit an empty raster, (ie. a raster with 0 bytes), 
-           assume we are done */
+    if (!my_canvas->debug_level) {
+        for (int ii = 0; ii < my_canvas->lines ; ii++) {
+            r = canvas_get_raster(my_canvas, ii);
+            assert(r);
 
-        if (!r->bytes && !r->chardata) {
-            return true;
+            /* if we hit an empty raster, (ie. a raster with 0 bytes),
+               assume we are done */
+
+            if (!r->bytes && !r->chardata) {
+                return true;
             }
 
-        assert(r->bytes);
-        assert(r->chardata);
-        raster_output(r, false, use_unicode);
-        putchar('\n');
+            assert(r->bytes);
+            assert(r->chardata);
+            raster_output(r, false, use_unicode, convert_colors, fh);
+            fputc('\n', fh);
+            //putchar('\n');
+        }
     }
 
     if (my_canvas->debug_level) {
@@ -108,11 +122,60 @@ bool canvas_output(ANSICanvas *my_canvas, bool use_unicode)
             assert(r);
             assert(r->chardata);
             assert(r->bytes);
-            raster_output(r, true, use_unicode);
-            printf("\r\n");
+            raster_output(r, true, use_unicode, convert_colors, fh);
+            fprintf(fh, "\r\n");
         }
     }
+
+    if (filename) {
+        fclose(fh);
+        }
 
     return (true);
 }
 
+
+uint16_t canvas_get_width(ANSICanvas *canvas)
+{
+    ANSIRaster *r = NULL;
+    uint16_t width = 0;
+    assert(canvas);
+    for (int ii = 0; ii < canvas->lines; ii++) {
+        r = canvas_get_raster(canvas, ii);
+        assert(r);
+        if (r->bytes > width) {
+            width = r->bytes;
+            }
+        }
+
+    return width;
+
+}
+
+uint16_t canvas_get_height(ANSICanvas *canvas)
+{
+    ANSIRaster *r = NULL;
+    uint16_t height = 0;
+    assert(canvas);
+    for (int ii = 0; ii < canvas->lines; ii++) {
+        r = canvas_get_raster(canvas, ii);
+        if (r) {
+            height++;
+        }
+    }
+
+    return height;
+
+}
+
+RGBColour* canvas_displaycolour(uint8_t colour)
+{
+
+    double multiplier = 0.45454;
+
+    rgbcolours[colour].r = (uint8_t) (pow(tcolours[colour].r, multiplier) * 255.0);
+    rgbcolours[colour].g = (uint8_t) (pow(tcolours[colour].g, multiplier) * 255.0);
+    rgbcolours[colour].b = (uint8_t) (pow(tcolours[colour].b, multiplier) * 255.0);
+
+    return (RGBColour*) &rgbcolours[colour];
+}

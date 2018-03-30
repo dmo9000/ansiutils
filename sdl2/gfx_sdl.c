@@ -1,7 +1,10 @@
 #include <SDL2/SDL.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <stdbool.h>
+#include <assert.h>
 #include "rawfont.h"
+#include "ansicanvas.h"
 
 SDL_Window* window;
 SDL_Renderer* renderer;
@@ -13,12 +16,18 @@ int gfx_expose()
     return 0;
 }
 
-int gfx_drawglyph(BitmapFont *font, uint8_t px, uint8_t py, uint8_t glyph)
+int gfx_drawglyph(BitmapFont *font, uint8_t px, uint8_t py, uint8_t glyph, uint8_t fg, uint8_t bg, uint8_t attr)
 {
+    RGBColour *fgc;
+    RGBColour *bgc;
     uint8_t rx = 0;
     uint8_t h = 0;
     SDL_Rect r;
     //printf("gfx_drawglyph(%u, %u, %u, %u, '%c')\n", px, py, font->header.px, font->header.py, glyph);
+    //
+    fgc = canvas_displaycolour(fg + ((attr & ATTRIB_BOLD ? 8 : 0)));
+    bgc = canvas_displaycolour(bg);
+ 
 
     for (int ii = 0; ii < font->header.py; ii++) {
         h = 0;
@@ -33,12 +42,15 @@ int gfx_drawglyph(BitmapFont *font, uint8_t px, uint8_t py, uint8_t glyph)
             //printf("%u -> %u, ", r, jj);
             rx = font->fontdata[(glyph*font->header.py) + ii];
             if (rx & jj) {
-                SDL_SetRenderDrawColor( renderer, 255, 255, 255, 255 );
+                
+
+
+                SDL_SetRenderDrawColor( renderer, fgc->r, fgc->g, fgc->b, 255 );
                 SDL_RenderFillRect( renderer, &r );
                 //SDL_RenderDrawPoint(renderer, (px*16) + (h*2), (py*16) + (ii*2));
                 //printf("X");
             } else {
-                SDL_SetRenderDrawColor( renderer, 0,0,0, 255 );
+                SDL_SetRenderDrawColor( renderer, bgc->r, bgc->g, bgc->b, 255 );
                 SDL_RenderFillRect( renderer, &r );
                 //SDL_RenderDrawPoint(renderer, (px*16) + (h*2), (py*16) + (ii*2));
                 //printf(" ");
@@ -58,8 +70,6 @@ int gfx_main(uint16_t xsize, uint16_t ysize)
     int sizeX = xsize;
     int sizeY =  ysize;
 
-    // Initialize SDL
-    // ==========================================================
     if ( SDL_Init( SDL_INIT_EVERYTHING ) != 0 )
     {
         // Something failed, print error and exit.
@@ -67,8 +77,6 @@ int gfx_main(uint16_t xsize, uint16_t ysize)
         return -1;
     }
 
-    // Create and init the window
-    // ==========================================================
     window = SDL_CreateWindow( "Test", posX, posY, sizeX, sizeY, 0 );
 
     if ( window == NULL )
@@ -77,8 +85,6 @@ int gfx_main(uint16_t xsize, uint16_t ysize)
         return -1;
     }
 
-    // Create and init the renderer
-    // ==========================================================
     renderer = SDL_CreateRenderer( window, -1, SDL_RENDERER_ACCELERATED );
 
     if ( renderer == NULL )
@@ -87,23 +93,30 @@ int gfx_main(uint16_t xsize, uint16_t ysize)
         return -1;
     }
 
-    // Render something
-    // ==========================================================
-
-    // Set size of renderer to the same as window
     SDL_RenderSetLogicalSize( renderer, sizeX, sizeY );
-
-    // Set color of renderer to red
     SDL_SetRenderDrawColor( renderer, 0, 0, 0, 255 );
-
-    // Clear the window and make it all red
     SDL_RenderClear( renderer );
-
-    // Render the changes above ( which up until now had just happened behind the scenes )
     SDL_RenderPresent( renderer);
+    return 0;
+}
 
-    // Pause program so that the window doesn't disappear at once.
-    // This willpause for 4000 milliseconds which is the same as 4 seconds
-    //SDL_Delay( 4000 );
+int gfx_canvas_render(ANSICanvas *canvas, BitmapFont *myfont) 
+{ 
+    ANSIRaster *r = NULL;
+    uint16_t width = 0, height = 0;
+    assert(canvas);
+    width = canvas_get_width(canvas);
+    height = canvas_get_height(canvas);
+    printf("gfx_canvas_render(%ux%u)\n", width, height);
+    for (uint16_t ii = 0; ii < height; ii++) {
+        r = canvas_get_raster(canvas, ii);
+        if (r) {
+            for (uint16_t jj = 0; jj < r->bytes; jj++) {
+                gfx_drawglyph(myfont, jj, ii, r->chardata[jj], r->fgcolors[jj], r->bgcolors[jj], r->attribs[jj]);
+                }
+            } else {
+            printf("canvas data missing for raster %u\n", ii);
+            } 
+        } 
     return 0;
 }

@@ -31,6 +31,7 @@ struct tdf_font {
     uint8_t average_height;
     uint8_t maximum_height;
     uint8_t defined_characters;
+    uint8_t discovered_height;
 };
 
 typedef struct tdf_char     TDFCharacter;

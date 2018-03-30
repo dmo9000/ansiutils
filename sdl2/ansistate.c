@@ -158,7 +158,8 @@ bool send_byte_to_canvas(ANSICanvas *canvas, uint16_t x, uint16_t y, unsigned ch
     r = canvas_get_raster(canvas, y);
     uint8_t fg = 7, bg = 0;
 
-    fg = fgcolor + ((attributes & ATTRIB_BOLD) ? 8 : 0);
+    //fg = fgcolor + ((attributes & ATTRIB_BOLD) ? 8 : 0);
+    fg = fgcolor; 
     bg = bgcolor;
 
 
@@ -175,7 +176,7 @@ bool send_byte_to_canvas(ANSICanvas *canvas, uint16_t x, uint16_t y, unsigned ch
         printf("send_byte_canvas(%u, %u): raster is too short (%u bytes)\n", x, y, r->bytes);
         exit(1);
         }
-    if (!raster_append_byte(r, c, fg, bg, true)) {
+    if (!raster_append_byte(r, c, fg, bg, attributes, true)) {
         printf("send_byte_to_canvas(%u, %u): error appending byte\n", x, y);
         exit(1);
         };
@@ -304,9 +305,9 @@ void dispatch_ansi_text_attributes()
 
         switch(parameters[i]) {
         case 0:
-            attributes = ATTRIB_NONE;
             fgcolor = 7;
             bgcolor = 0;
+            attributes = ATTRIB_NONE;
             goto next_parameter;
             break;
         case 1:

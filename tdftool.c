@@ -203,7 +203,7 @@ int main(int argc, char *argv[])
                 exit(1);
             }
 
-            if (my_tdf.debug_level) {
+            if (my_tdf.debug_level > 2) {
                 printf("  %2u [%-12s]\n", my_tdf.fontcount, new_font->name);
             }
 
@@ -236,7 +236,7 @@ int main(int argc, char *argv[])
             assert(new_font->spacing >= 0);
             assert(new_font->spacing <= 40);
 
-            if (my_tdf.debug_level) {
+            if (my_tdf.debug_level > 2) {
                 printf("spacing: %u\n", new_font->spacing);
             }
 
@@ -313,12 +313,12 @@ int main(int argc, char *argv[])
 
     if (message) {
         /* render glyphs */
-        if (my_tdf.debug_level) {
+        if (my_tdf.debug_level > 2) {
             printf("Message to display: %s\n", message);
         }
         render_font = getfont_by_id(&my_tdf, selected_font);
         if (render_font) {
-            if (my_tdf.debug_level) {
+            if (my_tdf.debug_level > 2) {
                 printf("Using font: %s\n", render_font->name);
             }
         } else {
@@ -375,7 +375,7 @@ int main(int argc, char *argv[])
         }
 
 
-        (void) canvas_output(my_canvas, use_unicode);
+        (void) canvas_output(my_canvas, use_unicode, true, NULL);
 
     }
 
