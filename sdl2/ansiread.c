@@ -93,7 +93,7 @@ int main(int argc, char *argv[])
 
     printf("canvas dimensions: %u x %u\n", width, height);
 
-    canvas_output(canvas, false, false, NULL);
+    canvas_output(canvas, true,  NULL);
 
     gfx_main((width*8), (height*16));
 

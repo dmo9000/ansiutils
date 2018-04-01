@@ -375,7 +375,7 @@ int main(int argc, char *argv[])
         }
 
 
-        (void) canvas_output(my_canvas, use_unicode, true, NULL);
+        (void) canvas_output(my_canvas, use_unicode, NULL);
 
     }
 

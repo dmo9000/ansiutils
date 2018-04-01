@@ -212,7 +212,7 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes)
     size_t o = 0;
 
     /* add an initial raster */
-    canvas_add_raster(canvas);
+    //canvas_add_raster(canvas);
 
     while (o < nbytes) {
 

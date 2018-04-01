@@ -20,6 +20,6 @@ bool raster_append_bytes(ANSIRaster *r, unsigned char *data, uint8_t bytes, ansi
 bool raster_append_byte(ANSIRaster *r, unsigned char data, ansicolor_t fg, ansicolor_t bg, attributes_t attr, bool debug);
 
 ANSIRaster *create_new_raster();
-bool raster_output(ANSIRaster *r, bool debug, bool use_unicode, bool convert_colors, FILE *fh);
+bool raster_output(ANSIRaster *r, bool debug, bool use_unicode, FILE *fh);
 
 #endif /* __ANSIRASTER_H__ */

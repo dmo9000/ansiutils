@@ -15,7 +15,7 @@ typedef struct ansi_canvas   ANSICanvas;
 ANSICanvas *new_canvas();
 ANSIRaster *canvas_get_raster(ANSICanvas *canvas, int line);
 ANSIRaster *canvas_add_raster(ANSICanvas *canvas);
-bool canvas_output(ANSICanvas *canvas, bool use_unicode, bool convert_colors, char *filename);
+bool canvas_output(ANSICanvas *canvas, bool use_unicode, char *filename);
 uint16_t canvas_get_width(ANSICanvas *canvas);
 uint16_t canvas_get_height(ANSICanvas *canvas);
 

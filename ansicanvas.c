@@ -84,7 +84,7 @@ ANSIRaster *canvas_add_raster(ANSICanvas *canvas)
     return (r->next_raster);
 }
 
-bool canvas_output(ANSICanvas *my_canvas, bool use_unicode, bool convert_colors, char *filename)
+bool canvas_output(ANSICanvas *my_canvas, bool use_unicode, char *filename)
 {
     ANSIRaster *r = NULL;
     assert(my_canvas);
@@ -110,7 +110,7 @@ bool canvas_output(ANSICanvas *my_canvas, bool use_unicode, bool convert_colors,
 
             assert(r->bytes);
             assert(r->chardata);
-            raster_output(r, false, use_unicode, convert_colors, fh);
+            raster_output(r, false, use_unicode, fh);
             fputc('\n', fh);
             //putchar('\n');
         }
@@ -122,7 +122,7 @@ bool canvas_output(ANSICanvas *my_canvas, bool use_unicode, bool convert_colors,
             assert(r);
             assert(r->chardata);
             assert(r->bytes);
-            raster_output(r, true, use_unicode, convert_colors, fh);
+            raster_output(r, true, use_unicode, fh);
             fprintf(fh, "\r\n");
         }
     }
@@ -164,7 +164,8 @@ uint16_t canvas_get_height(ANSICanvas *canvas)
         }
     }
 
-    return height;
+    return height-1;
+    //return height;
 
 }
 

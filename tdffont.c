@@ -435,7 +435,7 @@ bool display_glyph(TDFFont *tdf, uint8_t c, bool use_unicode)
 
         if (tdr->bytes && tdr->chardata) {
             //printf("%s", tdr->chardata);
-            raster_output(tdr, false, use_unicode, true, stdout);
+            raster_output(tdr, false, use_unicode, stdout);
             printf(" (%u,%u/%u)\n", tdr->bytes, ii+1, tdc->discovered_height);
         } else {
             /* blank raster */
