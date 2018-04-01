@@ -19,6 +19,7 @@
 
 
 extern int errno;
+extern bool auto_line_wrap;
 
 #define CHUNK_SIZE    4096
 
@@ -26,11 +27,6 @@ static unsigned char filebuf[CHUNK_SIZE];
 
 bool ansi_to_canvas(ANSICanvas *c, unsigned char *buf, size_t nbytes);
 BitmapFont *bmf_load(char *filename);
-/*
-extern int gfx_main(uint16_t, uint16_t);
-extern int gfx_drawglyph(BitmapFont *bmf, uint8_t px, uint8_t py, uint8_t glyph);
-extern int gfx_expose();
-*/
 
 int main(int argc, char *argv[])
 {
@@ -43,11 +39,31 @@ int main(int argc, char *argv[])
     uint16_t width = 0, height = 0;
     BitmapFont *myfont = NULL;
     char *font_filename = NULL;
+    int8_t c = 0;
+    char *input_filename = NULL;
 
 
     if (argc < 2) {
         printf("usage: ansiread <filename.ans>\n");
         exit(1);
+    }
+
+     while ((c = getopt (argc, argv, "w")) != -1) {
+        switch (c)
+        {
+        case 'w':
+            /* append sauce record */
+            printf("WRAP MODE ENABLED\n");
+            auto_line_wrap = true;
+            break;
+        case -1:
+            /* END OF ARGUMENTS? */
+            break;
+        default:
+            printf("exiting with c= %d [%c]\n", c, c);
+            exit (1);
+        }
+
     }
 
     font_filename = "bmf/8x8.bmf";
@@ -58,22 +74,21 @@ int main(int argc, char *argv[])
         exit(1);
     }
 
-    //gfx_main((CANVAS_WIDTH*8), (CANVAS_HEIGHT*16));
+    input_filename = (char *) argv[optind];
 
 
-    lstat(argv[1], &sbuf);
+    lstat(input_filename, &sbuf);
     printf("filesize = %lu\n", sbuf.st_size);
     assert(sbuf.st_size);
-
     total_length = sbuf.st_size;
+    
 
-    ansfile = fopen(argv[1], "rb");
+    ansfile = fopen(input_filename, "rb");
 
     if (!ansfile) {
-        printf("cannot open: %s: %s\n", argv[1], strerror(errno));
+        printf("cannot open: %s: %s\n", input_filename, strerror(errno));
         exit(1);
     }
-
 
     /* create the canvas */
 
@@ -82,7 +97,9 @@ int main(int argc, char *argv[])
 
     while (!feof(ansfile) && !ferror(ansfile) && offset < total_length) {
         bytes_read = fread((unsigned char *) &filebuf, 1, CHUNK_SIZE, ansfile);
-        ansi_to_canvas(canvas, (unsigned char *) &filebuf, bytes_read);
+        if (!ansi_to_canvas(canvas, (unsigned char *) &filebuf, bytes_read)) {
+            break;
+        };
         offset+=bytes_read;
     }
     printf("[%ld] total bytes processed\n", offset);
