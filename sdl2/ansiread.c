@@ -26,6 +26,8 @@ extern bool auto_line_wrap;
 static unsigned char filebuf[CHUNK_SIZE];
 
 bool ansi_to_canvas(ANSICanvas *c, unsigned char *buf, size_t nbytes);
+void raster_extend_length_to(ANSIRaster *r, uint16_t extrabytes);
+
 BitmapFont *bmf_load(char *filename);
 
 int main(int argc, char *argv[])
@@ -104,6 +106,18 @@ int main(int argc, char *argv[])
     }
     printf("[%ld] total bytes processed\n", offset);
     fclose(ansfile);
+
+
+    if (auto_line_wrap) {
+        /* pad lines */
+        for (int i = 0; i < canvas_get_height(canvas); i++) {
+            ANSIRaster *r = canvas_get_raster(canvas, i);
+            if (r->bytes < 80) {
+                raster_extend_length_to(r, 80);
+                }
+            }
+        }
+
     width = canvas_get_width(canvas);
     height = canvas_get_height(canvas);
 

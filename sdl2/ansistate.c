@@ -222,6 +222,12 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes)
         printf("[FLAGS=0x%02x(%u,%u)] %lu/%lu = 0x%02x: ", ansiflags, current_x, current_y, o, nbytes, c);
         switch(ansiflags) {
         case FLAG_NONE:
+
+            if (c == 26) {
+                /* EOF */
+                return false;
+                }
+
             if (c == ANSI_1B) {
                 printf("ANSI_1B\n");
                 set_ansi_flags(FLAG_1B);
@@ -321,7 +327,7 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes)
 //    assert(!last_c);
     assert (last_c || !last_c);
     printf("BLOCK DONE\n");
-    return 0;
+    return true;
 }
 
 void dispatch_ansi_text_attributes()
