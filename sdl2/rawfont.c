@@ -17,8 +17,8 @@ ANSICanvas *my_canvas = NULL;
 BitmapFont *bmf_load(char *filename);
 
 extern int ansi_read(char *ansi_file_name);
-extern int gfx_main(uint16_t, uint16_t);
-extern int gfx_drawglyph(BitmapFont *bmf, uint8_t px, uint8_t py, uint8_t glyph);
+extern int gfx_main(uint16_t, uint16_t, char *WindowTitle);
+extern int gfx_drawglyph(BitmapFont *font, uint8_t px, uint8_t py, uint8_t glyph, uint8_t fg, uint8_t bg, uint8_t attr);
 extern int gfx_expose();
 
 int main(int argc, char *argv[])
@@ -36,10 +36,10 @@ int main(int argc, char *argv[])
 
     my_canvas = new_canvas(); 
 
-    gfx_main((CANVAS_WIDTH*8), (CANVAS_HEIGHT*16));
+    gfx_main((CANVAS_WIDTH*8), (CANVAS_HEIGHT*16), "BMF Font Render Test");
 
     for (int kk = 0; kk < 256; kk++) {
-        gfx_drawglyph(myfont, (kk % CANVAS_WIDTH), (kk / CANVAS_WIDTH), kk);
+        gfx_drawglyph(myfont, (kk % CANVAS_WIDTH), (kk / CANVAS_WIDTH), kk, 7, 0, ATTRIB_NONE);
         }
 //    ansi_read("ansifiles/fruit.ans");
 

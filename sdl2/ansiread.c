@@ -126,7 +126,7 @@ int main(int argc, char *argv[])
 
     canvas_output(canvas, true,  NULL);
 
-    gfx_main((width*8), (height*16));
+    gfx_main((width*8), (height*16), input_filename);
 
     gfx_canvas_render(canvas, myfont);
 

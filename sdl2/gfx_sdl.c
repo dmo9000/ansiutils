@@ -63,7 +63,7 @@ int gfx_drawglyph(BitmapFont *font, uint8_t px, uint8_t py, uint8_t glyph, uint8
     return 0;
 }
 
-int gfx_main(uint16_t xsize, uint16_t ysize)
+int gfx_main(uint16_t xsize, uint16_t ysize, char *WindowTitle)
 {
     int posX = 100;
     int posY = 200;
@@ -77,7 +77,7 @@ int gfx_main(uint16_t xsize, uint16_t ysize)
         return -1;
     }
 
-    window = SDL_CreateWindow( "Test", posX, posY, sizeX, sizeY, 0 );
+    window = SDL_CreateWindow(WindowTitle, posX, posY, sizeX, sizeY, 0 );
 
     if ( window == NULL )
     {
