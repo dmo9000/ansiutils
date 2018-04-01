@@ -105,13 +105,11 @@ bool canvas_output(ANSICanvas *my_canvas, bool use_unicode, char *filename)
                assume we are done */
 
             if (!r->bytes && !r->chardata) {
-                return true;
+                /* blank/missing raster */
+                } else {
+                raster_output(r, false, use_unicode, fh);
+                fputc('\n', fh);
             }
-
-            assert(r->bytes);
-            assert(r->chardata);
-            raster_output(r, false, use_unicode, fh);
-            fputc('\n', fh);
             //putchar('\n');
         }
     }
