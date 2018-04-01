@@ -236,12 +236,16 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes)
                     printf("LINE BREAK! (%u)\n", c);
                     current_x = 0;
                     if (c == '\n') {
+                        ANSIRaster *r = NULL;
                         current_y++;
+                        r = canvas_get_raster(canvas, current_y);
+                        if (!r) {
                         if (!canvas_add_raster(canvas)) {
                             printf("*** error adding raster to canvas (line %u)\n", current_y);
                             exit(1);
                         };
                         printf("  $$$ canvas now has %u lines\n\n", canvas_get_height(canvas));
+                        }
                     }
 
                 } else {
@@ -263,6 +267,30 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes)
             init_parameters();
             break;
         case (FLAG_1B | FLAG_5B):
+
+            if (c == ';') {
+                /* parameter with value 0 */
+                paramcount ++;
+                paramidx ++;
+                break;
+                }
+
+            if (c == 's') {
+                /* save cursor position */
+                saved_cursor_x = current_x;
+                saved_cursor_y = current_y;
+                clear_ansi_flags(FLAG_ALL);
+                break;
+                }
+
+            if (c == 'u') {
+                /* restore saved cursor position */
+                current_x = saved_cursor_x;
+                current_y = saved_cursor_y;
+                clear_ansi_flags(FLAG_ALL);
+                break;
+                }
+
             if (c == '?') {
                 /* non standard extension! */
                 printf( "(! non-standard extension (? ... -> l)\n");
@@ -275,6 +303,30 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes)
                 clear_ansi_flags(FLAG_ALL);
                 break;
             }
+
+            if (c == 'A') {
+                /* if this appears raw, it is probably a mistake, or just padding */
+                clear_ansi_flags(FLAG_ALL);
+                break;
+                }
+
+            if (c == 'B') {
+                /* if this appears raw, it is probably a mistake, or just padding */
+                clear_ansi_flags(FLAG_ALL);
+                break;
+                }
+
+            if (c == 'C') {
+                current_x += (parameters[0] ? parameters[0] : 1);
+                clear_ansi_flags(FLAG_ALL);
+                break;
+                }
+
+            if (c == 'H') {
+                /* HOME with 0 parameters */
+                clear_ansi_flags(FLAG_ALL);
+                break;
+                }
 
             if (isdigit(c)) {
                 paramval = c - 0x30;
@@ -431,15 +483,41 @@ void dispatch_ansi_cursor_right(ANSICanvas *canvas)
 
 }
 
+void dispatch_ansi_cursor_left(ANSICanvas *canvas)
+{
+    current_x -= parameters[0];
+    return;
+}
+
 void dispatch_ansi_command(ANSICanvas *canvas, unsigned char c)
 {
 
     printf("dispatch_ansi_command('%c')\n", c);
 
     switch (c) {
+    case 'A':
+        /* move cursor down parameter[0] rows without changing column */
+        current_y-=parameters[0];
+        break;
+    case 'B':
+        /* move cursor down parameter[0] rows without changing column */
+        current_y+=parameters[0];
+        break;
+    case 'J':
+        /* move home and clear screen - noop for now */
+        break;
     case 'C':
         /* move cursor to the right N characters */
         dispatch_ansi_cursor_right(canvas);
+        break;
+    case 'D':
+        /* move cursor to the left N characters */
+        dispatch_ansi_cursor_left(canvas);
+        break;
+    case 'H':
+        /* set cursor home - move the cursor to the specified position */
+        current_y = parameters[0];
+        current_x = parameters[1];
         break;
     case 'm':
         /* text attributes */
