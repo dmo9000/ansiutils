@@ -24,6 +24,8 @@ char *strdup(const char *s);
 
 extern int errno;
 extern bool auto_line_wrap;
+extern bool allow_clear;
+
 
 #define CHUNK_SIZE    4096
 
@@ -47,28 +49,37 @@ int main(int argc, char *argv[])
     char *font_filename = NULL;
     int8_t c = 0;
     char *input_filename = NULL;
-		char *output_filename = NULL;
-		
+    char *output_filename = NULL;
+    bool graphic_preview = false;
+
 
     if (argc < 2) {
         printf("usage: ansiread <filename.ans>\n");
         exit(1);
     }
 
-     while ((c = getopt (argc, argv, "wf:")) != -1) {
+    while ((c = getopt (argc, argv, "wf:r")) != -1) {
         switch (c)
         {
+        case 'g':
+            /* enable graphic preview */
+            graphic_preview = true;
+            break;
+        case 'r':
+            printf("ALLOW CLEAR MODE SET\n");
+            allow_clear = true;
+            break;
         case 'w':
             /* append sauce record */
             printf("WRAP MODE ENABLED\n");
             auto_line_wrap = true;
             break;
-				case 'f':	
-						/* send output to file instead of terminal */
-						assert(optarg);
-						output_filename = strdup(optarg);
-						printf("+++ OUTPUT FILENAME SET TO %s\n", output_filename);
-						break;
+        case 'f':
+            /* send output to file instead of terminal */
+            assert(optarg);
+            output_filename = strdup(optarg);
+            printf("+++ OUTPUT FILENAME SET TO %s\n", output_filename);
+            break;
         case -1:
             /* END OF ARGUMENTS? */
             break;
@@ -79,21 +90,13 @@ int main(int argc, char *argv[])
 
     }
 
-    font_filename = "bmf/8x8.bmf";
-
-    myfont = bmf_load(font_filename);
-    if (!myfont) {
-        perror("bmf_load");
-        exit(1);
-    }
-
     input_filename = (char *) argv[optind];
-		
+
     lstat(input_filename, &sbuf);
     printf("filesize = %lu\n", sbuf.st_size);
     assert(sbuf.st_size);
     total_length = sbuf.st_size;
-    
+
 
     ansfile = fopen(input_filename, "rb");
 
@@ -124,9 +127,9 @@ int main(int argc, char *argv[])
             ANSIRaster *r = canvas_get_raster(canvas, i);
             if (r->bytes < 80) {
                 raster_extend_length_to(r, 80);
-                }
             }
         }
+    }
 
     width = canvas_get_width(canvas);
     height = canvas_get_height(canvas);
@@ -136,15 +139,19 @@ int main(int argc, char *argv[])
 
     canvas_output(canvas, true,  output_filename);
 
-    gfx_main((width*8), (height*16), input_filename);
-
-    gfx_canvas_render(canvas, myfont);
-
-    gfx_expose();
-
-    while (!getchar()) {
+    if (graphic_preview) {
+        font_filename = "bmf/8x8.bmf";
+        myfont = bmf_load(font_filename);
+        if (!myfont) {
+            perror("bmf_load");
+            exit(1);
+        }
+        gfx_main((width*8), (height*16), input_filename);
+        gfx_canvas_render(canvas, myfont);
+        gfx_expose();
+        while (!getchar()) {
+        }
     }
-
 
     exit (0);
 }

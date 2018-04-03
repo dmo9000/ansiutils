@@ -15,6 +15,7 @@ ANSICanvas *new_canvas()
     assert(canvas);
     memset(canvas, 0, sizeof(ANSICanvas));
 		canvas->clear_flag = false;
+		canvas->compress_output = false;
     return canvas;
 
 }
@@ -98,8 +99,8 @@ bool canvas_output(ANSICanvas *my_canvas, bool use_unicode, char *filename)
         }
 
 		if (my_canvas->clear_flag) {
-				/* if the clear flag was set, clear the canvas before output */
-				fprintf(fh, "\x1b\x5b""2J");
+				/* if the clear flag was set, put the cursor to 0, 0 */
+				fprintf(fh, "\x1b\x5b""H");
 				}
 
     if (!my_canvas->debug_level) {

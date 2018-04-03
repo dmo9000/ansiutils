@@ -9,6 +9,7 @@ struct ansi_canvas {
     struct ansi_raster *first_raster;
     int debug_level;
 		bool clear_flag;
+		bool compress_output;
 };
 
 typedef struct ansi_canvas   ANSICanvas;

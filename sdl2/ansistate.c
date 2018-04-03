@@ -94,7 +94,7 @@ ansicolor_t bgcolor = 0;
 uint8_t attributes = 0;
 
 bool auto_line_wrap = false;
-
+bool allow_clear = false;
 
 int ansi_decode_cmd_m();									/* text attributes, foreground and background color handling */
 int ansi_decode_cmd_J();									/* "home" command (2J) */
@@ -191,12 +191,12 @@ bool send_byte_to_canvas(ANSICanvas *canvas, unsigned char c)
     r->attribs[current_x] = attributes;
     current_x++;
 
-/*
-    if (!raster_append_byte(r, c, fg, bg, attributes, true)) {
-        printf("send_byte_to_canvas(%u, %u): error appending byte\n", x, y);
-        exit(1);
-    };
-    */
+    /*
+        if (!raster_append_byte(r, c, fg, bg, attributes, true)) {
+            printf("send_byte_to_canvas(%u, %u): error appending byte\n", x, y);
+            exit(1);
+        };
+        */
 
     printf("byte appended to canvas\n");
 
@@ -224,7 +224,7 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes)
             if (c == 26) {
                 /* EOF */
                 return false;
-                }
+            }
 
             if (c == ANSI_1B) {
                 printf("ANSI_1B\n");
@@ -238,11 +238,11 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes)
                         current_y++;
                         r = canvas_get_raster(canvas, current_y);
                         if (!r) {
-                        if (!canvas_add_raster(canvas)) {
-                            printf("*** error adding raster to canvas (line %u)\n", current_y);
-                            exit(1);
-                        };
-                        printf("  $$$ canvas now has %u lines\n\n", canvas_get_height(canvas));
+                            if (!canvas_add_raster(canvas)) {
+                                printf("*** error adding raster to canvas (line %u)\n", current_y);
+                                exit(1);
+                            };
+                            printf("  $$$ canvas now has %u lines\n\n", canvas_get_height(canvas));
                         }
                     }
 
@@ -271,7 +271,7 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes)
                 paramcount ++;
                 paramidx ++;
                 break;
-                }
+            }
 
             if (c == 's') {
                 /* save cursor position */
@@ -279,7 +279,7 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes)
                 saved_cursor_y = current_y;
                 clear_ansi_flags(FLAG_ALL);
                 break;
-                }
+            }
 
             if (c == 'u') {
                 /* restore saved cursor position */
@@ -287,7 +287,7 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes)
                 current_y = saved_cursor_y;
                 clear_ansi_flags(FLAG_ALL);
                 break;
-                }
+            }
 
             if (c == '?') {
                 /* non standard extension! */
@@ -306,28 +306,28 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes)
                 /* if this appears raw, it is probably a mistake, or just padding */
                 clear_ansi_flags(FLAG_ALL);
                 break;
-                }
+            }
 
             if (c == 'B') {
                 /* if this appears raw, it is probably a mistake, or just padding */
                 clear_ansi_flags(FLAG_ALL);
                 break;
-                }
+            }
 
             if (c == 'C') {
                 current_x += (parameters[0] ? parameters[0] : 1);
                 clear_ansi_flags(FLAG_ALL);
                 break;
-                }
+            }
 
             if (c == 'H') {
                 /* HOME with 0 parameters */
-								printf("  ++ GOT HOME WITH 0 PARAMETERS\n");
-								current_x = 0;
-								current_y = 0;
+                printf("  ++ GOT HOME WITH 0 PARAMETERS\n");
+                current_x = 0;
+                current_y = 0;
                 clear_ansi_flags(FLAG_ALL);
                 break;
-                }
+            }
 
             if (isdigit(c)) {
                 paramval = c - 0x30;
@@ -466,11 +466,11 @@ void dispatch_ansi_cursor_right(ANSICanvas *canvas)
     printf("  > move cursor right %u characters [%u,%u]->[%u,%u]\n", n, current_x, current_y, current_x+n, current_y);
     r = canvas_get_raster(canvas, current_y);
     if (!r) {
-            if (!canvas_add_raster(canvas)) {
-                printf("   XXX failure adding raster\n");
-                exit(1);
-                }
-            }
+        if (!canvas_add_raster(canvas)) {
+            printf("   XXX failure adding raster\n");
+            exit(1);
+        }
+    }
     printf("current_y = %u\n", current_y);
     r = canvas_get_raster(canvas, current_y);
     assert(r);
@@ -505,7 +505,9 @@ void dispatch_ansi_command(ANSICanvas *canvas, unsigned char c)
         break;
     case 'J':
         /* move home and clear screen - set the clear flag on the canvas if we encounter this */
-				//canvas->clear_flag = true;
+        if (allow_clear) {
+            canvas->clear_flag = true;
+        }
         break;
     case 'C':
         /* move cursor to the right N characters */
@@ -517,17 +519,17 @@ void dispatch_ansi_command(ANSICanvas *canvas, unsigned char c)
         break;
     case 'H':
         /* set cursor home - move the cursor to the specified position */
-				if (parameters[0] > 0) {
-	        current_y = parameters[0]-1;
-					} else {
-					current_y = parameters[0];
-					}
+        if (parameters[0] > 0) {
+            current_y = parameters[0]-1;
+        } else {
+            current_y = parameters[0];
+        }
 
-				if (parameters[1] > 0) {
-	        current_x = parameters[1]-1;
-					} else {
-					current_x = parameters[1];
-					}	
+        if (parameters[1] > 0) {
+            current_x = parameters[1]-1;
+        } else {
+            current_x = parameters[1];
+        }
         break;
     case 'm':
         /* text attributes */
