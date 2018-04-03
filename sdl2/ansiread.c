@@ -13,10 +13,14 @@
 #include <unistd.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include <getopt.h>
 #include "ansicanvas.h"
 #include "rawfont.h"
 #include "gfx.h"
 
+
+/* Prototype missing from c99 */
+char *strdup(const char *s);
 
 extern int errno;
 extern bool auto_line_wrap;
@@ -43,14 +47,15 @@ int main(int argc, char *argv[])
     char *font_filename = NULL;
     int8_t c = 0;
     char *input_filename = NULL;
-
+		char *output_filename = NULL;
+		
 
     if (argc < 2) {
         printf("usage: ansiread <filename.ans>\n");
         exit(1);
     }
 
-     while ((c = getopt (argc, argv, "w")) != -1) {
+     while ((c = getopt (argc, argv, "wf:")) != -1) {
         switch (c)
         {
         case 'w':
@@ -58,6 +63,12 @@ int main(int argc, char *argv[])
             printf("WRAP MODE ENABLED\n");
             auto_line_wrap = true;
             break;
+				case 'f':	
+						/* send output to file instead of terminal */
+						assert(optarg);
+						output_filename = strdup(optarg);
+						printf("+++ OUTPUT FILENAME SET TO %s\n", output_filename);
+						break;
         case -1:
             /* END OF ARGUMENTS? */
             break;
@@ -77,8 +88,7 @@ int main(int argc, char *argv[])
     }
 
     input_filename = (char *) argv[optind];
-
-
+		
     lstat(input_filename, &sbuf);
     printf("filesize = %lu\n", sbuf.st_size);
     assert(sbuf.st_size);
@@ -124,7 +134,7 @@ int main(int argc, char *argv[])
 
     printf("canvas dimensions: %u x %u\n", width, height);
 
-    canvas_output(canvas, true,  NULL);
+    canvas_output(canvas, true,  output_filename);
 
     gfx_main((width*8), (height*16), input_filename);
 

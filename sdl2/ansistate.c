@@ -19,8 +19,6 @@
 
 extern int errno;
 
-
-
 #define CONSOLE_WIDTH		    80
 #define CONSOLE_HEIGHT	        24
 
@@ -324,6 +322,9 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes)
 
             if (c == 'H') {
                 /* HOME with 0 parameters */
+								printf("  ++ GOT HOME WITH 0 PARAMETERS\n");
+								current_x = 0;
+								current_y = 0;
                 clear_ansi_flags(FLAG_ALL);
                 break;
                 }
@@ -491,7 +492,6 @@ void dispatch_ansi_cursor_left(ANSICanvas *canvas)
 
 void dispatch_ansi_command(ANSICanvas *canvas, unsigned char c)
 {
-
     printf("dispatch_ansi_command('%c')\n", c);
 
     switch (c) {
@@ -504,7 +504,8 @@ void dispatch_ansi_command(ANSICanvas *canvas, unsigned char c)
         current_y+=parameters[0];
         break;
     case 'J':
-        /* move home and clear screen - noop for now */
+        /* move home and clear screen - set the clear flag on the canvas if we encounter this */
+				//canvas->clear_flag = true;
         break;
     case 'C':
         /* move cursor to the right N characters */
@@ -516,8 +517,17 @@ void dispatch_ansi_command(ANSICanvas *canvas, unsigned char c)
         break;
     case 'H':
         /* set cursor home - move the cursor to the specified position */
-        current_y = parameters[0];
-        current_x = parameters[1];
+				if (parameters[0] > 0) {
+	        current_y = parameters[0]-1;
+					} else {
+					current_y = parameters[0];
+					}
+
+				if (parameters[1] > 0) {
+	        current_x = parameters[1]-1;
+					} else {
+					current_x = parameters[1];
+					}	
         break;
     case 'm':
         /* text attributes */

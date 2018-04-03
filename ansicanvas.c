@@ -14,6 +14,7 @@ ANSICanvas *new_canvas()
     canvas = malloc(sizeof(ANSICanvas));
     assert(canvas);
     memset(canvas, 0, sizeof(ANSICanvas));
+		canvas->clear_flag = false;
     return canvas;
 
 }
@@ -96,6 +97,11 @@ bool canvas_output(ANSICanvas *my_canvas, bool use_unicode, char *filename)
         fh = stdout;
         }
 
+		if (my_canvas->clear_flag) {
+				/* if the clear flag was set, clear the canvas before output */
+				fprintf(fh, "\x1b\x5b""2J");
+				}
+
     if (!my_canvas->debug_level) {
         for (int ii = 0; ii < my_canvas->lines ; ii++) {
             r = canvas_get_raster(my_canvas, ii);
@@ -106,6 +112,7 @@ bool canvas_output(ANSICanvas *my_canvas, bool use_unicode, char *filename)
 
             if (!r->bytes && !r->chardata) {
                 /* blank/missing raster */
+								printf("line %u is missing/truncated\n", ii);
                 } else {
                 raster_output(r, false, use_unicode, fh);
                 fputc('\n', fh);

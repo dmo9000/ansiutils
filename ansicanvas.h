@@ -8,6 +8,7 @@ struct ansi_canvas {
     uint64_t lines;
     struct ansi_raster *first_raster;
     int debug_level;
+		bool clear_flag;
 };
 
 typedef struct ansi_canvas   ANSICanvas;
