@@ -5,7 +5,7 @@
 #include "ansiraster.h"
 
 struct ansi_canvas {
-    uint64_t lines;
+    uint16_t lines;
     struct ansi_raster *first_raster;
     int debug_level;
 		bool clear_flag;

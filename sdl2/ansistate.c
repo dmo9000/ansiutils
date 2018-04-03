@@ -204,7 +204,7 @@ bool send_byte_to_canvas(ANSICanvas *canvas, unsigned char c)
 
 }
 
-bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes)
+bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_t offset)
 {
     unsigned char c = 0, last_c = 0;
     size_t o = 0;
@@ -217,7 +217,7 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes)
         /* get next character from stream */
         last_c = c;
         c = buf[o];
-        printf("[FLAGS=0x%02x(%u,%u)] %lu/%lu = 0x%02x: ", ansiflags, current_x, current_y, o, nbytes, c);
+        printf("[FLAGS=0x%02x(%u,%u)->(0x%08lx)] %lu/%lu/%lu = 0x%02x: ", ansiflags, current_x, current_y, offset+o, o, nbytes, offset+o, c);
         switch(ansiflags) {
         case FLAG_NONE:
 
@@ -258,8 +258,9 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes)
         case FLAG_1B:
             if (c != ANSI_5B) {
                 printf("error: ANSI_5B expected\n");
-								/* return false so that file is closed */	
-								return false;
+								/* not sure what to do here */
+								clear_ansi_flags(FLAG_ALL);
+								break;
             }
             printf("ANSI_5B\n");
             set_ansi_flags(FLAG_5B);

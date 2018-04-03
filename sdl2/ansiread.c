@@ -31,7 +31,7 @@ extern bool allow_clear;
 
 static unsigned char filebuf[CHUNK_SIZE];
 
-bool ansi_to_canvas(ANSICanvas *c, unsigned char *buf, size_t nbytes);
+bool ansi_to_canvas(ANSICanvas *c, unsigned char *buf, size_t nbytes, size_t offset);
 void raster_extend_length_to(ANSIRaster *r, uint16_t extrabytes);
 
 BitmapFont *bmf_load(char *filename);
@@ -124,7 +124,7 @@ int main(int argc, char *argv[])
 
     while (!feof(ansfile) && !ferror(ansfile) && offset < total_length) {
         bytes_read = fread((unsigned char *) &filebuf, 1, CHUNK_SIZE, ansfile);
-        if (!ansi_to_canvas(canvas, (unsigned char *) &filebuf, bytes_read)) {
+        if (!ansi_to_canvas(canvas, (unsigned char *) &filebuf, bytes_read, offset)) {
             break;
         };
         offset+=bytes_read;
@@ -132,15 +132,18 @@ int main(int argc, char *argv[])
     printf("[%ld] total bytes processed\n", offset);
     fclose(ansfile);
 
-
     if (auto_line_wrap) {
+				printf("\n");
         /* pad lines */
-        for (int i = 0; i < canvas_get_height(canvas); i++) {
+        for (int i = 0; i < canvas->lines; i++) {
+						printf("\rPadding line %u/%u\n", i, canvas->lines);
             ANSIRaster *r = canvas_get_raster(canvas, i);
+						
             if (r->bytes < 80) {
                 raster_extend_length_to(r, 80);
             }
         }
+			printf("\n");
     }
 
     width = canvas_get_width(canvas);
@@ -149,6 +152,11 @@ int main(int argc, char *argv[])
 
     printf("canvas dimensions: %u x %u\n", width, height);
 
+		if (output_filename) {
+			printf("Rendering to file, with compression %s\n", (enable_compression ? "enabled" : "disabled"));
+		} else {
+			printf("Rendering to tty, with compression %s\n", (enable_compression ? "enabled" : "disabled"));
+		}
     canvas_output(canvas, enable_utf8,output_filename);
 
     if (graphic_preview) {
