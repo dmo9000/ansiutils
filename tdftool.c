@@ -384,10 +384,6 @@ int main(int argc, char *argv[])
         exit(EXIT_FAILURE);
     };
 
-    /* reset colours */
-
-    printf("\x1b\x5b""0m");
-
     if (sauce) {
         int i = 0;
         printf("%cSAUCE", 26);
