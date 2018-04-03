@@ -258,7 +258,8 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes)
         case FLAG_1B:
             if (c != ANSI_5B) {
                 printf("error: ANSI_5B expected\n");
-                exit(1);
+								/* return false so that file is closed */	
+								return false;
             }
             printf("ANSI_5B\n");
             set_ansi_flags(FLAG_5B);
