@@ -25,7 +25,7 @@ char *strdup(const char *s);
 extern int errno;
 extern bool auto_line_wrap;
 extern bool allow_clear;
-
+bool auto_line_padding = false;
 
 #define CHUNK_SIZE    4096
 
@@ -59,7 +59,7 @@ int main(int argc, char *argv[])
         exit(1);
     }
 
-    while ((c = getopt (argc, argv, "wf:rgcz")) != -1) {
+    while ((c = getopt (argc, argv, "wf:rgczp")) != -1) {
         switch (c)
         {
         case 'c':
@@ -76,6 +76,10 @@ int main(int argc, char *argv[])
             /* enable graphic preview */
             graphic_preview = true;
             break;
+				case 'p':
+						/* enable line padding */
+						auto_line_padding = true;
+						break;
         case 'r':
             printf("ALLOW CLEAR MODE SET\n");
             allow_clear = true;
@@ -132,13 +136,12 @@ int main(int argc, char *argv[])
     printf("[%ld] total bytes processed\n", offset);
     fclose(ansfile);
 
-    if (auto_line_wrap) {
+    if (auto_line_padding) {
 				printf("\n");
         /* pad lines */
         for (int i = 0; i < canvas->lines; i++) {
 						printf("\rPadding line %u/%u\n", i, canvas->lines);
             ANSIRaster *r = canvas_get_raster(canvas, i);
-						
             if (r->bytes < 80) {
                 raster_extend_length_to(r, 80);
             }
