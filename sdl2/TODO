@@ -1,0 +1,4 @@
+* add RLE span compression (ie. when multiple spaces with the same fg/bg/attribute occur, compress them 
+	to a cursor right 'n' sequence
+	
+  
