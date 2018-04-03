@@ -1,3 +1,4 @@
+#include <stdint.h>
 #include "tdf.h"
 #include "ansiraster.h"
 #include "utf8.h"
@@ -143,34 +144,57 @@ bool raster_append_byte(ANSIRaster *r, unsigned char data, ansicolor_t fg, ansic
     return true;
 }
 
-bool raster_output(ANSIRaster *r, bool debug_mode, bool use_unicode, FILE *fh)
+bool raster_output(ANSIRaster *r, bool debug_mode, bool use_unicode, bool compress, FILE *fh)
 {
 
     int jj = 0;
-    ansicolor_t fg = 0x0, bg = 0;
+    ansicolor_t fg = 0, bg = 0;
+    uint8_t attr = ATTRIB_NONE;
+    ansicolor_t last_fg = 0, last_bg = 0;
+    uint8_t last_attr = ATTRIB_NONE;
     bool bold = false;
-
 
     for (jj = 0; jj < r->bytes; jj++) {
 
         bold = false;
 
 
+        last_fg = fg;
+        last_bg = bg;
+        last_attr = attr;
+
         fg = r->fgcolors[jj];
         bg = r->bgcolors[jj];
-        bold = r->attribs[jj] & ATTRIB_BOLD;
-
+        attr = r->attribs[jj];
+        bold = attr  & ATTRIB_BOLD;
 
         if (debug_mode) {
             printf("[%u/%03u:%c:%X/%X:%s]\n", jj, r->chardata[jj],
                    r->chardata[jj], r->bgcolors[jj], r->fgcolors[jj], ((bold) ? "BOLD" : "NOBOLD"));
         } else {
-            fprintf(fh, (char *) "\x1b\x5b""%u;%um", 40 + bg, 30 + fg);
-
-            if (bold) {
-                fprintf(fh, "\x1b\x5b""1m");
+            if (compress && last_fg == fg && last_bg == bg) {
+                /* no color output if compression is enabled and fg/bg haven't changed */
             } else {
-                fprintf(fh, "\x1b\x5b""21m");
+                fprintf(fh, (char *) "\x1b\x5b""%u;%um", 40 + bg, 30 + fg);
+            }
+
+            if (compress) {
+                if (last_attr == attr) {
+
+                } else {
+                    if (bold) {
+                        fprintf(fh, "\x1b\x5b""1m");
+                    } else {
+                        fprintf(fh, "\x1b\x5b""21m");
+                    }
+                }
+            } else {
+                /* no compression */
+                if (bold) {
+                    fprintf(fh, "\x1b\x5b""1m");
+                } else {
+                    fprintf(fh, "\x1b\x5b""21m");
+                }
             }
 
             if (use_unicode) {

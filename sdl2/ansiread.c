@@ -51,16 +51,27 @@ int main(int argc, char *argv[])
     char *input_filename = NULL;
     char *output_filename = NULL;
     bool graphic_preview = false;
-
+    bool enable_utf8 = true;
+    bool enable_compression = false;
 
     if (argc < 2) {
         printf("usage: ansiread <filename.ans>\n");
         exit(1);
     }
 
-    while ((c = getopt (argc, argv, "wf:r")) != -1) {
+    while ((c = getopt (argc, argv, "wf:rgcz")) != -1) {
         switch (c)
         {
+        case 'c':
+            printf("UTF8 DISABLED - USING CP437 OUTPUT\n");
+            enable_utf8 = false;
+            break;
+        case 'f':
+            /* send output to file instead of terminal */
+            assert(optarg);
+            output_filename = strdup(optarg);
+            printf("+++ OUTPUT FILENAME SET TO %s\n", output_filename);
+            break;
         case 'g':
             /* enable graphic preview */
             graphic_preview = true;
@@ -74,11 +85,8 @@ int main(int argc, char *argv[])
             printf("WRAP MODE ENABLED\n");
             auto_line_wrap = true;
             break;
-        case 'f':
-            /* send output to file instead of terminal */
-            assert(optarg);
-            output_filename = strdup(optarg);
-            printf("+++ OUTPUT FILENAME SET TO %s\n", output_filename);
+        case 'z':
+            enable_compression = true;
             break;
         case -1:
             /* END OF ARGUMENTS? */
@@ -110,6 +118,10 @@ int main(int argc, char *argv[])
     canvas = new_canvas();
     assert(canvas);
 
+    if (enable_compression) {
+        canvas->compress_output = true;
+    }
+
     while (!feof(ansfile) && !ferror(ansfile) && offset < total_length) {
         bytes_read = fread((unsigned char *) &filebuf, 1, CHUNK_SIZE, ansfile);
         if (!ansi_to_canvas(canvas, (unsigned char *) &filebuf, bytes_read)) {
@@ -137,7 +149,7 @@ int main(int argc, char *argv[])
 
     printf("canvas dimensions: %u x %u\n", width, height);
 
-    canvas_output(canvas, true,  output_filename);
+    canvas_output(canvas, enable_utf8,output_filename);
 
     if (graphic_preview) {
         font_filename = "bmf/8x8.bmf";

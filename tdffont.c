@@ -225,7 +225,7 @@ bool prerender_glyph(TDFFont *font, unsigned char c)
 
         if ((y+2) > font->discovered_height) {
             font->discovered_height = (y+2);
-            }
+        }
 
         switch(type) {
         case TYPE_OUTLINE:
@@ -289,10 +289,10 @@ bool prerender_glyph(TDFFont *font, unsigned char c)
             assert((bool)(bg >= 0 && bg <= 7));
 
 
-        if (fg >= 0x08) {
-            fg -= 0x08;
-            /* ANSI control code - hi intensity */
-            attr |= ATTRIB_BOLD;
+            if (fg >= 0x08) {
+                fg -= 0x08;
+                /* ANSI control code - hi intensity */
+                attr |= ATTRIB_BOLD;
             }
 
 //            fg = ansi_color_map[fg];
@@ -332,12 +332,12 @@ bool prerender_glyph(TDFFont *font, unsigned char c)
                     ptr ++;
                     offset ++;
                 } //else {
-                    /* ok it's strange but some fonts seem to have sub-ASCII values */
-                    //if (!(byteval >= 32 && byteval <= 255)) {
-                    //printf("prerender_glyph: byteval = %u (0x%02x)\n", byteval);
-                    //exit(1);
-                    //}
-                    //assert (byteval >= 32 && byteval <= 255);
+                /* ok it's strange but some fonts seem to have sub-ASCII values */
+                //if (!(byteval >= 32 && byteval <= 255)) {
+                //printf("prerender_glyph: byteval = %u (0x%02x)\n", byteval);
+                //exit(1);
+                //}
+                //assert (byteval >= 32 && byteval <= 255);
                 //}
             }
             if (x > width) {
@@ -435,7 +435,7 @@ bool display_glyph(TDFFont *tdf, uint8_t c, bool use_unicode)
 
         if (tdr->bytes && tdr->chardata) {
             //printf("%s", tdr->chardata);
-            raster_output(tdr, false, use_unicode, stdout);
+            raster_output(tdr, false, use_unicode, false, stdout);
             printf(" (%u,%u/%u)\n", tdr->bytes, ii+1, tdc->discovered_height);
         } else {
             /* blank raster */

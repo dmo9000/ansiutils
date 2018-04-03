@@ -27,7 +27,7 @@ int gfx_drawglyph(BitmapFont *font, uint8_t px, uint8_t py, uint8_t glyph, uint8
     //
     fgc = canvas_displaycolour(fg + ((attr & ATTRIB_BOLD ? 8 : 0)));
     bgc = canvas_displaycolour(bg);
- 
+
 
     for (int ii = 0; ii < font->header.py; ii++) {
         h = 0;
@@ -42,7 +42,7 @@ int gfx_drawglyph(BitmapFont *font, uint8_t px, uint8_t py, uint8_t glyph, uint8
             //printf("%u -> %u, ", r, jj);
             rx = font->fontdata[(glyph*font->header.py) + ii];
             if (rx & jj) {
-                
+
 
 
                 SDL_SetRenderDrawColor( renderer, fgc->r, fgc->g, fgc->b, 255 );
@@ -55,7 +55,7 @@ int gfx_drawglyph(BitmapFont *font, uint8_t px, uint8_t py, uint8_t glyph, uint8
                 //SDL_RenderDrawPoint(renderer, (px*16) + (h*2), (py*16) + (ii*2));
                 //printf(" ");
             }
-        h++;
+            h++;
         }
         //printf("\n");
     }
@@ -100,8 +100,8 @@ int gfx_main(uint16_t xsize, uint16_t ysize, char *WindowTitle)
     return 0;
 }
 
-int gfx_canvas_render(ANSICanvas *canvas, BitmapFont *myfont) 
-{ 
+int gfx_canvas_render(ANSICanvas *canvas, BitmapFont *myfont)
+{
     ANSIRaster *r = NULL;
     uint16_t width = 0, height = 0;
     assert(canvas);
@@ -113,10 +113,10 @@ int gfx_canvas_render(ANSICanvas *canvas, BitmapFont *myfont)
         if (r) {
             for (uint16_t jj = 0; jj < r->bytes; jj++) {
                 gfx_drawglyph(myfont, jj, ii, r->chardata[jj], r->fgcolors[jj], r->bgcolors[jj], r->attribs[jj]);
-                }
-            } else {
+            }
+        } else {
             printf("canvas data missing for raster %u\n", ii);
-            } 
-        } 
+        }
+    }
     return 0;
 }

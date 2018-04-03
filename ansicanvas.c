@@ -14,8 +14,8 @@ ANSICanvas *new_canvas()
     canvas = malloc(sizeof(ANSICanvas));
     assert(canvas);
     memset(canvas, 0, sizeof(ANSICanvas));
-		canvas->clear_flag = false;
-		canvas->compress_output = false;
+    canvas->clear_flag = false;
+    canvas->compress_output = false;
     return canvas;
 
 }
@@ -94,14 +94,14 @@ bool canvas_output(ANSICanvas *my_canvas, bool use_unicode, char *filename)
 
     if (filename) {
         fh = fopen(filename, "wb");
-        } else {
+    } else {
         fh = stdout;
-        }
+    }
 
-		if (my_canvas->clear_flag) {
-				/* if the clear flag was set, put the cursor to 0, 0 */
-				fprintf(fh, "\x1b\x5b""H");
-				}
+    if (my_canvas->clear_flag) {
+        /* if the clear flag was set, put the cursor to 0, 0 */
+        fprintf(fh, "\x1b\x5b""H");
+    }
 
     if (!my_canvas->debug_level) {
         for (int ii = 0; ii < my_canvas->lines ; ii++) {
@@ -113,9 +113,9 @@ bool canvas_output(ANSICanvas *my_canvas, bool use_unicode, char *filename)
 
             if (!r->bytes && !r->chardata) {
                 /* blank/missing raster */
-								printf("line %u is missing/truncated\n", ii);
-                } else {
-                raster_output(r, false, use_unicode, fh);
+                printf("line %u is missing/truncated\n", ii);
+            } else {
+                raster_output(r, false, use_unicode, my_canvas->compress_output, fh);
                 fputc('\n', fh);
             }
             //putchar('\n');
@@ -128,14 +128,14 @@ bool canvas_output(ANSICanvas *my_canvas, bool use_unicode, char *filename)
             assert(r);
             assert(r->chardata);
             assert(r->bytes);
-            raster_output(r, true, use_unicode, fh);
+            raster_output(r, true, use_unicode, false, fh);
             fprintf(fh, "\r\n");
         }
     }
 
     if (filename) {
         fclose(fh);
-        }
+    }
 
     return (true);
 }
@@ -151,8 +151,8 @@ uint16_t canvas_get_width(ANSICanvas *canvas)
         assert(r);
         if (r->bytes > width) {
             width = r->bytes;
-            }
         }
+    }
 
     return width;
 

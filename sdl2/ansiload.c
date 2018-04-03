@@ -13,7 +13,7 @@ extern int errno;
 #define CONSOLE_HEIGHT	25
 
 #define CHUNK_SIZE      19558
-#define BUF_SIZE 		32767	
+#define BUF_SIZE 		32767
 #define MAX_ANSI		64				/* maximum length allowed for an ANSI sequence */
 #define MAX_PARAMS	16
 
@@ -29,11 +29,11 @@ int parameters[MAX_PARAMS];
 #define SEQ_ANSI_CMD_M			5
 #define SEQ_ANSI_CMD_J			6
 #define SEQ_ANSI_CMD_A			7
-#define SEQ_ANSI_CMD_B			8	
-#define SEQ_ANSI_CMD_C			9	
-#define SEQ_ANSI_CMD_D			10	
-#define SEQ_ANSI_CMD_H			11	
-#define SEQ_ANSI_EXECUTED		12	
+#define SEQ_ANSI_CMD_B			8
+#define SEQ_ANSI_CMD_C			9
+#define SEQ_ANSI_CMD_D			10
+#define SEQ_ANSI_CMD_H			11
+#define SEQ_ANSI_EXECUTED		12
 #define SEQ_NOOP					 	13
 
 static char *states[] = {
@@ -155,9 +155,9 @@ int ansi_read(char *ansi_file_name)
             offset++;
             break;
         case SEQ_ANSI_EXECUTED:
-				case SEQ_NOOP:
-            printf("%08ld-%08ld: ", current_escape_address, 
-								current_escape_address + ansioffset - 1);
+        case SEQ_NOOP:
+            printf("%08ld-%08ld: ", current_escape_address,
+                   current_escape_address + ansioffset - 1);
             printf("%s: < ", ansi_state(ansi_mode));
             for (i = 0; i < ansioffset; i++) {
                 if (ansibuf[i] < 32) {
@@ -257,7 +257,7 @@ int decode_command(char c)
         case ';':
             printf("stored [%d:%d], new parameter -> %d\n", paramidx, parameters[paramidx], paramidx+1);
             paramidx++;
-						 parameters[paramidx] = 0;
+            parameters[paramidx] = 0;
             return SEQ_ANSI_IPARAM;
             break;
         case 'A':
@@ -297,7 +297,7 @@ int decode_integer_parameter(char c)
             break;
         case ';':
             /* end of previous command parameter, go back to collect another parameter */
-           //printf("decode_integer_parameter:   parameter[%d] = %d\n", paramidx, parameters[paramidx]);
+            //printf("decode_integer_parameter:   parameter[%d] = %d\n", paramidx, parameters[paramidx]);
             paramidx++;
             parameters[paramidx] = 0;
             return SEQ_ANSI_IPARAM;
@@ -463,9 +463,9 @@ int ansi_decode_cmd_A()
         return SEQ_NOOP;
     }
 
-		if (parameters[0] < 1) {
-					return SEQ_NOOP;
-					}
+    if (parameters[0] < 1) {
+        return SEQ_NOOP;
+    }
 
     cursor_y -= parameters[0];
     if (cursor_y < 0) {
@@ -486,9 +486,9 @@ int ansi_decode_cmd_B()
         return SEQ_NOOP;
     }
 
-		if (parameters[0] < 1) {
-					return SEQ_NOOP;
-					}
+    if (parameters[0] < 1) {
+        return SEQ_NOOP;
+    }
 
     cursor_y += parameters[0];
     if (cursor_y > (CONSOLE_HEIGHT - 1)) {
@@ -509,9 +509,9 @@ int ansi_decode_cmd_D()
         return SEQ_NOOP;
     }
 
-		if (parameters[0] < 1) {
-					return SEQ_NOOP;
-					}
+    if (parameters[0] < 1) {
+        return SEQ_NOOP;
+    }
 
     cursor_x -= parameters[0];
     if (cursor_x < 0) {
@@ -532,9 +532,9 @@ int ansi_decode_cmd_C()
         return SEQ_NOOP;
     }
 
-		if (parameters[0] < 1) {
-					return SEQ_NOOP;
-					}
+    if (parameters[0] < 1) {
+        return SEQ_NOOP;
+    }
 
     cursor_x += parameters[0];
     if (cursor_x > CONSOLE_WIDTH - 1) {
@@ -556,14 +556,14 @@ int ansi_decode_cmd_H()
         return SEQ_ANSI_EXECUTED;
     }
 
-		/* SANITY CHECKING */
+    /* SANITY CHECKING */
 
-		if (parameters[0] == -1) {
+    if (parameters[0] == -1) {
 //			printf("+++ fatal: setcursor received [;H, parameters[0] == -1\n");
 //			printf("+++ parameter1 = %d\n", parameters[1]);
 //			exit(1);
-			parameters[0] = 0;
-			}
+        parameters[0] = 0;
+    }
     printf(">>> setcursor(%d,%d)\n", parameters[1], parameters[0]);
 
     if (parameters[1] > 0) {

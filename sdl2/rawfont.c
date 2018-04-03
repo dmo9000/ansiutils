@@ -30,17 +30,17 @@ int main(int argc, char *argv[])
     myfont = bmf_load(filename);
 
     if (!myfont) {
-            perror("bmf_load");
-            exit(1);
-            }
+        perror("bmf_load");
+        exit(1);
+    }
 
-    my_canvas = new_canvas(); 
+    my_canvas = new_canvas();
 
     gfx_main((CANVAS_WIDTH*8), (CANVAS_HEIGHT*16), "BMF Font Render Test");
 
     for (int kk = 0; kk < 256; kk++) {
         gfx_drawglyph(myfont, (kk % CANVAS_WIDTH), (kk / CANVAS_WIDTH), kk, 7, 0, ATTRIB_NONE);
-        }
+    }
 //    ansi_read("ansifiles/fruit.ans");
 
 

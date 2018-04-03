@@ -63,7 +63,7 @@ int main(int argc, char *argv[])
         case 'c':
             /* enable UNICODE. Otherwise we default to CP437 */
             use_unicode = false;
-						break;
+            break;
         case 'o':
             /* output filename */
             //output_filename = strdup((char *) optarg);
