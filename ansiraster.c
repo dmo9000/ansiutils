@@ -246,11 +246,13 @@ bool raster_output(ANSIRaster *r, bool debug_mode, bool use_unicode, bool compre
             }
 
             // brake lever
-            //assert(!(compress_flags & COMPRESSION_HRELEASE));
+            assert(!(compress_flags & COMPRESSION_HRELEASE));
 
             if (compress_flags & COMPRESSION_HRELEASE) {
-                printf("+++ COMPRESSION_HRELEASE set, counter = %u\n", compress_hspace_count);
-                exit(1);
+                //printf("+++ COMPRESSION_HRELEASE set, counter = %u\n", compress_hspace_count);
+								/* dump the HSPACES to output */	
+								fprintf(fh, "\x1b\x5b""%uC", compress_hspace_count);
+						//		fprintf(fh, "
 								}
 
                 /* check that COMPRESSION_HRELEASE isn't set (for now) */
