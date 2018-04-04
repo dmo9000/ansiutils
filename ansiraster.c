@@ -152,19 +152,13 @@ bool raster_output(ANSIRaster *r, bool debug_mode, bool use_unicode, bool compre
     uint8_t attr = ATTRIB_NONE;
     ansicolor_t last_fg = 0, last_bg = 0;
     uint8_t last_attr = ATTRIB_NONE;
-    unsigned char last_char = 0;
     bool bold = false;
-    uint8_t compress_flags = COMPRESSION_DISABLED;
-    uint16_t compress_hspace_count = 0;
-
-    if (compress) {
-        compress_flags |= COMPRESSION_ENABLED;
-    }
-
-    assert(compress_flags == COMPRESSION_ENABLED || compress_flags == COMPRESSION_DISABLED);
 
     for (jj = 0; jj < r->bytes; jj++) {
+
         bold = false;
+
+
         last_fg = fg;
         last_bg = bg;
         last_attr = attr;
@@ -178,26 +172,16 @@ bool raster_output(ANSIRaster *r, bool debug_mode, bool use_unicode, bool compre
             printf("[%u/%03u:%c:%X/%X:%s]\n", jj, r->chardata[jj],
                    r->chardata[jj], r->bgcolors[jj], r->fgcolors[jj], ((bold) ? "BOLD" : "NOBOLD"));
         } else {
-            /* if compression is enabled, check whether the colors are repeated and set/clear compression flags appropriately */
-            if (compress_flags & COMPRESSION_ENABLED) {
-                if (last_fg == fg && last_bg == bg) {
-                    compress_flags |= COMPRESSION_COLORS;
-                } else {
-                    fprintf(fh, (char *) "\x1b\x5b""%u;%um", 40 + bg, 30 + fg);
-                    compress_flags &= ~COMPRESSION_COLORS;
-                }
+            if (compress && last_fg == fg && last_bg == bg) {
+                /* no color output if compression is enabled and fg/bg haven't changed */
             } else {
-                /* compression disabled, output color codes for every byte */
-                assert(!compress_flags);
                 fprintf(fh, (char *) "\x1b\x5b""%u;%um", 40 + bg, 30 + fg);
             }
 
-            if (compress_flags & COMPRESSION_ENABLED) {
-                /* if compression is enabled, check whether the attributes are repeated and set/clear compression flags appropriately */
+            if (compress) {
                 if (last_attr == attr) {
-                    compress_flags |= COMPRESSION_ATTRIBS;
+
                 } else {
-                    compress_flags &= ~COMPRESSION_ATTRIBS;
                     if (bold) {
                         fprintf(fh, "\x1b\x5b""1m");
                     } else {
@@ -206,7 +190,6 @@ bool raster_output(ANSIRaster *r, bool debug_mode, bool use_unicode, bool compre
                 }
             } else {
                 /* no compression */
-                assert(!compress_flags);
                 if (bold) {
                     fprintf(fh, "\x1b\x5b""1m");
                 } else {
@@ -214,63 +197,17 @@ bool raster_output(ANSIRaster *r, bool debug_mode, bool use_unicode, bool compre
                 }
             }
 
-            /* check that COMPRESSION_HRELEASE isn't set (for now), since it can't be set here */
-            assert(!(compress_flags & COMPRESSION_HRELEASE));
-
-            if (compress_flags & COMPRESSION_ENABLED) {
-                if ((compress_flags & COMPRESSION_COLORS) && (compress_flags & COMPRESSION_ATTRIBS)) {
-                    /* colors and attributes are compressed. consider whether we can compress a row of spaces into a MOVE CURSOR RIGHT n SPACES sequence */
-                    if (last_char == 0x020) {
-                        /* last character was a space ... */
-                        if (last_char == r->chardata[jj]) {
-                            /* this one is too. set the HSPACE compression flag and increment the counter */
-                            compress_flags |= COMPRESSION_HSPACE;
-                            compress_hspace_count ++;
-                        } else {
-                            /* this one isn't. set the HRELEASE flag */
-                            compress_flags |= COMPRESSION_HRELEASE;
-                        }
-                    } else {
-                        /* colors and attributes were compressed, by last character wasn't a space. don't consider compression for the current byte */
-                        compress_flags &= ~COMPRESSION_HSPACE;
-                        compress_hspace_count = 0;
-                    }
+            if (use_unicode) {
+                if (r->chardata[jj] < 128) {
+                    fputc(r->chardata[jj], fh);
                 } else {
-                    /* colors and attributes are not currently compressed (they changed). accordingly can't compress horizontal whitespace either */
-                    compress_flags &= ~COMPRESSION_HSPACE;
-                    compress_hspace_count = 0;
+                    fprintf(fh, "%s", utf8_string(r->chardata[jj]));
                 }
             } else {
-                /* compression is disabled - no horizontal space compression */
-                assert(!compress_hspace_count);
-            }
-
-            // brake lever
-            assert(!(compress_flags & COMPRESSION_HRELEASE));
-
-            if (compress_flags & COMPRESSION_HRELEASE) {
-                //printf("+++ COMPRESSION_HRELEASE set, counter = %u\n", compress_hspace_count);
-								/* dump the HSPACES to output */	
-								fprintf(fh, "\x1b\x5b""%uC", compress_hspace_count);
-						//		fprintf(fh, "
-								}
-
-                /* check that COMPRESSION_HRELEASE isn't set (for now) */
-                assert(!(compress_flags & COMPRESSION_HRELEASE));
-
-                if (use_unicode) {
-                    if (r->chardata[jj] < 128) {
-                        fputc(r->chardata[jj], fh);
-                    } else {
-                        fprintf(fh, "%s", utf8_string(r->chardata[jj]));
-                    }
-                } else {
-                    fputc(r->chardata[jj], fh);
-                }
-
-                last_char = r->chardata[jj];
+                fputc(r->chardata[jj], fh);
             }
         }
+    }
 
     fprintf(fh, "\x1b\x5b""0m");
     return true;
