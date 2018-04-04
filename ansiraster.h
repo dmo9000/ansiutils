@@ -14,6 +14,13 @@ struct ansi_raster {
     uint16_t index;
 };
 
+#define COMPRESSION_DISABLED		0
+#define COMPRESSION_ENABLED			1
+#define COMPRESSION_COLORS			2
+#define COMPRESSION_ATTRIBS			4
+#define COMPRESSION_HSPACE			8
+#define COMPRESSION_HRELEASE		16
+
 typedef struct ansi_raster   ANSIRaster;
 
 bool raster_append_bytes(ANSIRaster *r, unsigned char *data, uint8_t bytes, ansicolor_t fg, ansicolor_t bg, attributes_t attr, bool debug);
