@@ -195,7 +195,7 @@ int main(int argc, char *argv[])
         printf("Rendering PNG output to %s ...\n", png_filename);
         gfx_png_main((width*8), (height*16));
         gfx_png_canvas_render(canvas, myfont);
-        gfx_png_export();
+        gfx_png_export(png_filename);
     }
 
     exit (0);
