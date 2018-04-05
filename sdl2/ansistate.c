@@ -325,16 +325,13 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
                 break;
             }
 
-            /*
  
-            FAIL FOR NOW IF DETECTED
   
             if (c == 'B') {
                 current_y += (parameters[0] ? parameters[0] : 1);
                 clear_ansi_flags(FLAG_ALL);
                 break;
             }
-            */
 
             if (c == 'C') {
                 current_x += (parameters[0] ? parameters[0] : 1);
@@ -557,13 +554,11 @@ void dispatch_ansi_command(ANSICanvas *canvas, unsigned char c)
     switch (c) {
     case 'A':
         /* move cursor up parameter[0] rows without changing column */
-        current_y-=parameters[0];
-        printf("move down %u rows\n", parameters[0]);
-        exit(1);
+        current_y-=(parameters[0] ? parameters[0] : 1);
         break;
     case 'B':
         /* move cursor down parameter[0] rows without changing column */
-        current_y+=parameters[0];
+        current_y+=(parameters[0] ? parameters[0] : 1);
         break;
     case 'J':
         /* move home and clear screen - set the clear flag on the canvas if we encounter this */
