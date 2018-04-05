@@ -9,21 +9,21 @@
 SDL_Window* window;
 SDL_Renderer* renderer;
 
-int gfx_expose()
+int gfx_sdl_expose()
 {
 
     SDL_RenderPresent(renderer);
     return 0;
 }
 
-int gfx_drawglyph(BitmapFont *font, uint8_t px, uint8_t py, uint8_t glyph, uint8_t fg, uint8_t bg, uint8_t attr)
+int gfx_sdl_drawglyph(BitmapFont *font, uint8_t px, uint8_t py, uint8_t glyph, uint8_t fg, uint8_t bg, uint8_t attr)
 {
     RGBColour *fgc;
     RGBColour *bgc;
     uint8_t rx = 0;
     uint8_t h = 0;
     SDL_Rect r;
-    //printf("gfx_drawglyph(%u, %u, %u, %u, '%c')\n", px, py, font->header.px, font->header.py, glyph);
+    //printf("gfx_sdl_drawglyph(%u, %u, %u, %u, '%c')\n", px, py, font->header.px, font->header.py, glyph);
     //
     fgc = canvas_displaycolour(fg + ((attr & ATTRIB_BOLD ? 8 : 0)));
     bgc = canvas_displaycolour(bg);
@@ -63,7 +63,7 @@ int gfx_drawglyph(BitmapFont *font, uint8_t px, uint8_t py, uint8_t glyph, uint8
     return 0;
 }
 
-int gfx_main(uint16_t xsize, uint16_t ysize, char *WindowTitle)
+int gfx_sdl_main(uint16_t xsize, uint16_t ysize, char *WindowTitle)
 {
     int posX = 100;
     int posY = 200;
@@ -100,19 +100,19 @@ int gfx_main(uint16_t xsize, uint16_t ysize, char *WindowTitle)
     return 0;
 }
 
-int gfx_canvas_render(ANSICanvas *canvas, BitmapFont *myfont)
+int gfx_sdl_canvas_render(ANSICanvas *canvas, BitmapFont *myfont)
 {
     ANSIRaster *r = NULL;
     uint16_t width = 0, height = 0;
     assert(canvas);
     width = canvas_get_width(canvas);
     height = canvas_get_height(canvas);
-    printf("gfx_canvas_render(%ux%u)\n", width, height);
+    printf("gfx_sdl_canvas_render(%ux%u)\n", width, height);
     for (uint16_t ii = 0; ii < height; ii++) {
         r = canvas_get_raster(canvas, ii);
         if (r) {
             for (uint16_t jj = 0; jj < r->bytes; jj++) {
-                gfx_drawglyph(myfont, jj, ii, r->chardata[jj], r->fgcolors[jj], r->bgcolors[jj], r->attribs[jj]);
+                gfx_sdl_drawglyph(myfont, jj, ii, r->chardata[jj], r->fgcolors[jj], r->bgcolors[jj], r->attribs[jj]);
             }
         } else {
             printf("canvas data missing for raster %u\n", ii);

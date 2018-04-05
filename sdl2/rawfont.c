@@ -17,9 +17,9 @@ ANSICanvas *my_canvas = NULL;
 BitmapFont *bmf_load(char *filename);
 
 extern int ansi_read(char *ansi_file_name);
-extern int gfx_main(uint16_t, uint16_t, char *WindowTitle);
-extern int gfx_drawglyph(BitmapFont *font, uint8_t px, uint8_t py, uint8_t glyph, uint8_t fg, uint8_t bg, uint8_t attr);
-extern int gfx_expose();
+extern int gfx_sdl_main(uint16_t, uint16_t, char *WindowTitle);
+extern int gfx_sdl_drawglyph(BitmapFont *font, uint8_t px, uint8_t py, uint8_t glyph, uint8_t fg, uint8_t bg, uint8_t attr);
+extern int gfx_sdl_expose();
 
 int main(int argc, char *argv[])
 {
@@ -36,15 +36,15 @@ int main(int argc, char *argv[])
 
     my_canvas = new_canvas();
 
-    gfx_main((CANVAS_WIDTH*8), (CANVAS_HEIGHT*16), "BMF Font Render Test");
+    gfx_sdl_main((CANVAS_WIDTH*8), (CANVAS_HEIGHT*16), "BMF Font Render Test");
 
     for (int kk = 0; kk < 256; kk++) {
-        gfx_drawglyph(myfont, (kk % CANVAS_WIDTH), (kk / CANVAS_WIDTH), kk, 7, 0, ATTRIB_NONE);
+        gfx_sdl_drawglyph(myfont, (kk % CANVAS_WIDTH), (kk / CANVAS_WIDTH), kk, 7, 0, ATTRIB_NONE);
     }
 //    ansi_read("ansifiles/fruit.ans");
 
 
-    gfx_expose();
+    gfx_sdl_expose();
     while (!getchar()) {
     }
     exit(0);

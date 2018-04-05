@@ -169,9 +169,9 @@ int main(int argc, char *argv[])
             perror("bmf_load");
             exit(1);
         }
-        gfx_main((width*8), (height*16), input_filename);
-        gfx_canvas_render(canvas, myfont);
-        gfx_expose();
+        gfx_sdl_main((width*8), (height*16), input_filename);
+        gfx_sdl_canvas_render(canvas, myfont);
+        gfx_sdl_expose();
         while (!getchar()) {
         }
     }
