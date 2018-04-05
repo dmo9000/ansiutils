@@ -9,6 +9,7 @@
 
 /* see http://www.labbookpages.co.uk/software/imgProc/libPNG.html */
 
+FILE *fp = NULL;
 png_structp png;
 png_infop info;
 png_bytep *row_pointers;
@@ -17,7 +18,6 @@ static png_uint_32 png_height;
 
 int gfx_png_export(char *pngfilename)
 {
-    FILE *fp = NULL;
     printf("Exporting to file '%s'...\n", pngfilename);
 
     fp = fopen(pngfilename, "wb");
@@ -28,25 +28,28 @@ int gfx_png_export(char *pngfilename)
 
     png_init_io(png, fp);
 
+		printf("png_init_io done\n");
+
     // Output is 8bit depth, RGBA format.
-    png_set_IHDR(
-        png,
-        info,
-        png_width, png_height,
-        8,
-        PNG_COLOR_TYPE_RGBA,
-        PNG_INTERLACE_NONE,
-        PNG_COMPRESSION_TYPE_DEFAULT,
-        PNG_FILTER_TYPE_DEFAULT
-    );
+
+		printf("png_set_ihdr() done\n");
+
     png_write_info(png, info);
+
+		printf("png_write_info() done\n");
 
     // To remove the alpha channel for PNG_COLOR_TYPE_RGB format,
     // Use png_set_filler().
     //png_set_filler(png, 0, PNG_FILLER_AFTER);
 
+
     png_write_image(png, row_pointers);
+
+		printf("png_write_image()\n");
+
     png_write_end(png, NULL);
+
+		printf("png_write_end()\n");
 
     for(int y = 0; y < png_height; y++) {
         free(row_pointers[y]);
@@ -82,7 +85,17 @@ int gfx_png_drawglyph(BitmapFont *font, uint8_t px, uint8_t py, uint8_t glyph, u
 
             //printf("%u -> %u, ", r, jj);
             rx = font->fontdata[(glyph*font->header.py) + ii];
+
+						png_bytep row = row_pointers[i];
+	 				 png_bytep px = &(row[x * 4]);
+            px[0] = 0;
+            px[1] = 0;
+            px[2] = 0;
+            px[3] = 255;
+
+
             if (rx & jj) {
+
 
 
 
@@ -126,12 +139,31 @@ int gfx_png_main(uint16_t xsize, uint16_t ysize, char *WindowTitle)
     info = png_create_info_struct(png);
     assert (info);
 
+  png_set_IHDR(
+        png,
+        info,
+        png_width, png_height,
+        8,
+        PNG_COLOR_TYPE_RGBA,
+        PNG_INTERLACE_NONE,
+        PNG_COMPRESSION_TYPE_DEFAULT,
+        PNG_FILTER_TYPE_DEFAULT
+    );
+
+
 		if (setjmp(png_jmpbuf(png))) abort();	
 
+		printf("allocating data for %u rows\n", png_height);
+		printf("png = 0x%08x\n", png);
+		printf("info = 0x%08x\n", info);
+
     for(int y = 0; y < png_height; y++) {
+//				printf("png_get_rowbytes(png,info) = %lu\n", png_get_rowbytes(png,info));
         row_pointers[y] = (png_byte*)malloc(png_get_rowbytes(png,info));
-				assert(row_pointers[y]);
+				
     }
+
+		printf("done\n");
     return 0;
 }
 
@@ -143,12 +175,13 @@ int gfx_png_canvas_render(ANSICanvas *canvas, BitmapFont *myfont)
     width = canvas_get_width(canvas);
     height = canvas_get_height(canvas);
     printf("gfx_png_canvas_render(%ux%u)\n", png_width, png_height);
+		printf("png_width = %u, png_height = %u\n", png_width, png_height);
 
     for(int y = 0; y < png_height; y++) {
         png_bytep row = row_pointers[y];
         for(int x = 0; x < png_width; x++) {
             png_bytep px = &(row[x * 4]);
-            px[0] = 255;
+            px[0] = 0;
             px[1] = 0;
             px[2] = 0;
             px[3] = 255;
