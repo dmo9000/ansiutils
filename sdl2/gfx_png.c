@@ -54,7 +54,7 @@ int gfx_png_export(char *pngfilename)
     return 0;
 }
 
-int gfx_png_drawglyph(BitmapFont *font, uint8_t px, uint8_t py, uint8_t glyph, uint8_t fg, uint8_t bg, uint8_t attr)
+int gfx_png_drawglyph(BitmapFont *font, uint16_t px, uint16_t py, uint8_t glyph, uint8_t fg, uint8_t bg, uint8_t attr)
 {
 
     RGBColour *fgc;
@@ -69,10 +69,10 @@ int gfx_png_drawglyph(BitmapFont *font, uint8_t px, uint8_t py, uint8_t glyph, u
     fgc = canvas_displaycolour(fg + ((attr & ATTRIB_BOLD ? 8 : 0)));
     bgc = canvas_displaycolour(bg);
 
-    for (int ii = 0; ii < font->header.py; ii++) {
+    for (uint8_t ii = 0; ii < font->header.py; ii++) {
         h = 0;
         /* TODO: handle big-endian */
-        for (int jj = 128; jj >0; jj = jj >> 1) {
+        for (uint8_t jj = 128; jj >0; jj = jj >> 1) {
             //printf("%u -> %u, ", r, jj);
             rx = font->fontdata[(glyph*font->header.py) + ii];
 

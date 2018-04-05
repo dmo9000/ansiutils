@@ -16,7 +16,7 @@ int gfx_sdl_expose()
     return 0;
 }
 
-int gfx_sdl_drawglyph(BitmapFont *font, uint8_t px, uint8_t py, uint8_t glyph, uint8_t fg, uint8_t bg, uint8_t attr)
+int gfx_sdl_drawglyph(BitmapFont *font, uint16_t px, uint16_t py, uint8_t glyph, uint8_t fg, uint8_t bg, uint8_t attr)
 {
     RGBColour *fgc;
     RGBColour *bgc;
