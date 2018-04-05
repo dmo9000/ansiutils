@@ -23,7 +23,7 @@ bmf/8x8.bmf: Makefile pf/8x8.pf
 	( echo -ne "BMF\x00\x08\x08\x00\x01" && cat pf/8x8.pf ) > bmf/8x8.bmf
 
 ansiread: $(ANSIREAD_OBJS) ../libansicanvas.a
-	$(CC) $(CFLAGS) $(LDFLAGS) -o ansiread $(ANSIREAD_OBJS) -L.. -lansicanvas -lm
+	$(CC) $(CFLAGS) $(LDFLAGS) -o ansiread $(ANSIREAD_OBJS) -L.. -lansicanvas -lpng -lm
 
 rawfont: $(OBJS) ../libansicanvas.a
 	$(CC) $(CFLAGS) $(LDFLAGS) -o rawfont $(OBJS) -L.. -lansicanvas -lm
