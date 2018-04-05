@@ -51,6 +51,7 @@ int main(int argc, char *argv[])
     char *input_filename = NULL;
     char *output_filename = NULL;
     bool graphic_preview = false;
+		bool text_output = true;
     bool enable_utf8 = true;
     bool enable_compression = false;
 
@@ -75,6 +76,7 @@ int main(int argc, char *argv[])
         case 'g':
             /* enable graphic preview */
             graphic_preview = true;
+						text_output = false;
             break;
 				case 'p':
 						/* enable line padding */
@@ -155,14 +157,17 @@ int main(int argc, char *argv[])
 
     printf("canvas dimensions: %u x %u\n", width, height);
 
-		if (output_filename) {
-			printf("Rendering to file, with compression %s\n", (enable_compression ? "enabled" : "disabled"));
-		} else {
-			printf("Rendering to tty, with compression %s\n", (enable_compression ? "enabled" : "disabled"));
-		}
-    canvas_output(canvas, enable_utf8,output_filename);
+		if (text_output) {
+				if (output_filename) {
+								printf("Rendering to file, with compression %s\n", (enable_compression ? "enabled" : "disabled"));
+								} else {
+								printf("Rendering to tty, with compression %s\n", (enable_compression ? "enabled" : "disabled"));
+								}
+		    canvas_output(canvas, enable_utf8,output_filename);
+				}
 
     if (graphic_preview) {
+				printf("Rendering SDL preview ...\n");
         font_filename = "bmf/8x8.bmf";
         myfont = bmf_load(font_filename);
         if (!myfont) {
@@ -172,6 +177,7 @@ int main(int argc, char *argv[])
         gfx_sdl_main((width*8), (height*16), input_filename);
         gfx_sdl_canvas_render(canvas, myfont);
         gfx_sdl_expose();
+				printf("Hit ENTER to close preview.\n");
         while (!getchar()) {
         }
     }
