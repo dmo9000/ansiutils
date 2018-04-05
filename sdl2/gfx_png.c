@@ -7,6 +7,8 @@
 #include "rawfont.h"
 #include "ansicanvas.h"
 
+/* see http://www.labbookpages.co.uk/software/imgProc/libPNG.html */
+
 png_structp png;
 png_infop info;
 png_bytep *row_pointers;
@@ -19,15 +21,10 @@ int gfx_png_export(char *pngfilename)
     printf("Exporting to file '%s'...\n", pngfilename);
 
     fp = fopen(pngfilename, "wb");
-    if(!fp) abort();
-
-    png_structp png = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
-    if (!png) abort();
-
-    png_infop info = png_create_info_struct(png);
-    if (!info) abort();
-
-    if (setjmp(png_jmpbuf(png))) abort();
+    if(!fp) {
+			printf("FP FAIL!\n");
+			abort();
+			}
 
     png_init_io(png, fp);
 
@@ -111,17 +108,13 @@ int gfx_png_drawglyph(BitmapFont *font, uint8_t px, uint8_t py, uint8_t glyph, u
 
 int gfx_png_main(uint16_t xsize, uint16_t ysize, char *WindowTitle)
 {
-    int posX = 100;
-    int posY = 200;
-    int sizeX = xsize;
-    int sizeY =  ysize;
     uint32_t pngdatasize = 0;
 
     /* 4 bytes per pixel */
 
-    pngdatasize = (xsize*ysize) * 4;
+		pngdatasize = sizeof(png_bytep) * ysize;
 
-    printf("[PNG] allocating %lu bytes for PNG data buffer\n", (unsigned long) pngdatasize);
+    printf("[PNG] allocating initial %lu bytes for PNG row pointers\n", (unsigned long) pngdatasize);
     assert(pngdatasize);
     row_pointers = (png_bytep*)malloc(sizeof(png_bytep) * ysize);
     assert(row_pointers);
@@ -133,8 +126,11 @@ int gfx_png_main(uint16_t xsize, uint16_t ysize, char *WindowTitle)
     info = png_create_info_struct(png);
     assert (info);
 
+		if (setjmp(png_jmpbuf(png))) abort();	
+
     for(int y = 0; y < png_height; y++) {
         row_pointers[y] = (png_byte*)malloc(png_get_rowbytes(png,info));
+				assert(row_pointers[y]);
     }
     return 0;
 }
@@ -146,7 +142,20 @@ int gfx_png_canvas_render(ANSICanvas *canvas, BitmapFont *myfont)
     assert(canvas);
     width = canvas_get_width(canvas);
     height = canvas_get_height(canvas);
-    printf("gfx_png_canvas_render(%ux%u)\n", width, height);
+    printf("gfx_png_canvas_render(%ux%u)\n", png_width, png_height);
+
+    for(int y = 0; y < png_height; y++) {
+        png_bytep row = row_pointers[y];
+        for(int x = 0; x < png_width; x++) {
+            png_bytep px = &(row[x * 4]);
+            px[0] = 255;
+            px[1] = 0;
+            px[2] = 0;
+            px[3] = 255;
+        }
+    }
+
+
     for (uint16_t ii = 0; ii < height; ii++) {
         r = canvas_get_raster(canvas, ii);
         if (r) {
