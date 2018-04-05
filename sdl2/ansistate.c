@@ -17,6 +17,7 @@
 
 
 
+bool debug_flag = false;
 extern int errno;
 
 #define CONSOLE_WIDTH		    80
@@ -161,7 +162,9 @@ bool send_byte_to_canvas(ANSICanvas *canvas, unsigned char c)
     bg = bgcolor;
 
     if (current_x >= 80 && auto_line_wrap) {
+        if (debug_flag) {
         printf("  * AUTO LINE WRAP at [%u,%u]->[%u,%u]\n", current_x, current_y, current_x - 80, current_y+1);
+        }
         current_x -= 80;
         current_y ++;
     }
@@ -169,16 +172,23 @@ bool send_byte_to_canvas(ANSICanvas *canvas, unsigned char c)
     r = canvas_get_raster(canvas, current_y);
 
     while (!r) {
-        printf("send_byte_to_canvas(%u, %u): line %u does not exist, requesting new\n", current_x, current_y, current_y);
+        if (debug_flag) {
+            printf("send_byte_to_canvas(%u, %u): line %u does not exist, requesting new\n", current_x, current_y, current_y);
+        }
         if (!canvas_add_raster(canvas)) {
             printf("*** error adding raster to canvas (line %u)\n", current_y);
+            exit(1);
         };
         r = canvas_get_raster(canvas, current_y);
     }
 
-    printf("send_byte_to_canvas(%u, %u): retrieved raster line %u (%u bytes)\n", current_x, current_y, current_y, r->bytes);
+    if (debug_flag) {
+        printf("send_byte_to_canvas(%u, %u): retrieved raster line %u (%u bytes)\n", current_x, current_y, current_y, r->bytes);
+    }
     if ((current_x+1) > r->bytes) {
-        printf("send_byte_canvas(%u, %u): raster is too short (%u bytes), extending\n", current_x, current_y, r->bytes);
+        if (debug_flag) {
+            printf("send_byte_canvas(%u, %u): raster is too short (%u bytes), extending\n", current_x, current_y, r->bytes);
+        }
         raster_extend_length_to(r, (current_x+1));
     }
 
@@ -191,14 +201,6 @@ bool send_byte_to_canvas(ANSICanvas *canvas, unsigned char c)
     r->attribs[current_x] = attributes;
     current_x++;
 
-    /*
-        if (!raster_append_byte(r, c, fg, bg, attributes, true)) {
-            printf("send_byte_to_canvas(%u, %u): error appending byte\n", x, y);
-            exit(1);
-        };
-        */
-
-    printf("byte appended to canvas\n");
 
     return true;
 
@@ -217,7 +219,9 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
         /* get next character from stream */
         last_c = c;
         c = buf[o];
-        printf("[FLAGS=0x%02x(%u,%u)->(0x%08lx)] %lu/%lu/%lu = 0x%02x: ", ansiflags, current_x, current_y, offset+o, o, nbytes, offset+o, c);
+        if (debug_flag) {
+            printf("[FLAGS=0x%02x(%u,%u)->(0x%08lx)] %lu/%lu/%lu = 0x%02x: ", ansiflags, current_x, current_y, offset+o, o, nbytes, offset+o, c);
+        }
         switch(ansiflags) {
         case FLAG_NONE:
 
@@ -227,11 +231,15 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
             }
 
             if (c == ANSI_1B) {
-                printf("ANSI_1B\n");
+                if (debug_flag) {
+                    printf("ANSI_1B\n");
+                }
                 set_ansi_flags(FLAG_1B);
             } else {
                 if (c == '\r' || c == '\n') {
+                    if (debug_flag) {
                     printf("LINE BREAK! (%u)\n", c);
+                    }
                     current_x = 0;
                     if (c == '\n') {
                         ANSIRaster *r = NULL;
@@ -242,12 +250,16 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
                                 printf("*** error adding raster to canvas (line %u)\n", current_y);
                                 exit(1);
                             };
-                            printf("  $$$ canvas now has %u lines\n\n", canvas_get_height(canvas));
+                            if (debug_flag) {
+                                printf("  $$$ canvas now has %u lines\n\n", canvas_get_height(canvas));
+                            }
                         }
                     }
 
                 } else {
-                    printf("output character '%c'\n", c);
+                    if (debug_flag) {
+                        printf("output character '%c'\n", c);
+                    }
                     if (!send_byte_to_canvas(canvas, c)) {
                         printf("ERROR writing byte to canvas at (%u, %u)\n", current_x, current_y);
                         exit(1);
@@ -258,11 +270,13 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
         case FLAG_1B:
             if (c != ANSI_5B) {
                 printf("error: ANSI_5B expected\n");
-								/* not sure what to do here */
-								clear_ansi_flags(FLAG_ALL);
-								break;
+                /* not sure what to do here */
+                clear_ansi_flags(FLAG_ALL);
+                break;
             }
-            printf("ANSI_5B\n");
+            if (debug_flag) {
+                printf("ANSI_5B\n");
+            }
             set_ansi_flags(FLAG_5B);
             init_parameters();
             break;
@@ -333,7 +347,9 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
 
             if (isdigit(c)) {
                 paramval = c - 0x30;
-                printf("start integer parameter [%u], current_value = %u\n", paramidx, paramval);
+                if (debug_flag) {
+                    printf("start integer parameter [%u], current_value = %u\n", paramidx, paramval);
+                }
                 set_ansi_flags(FLAG_INT);
             } else {
                 printf("error: expecting digit, got '%c' (0x%02x)\n", c, c);
@@ -344,9 +360,13 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
             if (isalpha(c)) {
                 parameters[paramidx] = paramval;
                 paramcount ++;
-                printf("assign integer parameter [%u] = %u\n", paramidx, parameters[paramidx]);
+                if (debug_flag) {
+                    printf("assign integer parameter [%u] = %u\n", paramidx, parameters[paramidx]);
+                }
                 paramidx++;
-                printf("got alphabetical '%c', dispatching\n", c);
+                if (debug_flag) {
+                    printf("got alphabetical '%c', dispatching\n", c);
+                }
                 dispatch_ansi_command(canvas, c);
                 clear_ansi_flags(FLAG_1B | FLAG_5B | FLAG_INT);
                 break;
@@ -355,14 +375,18 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
                 /* integer seperator */
                 parameters[paramidx] = paramval;
                 paramcount ++;
-                printf("assign integer parameter [%u] = %u\n", paramidx, parameters[paramidx]);
+                if (debug_flag) {
+                    printf("assign integer parameter [%u] = %u\n", paramidx, parameters[paramidx]);
+                }
                 paramidx++;
                 paramval = 0;
                 clear_ansi_flags(FLAG_INT);
             } else {
                 if (isdigit(c)) {
                     paramval = (paramval * 10) + (c - 0x30);
+                    if (debug_flag) {
                     printf(" cont integer parameter [%u], current_value = %u\n", paramidx, paramval);
+                    }
                 } else {
                     printf("error: expecting digit or seperator, got '%c' (0x%02x)\n", c, c);
                     exit(1);
@@ -381,41 +405,57 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
 //    assert(!c);
 //    assert(!last_c);
     assert (last_c || !last_c);
+    if (debug_flag) {
     printf("BLOCK DONE\n");
+    }
     return true;
 }
 
 void dispatch_ansi_text_attributes()
 {
-    printf("--- dispatching %u text attribute parameters\n", paramcount);
+    if (debug_flag) {
+        printf("--- dispatching %u text attribute parameters\n", paramcount);
+    }
     for (int i = 0; i < paramcount; i++) {
-        printf("  + parameter[%u/%u] = %u\n", i, paramcount - 1, parameters[i]);
+        if (debug_flag) {
+            printf("  + parameter[%u/%u] = %u\n", i, paramcount - 1, parameters[i]);
+        }
         if (parameters[i] >= 30 && parameters[i] <= 37) {
             fgcolor = parameters[i] - 30;
-            printf("  * fgcolor = %u\n", fgcolor);
+            if (debug_flag) {
+                printf("  * fgcolor = %u\n", fgcolor);
+            }
             goto next_parameter;
         }
         if (parameters[i] >= 40 && parameters[i] <= 47) {
             bgcolor = parameters[i] - 40;
-            printf("  * bgcolor = %u\n", bgcolor);
+            if (debug_flag) {
+                printf("  * bgcolor = %u\n", bgcolor);
+            }
             goto next_parameter;
         }
 
         switch(parameters[i]) {
         case 0:
-            printf("  * reset all parameters, rg/bg etc.\n");
+            if (debug_flag) {
+                printf("  * reset all parameters, rg/bg etc.\n");
+            }
             fgcolor = 7;
             bgcolor = 0;
             attributes = ATTRIB_NONE;
             goto next_parameter;
             break;
         case 1:
-            printf("  * enable ATTRIB_BOLD\n");
+            if (debug_flag) {
+                printf("  * enable ATTRIB_BOLD\n");
+            }
             attributes |= ATTRIB_BOLD;
             goto next_parameter;
             break;
         case 21:
-            printf("  * disable ATTRIB_BOLD\n");
+            if (debug_flag) {
+                printf("  * disable ATTRIB_BOLD\n");
+            }
             attributes &= ~ATTRIB_BOLD;
             goto next_parameter;
             break;
@@ -465,7 +505,9 @@ void dispatch_ansi_cursor_right(ANSICanvas *canvas)
 {
     ANSIRaster *r = NULL;
     uint16_t n = parameters[0];
-    printf("  > move cursor right %u characters [%u,%u]->[%u,%u]\n", n, current_x, current_y, current_x+n, current_y);
+    if (debug_flag) {
+        printf("  > move cursor right %u characters [%u,%u]->[%u,%u]\n", n, current_x, current_y, current_x+n, current_y);
+        }
     r = canvas_get_raster(canvas, current_y);
     if (!r) {
         if (!canvas_add_raster(canvas)) {
@@ -473,13 +515,19 @@ void dispatch_ansi_cursor_right(ANSICanvas *canvas)
             exit(1);
         }
     }
+    if (debug_flag) {
     printf("current_y = %u\n", current_y);
+    }
     r = canvas_get_raster(canvas, current_y);
     assert(r);
     if (r->bytes < current_x + n) {
-        printf("  > raster is too short (%u), extending to %u\n", r->bytes, current_x + n);
+        if (debug_flag) {
+         printf("  > raster is too short (%u), extending to %u\n", r->bytes, current_x + n);
+        }
         raster_extend_length_to(r, ((current_x + n)));
-        printf("  > raster is now length (%u)\n", r->bytes);
+        if (debug_flag) {
+            printf("  > raster is now length (%u)\n", r->bytes);
+            }
     }
     current_x += n;
     return;
@@ -494,7 +542,9 @@ void dispatch_ansi_cursor_left(ANSICanvas *canvas)
 
 void dispatch_ansi_command(ANSICanvas *canvas, unsigned char c)
 {
+    if (debug_flag) {
     printf("dispatch_ansi_command('%c')\n", c);
+        }
 
     switch (c) {
     case 'A':
