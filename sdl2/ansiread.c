@@ -50,8 +50,9 @@ int main(int argc, char *argv[])
     int8_t c = 0;
     char *input_filename = NULL;
     char *output_filename = NULL;
+    char *png_filename = NULL;
     bool graphic_preview = false;
-		bool text_output = true;
+    bool text_output = true;
     bool enable_utf8 = true;
     bool enable_compression = false;
 
@@ -60,7 +61,7 @@ int main(int argc, char *argv[])
         exit(1);
     }
 
-    while ((c = getopt (argc, argv, "wf:rgczp")) != -1) {
+    while ((c = getopt (argc, argv, "wf:o:rgczp")) != -1) {
         switch (c)
         {
         case 'c':
@@ -76,12 +77,16 @@ int main(int argc, char *argv[])
         case 'g':
             /* enable graphic preview */
             graphic_preview = true;
-						text_output = false;
+            text_output = false;
             break;
-				case 'p':
-						/* enable line padding */
-						auto_line_padding = true;
-						break;
+        case 'o':
+            png_filename = strdup(optarg);
+            text_output = false;
+            break;
+        case 'p':
+            /* enable line padding */
+            auto_line_padding = true;
+            break;
         case 'r':
             printf("ALLOW CLEAR MODE SET\n");
             allow_clear = true;
@@ -139,16 +144,16 @@ int main(int argc, char *argv[])
     fclose(ansfile);
 
     if (auto_line_padding) {
-				printf("\n");
+        printf("\n");
         /* pad lines */
         for (int i = 0; i < canvas->lines; i++) {
-						printf("\rPadding line %u/%u\n", i, canvas->lines);
+            printf("\rPadding line %u/%u\n", i, canvas->lines);
             ANSIRaster *r = canvas_get_raster(canvas, i);
             if (r->bytes < 80) {
                 raster_extend_length_to(r, 80);
             }
         }
-			printf("\n");
+        printf("\n");
     }
 
     width = canvas_get_width(canvas);
@@ -157,29 +162,40 @@ int main(int argc, char *argv[])
 
     printf("canvas dimensions: %u x %u\n", width, height);
 
-		if (text_output) {
-				if (output_filename) {
-								printf("Rendering to file, with compression %s\n", (enable_compression ? "enabled" : "disabled"));
-								} else {
-								printf("Rendering to tty, with compression %s\n", (enable_compression ? "enabled" : "disabled"));
-								}
-		    canvas_output(canvas, enable_utf8,output_filename);
-				}
+    if (text_output) {
+        if (output_filename) {
+            printf("Rendering to file, with compression %s\n", (enable_compression ? "enabled" : "disabled"));
+        } else {
+            printf("Rendering to tty, with compression %s\n", (enable_compression ? "enabled" : "disabled"));
+        }
+        canvas_output(canvas, enable_utf8,output_filename);
+    }
 
-    if (graphic_preview) {
-				printf("Rendering SDL preview ...\n");
+    if (graphic_preview || png_filename) {
         font_filename = "bmf/8x8.bmf";
         myfont = bmf_load(font_filename);
         if (!myfont) {
             perror("bmf_load");
             exit(1);
         }
+    }
+
+
+    if (graphic_preview) {
+        printf("Rendering SDL preview ...\n");
         gfx_sdl_main((width*8), (height*16), input_filename);
         gfx_sdl_canvas_render(canvas, myfont);
         gfx_sdl_expose();
-				printf("Hit ENTER to close preview.\n");
+        printf("Hit ENTER to close preview.\n");
         while (!getchar()) {
         }
+    }
+
+    if (png_filename) {
+        printf("Rendering PNG output to %s ...\n", png_filename);
+        gfx_png_main((width*8), (height*16));
+        gfx_png_canvas_render(canvas, myfont);
+        gfx_png_export();
     }
 
     exit (0);
