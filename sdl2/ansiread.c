@@ -26,6 +26,7 @@ extern int errno;
 extern bool auto_line_wrap;
 extern bool allow_clear;
 bool auto_line_padding = false;
+extern bool debug_flag;
 
 #define CHUNK_SIZE    4096
 
@@ -147,10 +148,14 @@ int main(int argc, char *argv[])
         printf("\n");
         /* pad lines */
         for (int i = 0; i < canvas->lines; i++) {
+            if (debug_flag) {
             printf("\rPadding line %u/%u", i, canvas->lines);
+            }
             ANSIRaster *r = canvas_get_raster(canvas, i);
             if (r->bytes > 80) {
-                printf("\r\nTrimming line %u/%u\n", i, canvas->lines);
+                if (debug_flag) {
+                    printf("\r\nTrimming line %u/%u\n", i, canvas->lines);
+                }
                 r->bytes = 80;
                 }
             if (r->bytes < 80) {

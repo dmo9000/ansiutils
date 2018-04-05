@@ -320,15 +320,21 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
 
             if (c == 'A') {
                 /* if this appears raw, it is probably a mistake, or just padding */
+                current_y -= (parameters[0] ? parameters[0] : 1);
                 clear_ansi_flags(FLAG_ALL);
                 break;
             }
 
+            /*
+ 
+            FAIL FOR NOW IF DETECTED
+  
             if (c == 'B') {
-                /* if this appears raw, it is probably a mistake, or just padding */
+                current_y += (parameters[0] ? parameters[0] : 1);
                 clear_ansi_flags(FLAG_ALL);
                 break;
             }
+            */
 
             if (c == 'C') {
                 current_x += (parameters[0] ? parameters[0] : 1);
@@ -505,6 +511,7 @@ void dispatch_ansi_cursor_right(ANSICanvas *canvas)
 {
     ANSIRaster *r = NULL;
     uint16_t n = parameters[0];
+    uint16_t extend_len = 0;
     if (debug_flag) {
         printf("  > move cursor right %u characters [%u,%u]->[%u,%u]\n", n, current_x, current_y, current_x+n, current_y);
         }
@@ -520,11 +527,12 @@ void dispatch_ansi_cursor_right(ANSICanvas *canvas)
     }
     r = canvas_get_raster(canvas, current_y);
     assert(r);
-    if (r->bytes < current_x + n) {
+    extend_len = current_x + n;
+    if (r->bytes < extend_len) {
         if (debug_flag) {
-         printf("  > raster is too short (%u), extending to %u\n", r->bytes, current_x + n);
+         printf("  > raster is too short (%u), extending to %u\n", r->bytes, extend_len);
         }
-        raster_extend_length_to(r, ((current_x + n)));
+        raster_extend_length_to(r, ((extend_len)));
         if (debug_flag) {
             printf("  > raster is now length (%u)\n", r->bytes);
             }
@@ -548,8 +556,10 @@ void dispatch_ansi_command(ANSICanvas *canvas, unsigned char c)
 
     switch (c) {
     case 'A':
-        /* move cursor down parameter[0] rows without changing column */
+        /* move cursor up parameter[0] rows without changing column */
         current_y-=parameters[0];
+        printf("move down %u rows\n", parameters[0]);
+        exit(1);
         break;
     case 'B':
         /* move cursor down parameter[0] rows without changing column */
