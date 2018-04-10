@@ -1,4 +1,4 @@
-![TDFTool](platzang.tdf.ans.png)
+![ANSIUtils](platzang.tdf.ans.png)
 
 A program for rendering TheDraw fonts to the terminal. 
 
