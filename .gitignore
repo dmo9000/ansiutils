@@ -1,4 +1,6 @@
 tdftool
+rawfont
+ansiread
 output.ans
 tests/
 *.o
