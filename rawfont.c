@@ -5,10 +5,10 @@
 #include <assert.h>
 #include <errno.h>
 #include "rawfont.h"
-#include "../tdf.h"
-#include "../tdffont.h"
-#include "../ansiraster.h"
-#include "../ansicanvas.h"
+#include "tdf.h"
+#include "tdffont.h"
+#include "ansiraster.h"
+#include "ansicanvas.h"
 
 #define CANVAS_WIDTH    80
 #define CANVAS_HEIGHT   24
