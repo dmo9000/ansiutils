@@ -5,17 +5,21 @@ CFLAGS = -Wall --std=c99 -g -ggdb
 
 TDFTOOL_OBJS=tdftool.o tdffont.o sauce.o
 OBJS=rawfont.o gfx_sdl.o ansiload.o
-ANSIREAD_OBJS=ansiread.o ansistate.o gfx_sdl.o gfx_png.o bmf.o
+ANSIREAD_OBJS=ansiread.o ansistate.o gfx_png.o bmf.o
 LIBANSICANVAS_OBJS=ansiraster.o ansicanvas.o utf8.o
+LIBANSISDLCANVAS_OBJS=gfx_sdl.o
 TESTSAMPLE=../THEDRAWFONTS/BLACKX.TDF
 
-all: libansicanvas.a tdftool rawfont ansiread bmf/8x8.bmf
+all: libansicanvas.a libansisdlcanvas.a tdftool rawfont ansiread bmf/8x8.bmf
 
 sample:
 	@./tdftool -c ${TESTSAMPLE} ABC
 
 sampledebug:
 	@./tdftool -d -c ${TESTSAMPLE} ABC | more
+
+libansisdlcanvas.a: $(LIBANSISDLCANVAS_OBJS)
+	ar cru libansisdlcanvas.a $(LIBANSISDLCANVAS_OBJS)
 
 libansicanvas.a: $(LIBANSICANVAS_OBJS)
 	ar cru libansicanvas.a $(LIBANSICANVAS_OBJS)
@@ -27,10 +31,10 @@ bmf/8x8.bmf: Makefile pf/8x8.pf
 	( echo -ne "BMF\x00\x08\x08\x00\x01" && cat pf/8x8.pf ) > bmf/8x8.bmf
 
 ansiread: $(ANSIREAD_OBJS) libansicanvas.a
-	$(CC) $(CFLAGS) $(LDFLAGS) -o ansiread $(ANSIREAD_OBJS) -L. -lansicanvas -lpng -lSDL2 -lm
+	$(CC) $(CFLAGS) $(LDFLAGS) -o ansiread $(ANSIREAD_OBJS) -L. -lansicanvas -lpng -lSDL2 -lansisdlcanvas -lm
 
 rawfont: $(OBJS) libansicanvas.a
-	$(CC) $(CFLAGS) $(LDFLAGS) -o rawfont $(OBJS) -L. -lansicanvas -lSDL2 -lm
+	$(CC) $(CFLAGS) $(LDFLAGS) -o rawfont $(OBJS) -L. -lansicanvas -lSDL2 -lansisdlcanvas -lm
 
 clean:
 	rm -f tdftool rawfont ansiread *.o *.a *.core
