@@ -4,10 +4,10 @@ CC=gcc
 CFLAGS = -Wall --std=c99 -g -ggdb
 
 TDFTOOL_OBJS=tdftool.o tdffont.o sauce.o
-OBJS=gfx_sdl.o ansiload.o
-ANSIREAD_OBJS=ansiread.o gfx_png.o bmf.o
+OBJS=gfx_sdl.o rawfont.o ansiload.o
+ANSIREAD_OBJS=ansiread.o gfx_png.o 
 LIBANSICANVAS_OBJS=ansiraster.o ansicanvas.o ansistate.o utf8.o 
-LIBANSISDLCANVAS_OBJS=gfx_sdl.o rawfont.o
+LIBANSISDLCANVAS_OBJS=gfx_sdl.o bmf.o
 TESTSAMPLE=../THEDRAWFONTS/BLACKX.TDF
 
 all: libansicanvas.a libansisdlcanvas.a tdftool rawfont ansiread bmf/8x8.bmf
