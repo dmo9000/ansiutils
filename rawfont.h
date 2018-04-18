@@ -1,4 +1,6 @@
+#ifndef __RAWFONT_H__
 
+#define __RAWFONT_H__
 
 struct bitmapfontheader {
                     unsigned char magic[3];
@@ -17,5 +19,5 @@ struct bitmapfont {
 typedef struct bitmapfontheader BitmapFontHeader;
 typedef struct bitmapfont BitmapFont;
 
-
+#endif /* __RAWFONT_H__ */
 

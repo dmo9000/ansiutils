@@ -2,6 +2,9 @@
 
 #define __ANSICANVAS_H__
 
+#include <stdint.h>
+#include <stdbool.h>
+
 #include "ansiraster.h"
 
 struct ansi_canvas {

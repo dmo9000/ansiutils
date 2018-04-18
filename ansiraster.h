@@ -2,6 +2,7 @@
 
 #define __ANSIRASTER_H__
 
+#include <stdio.h>
 #include "ansicolor.h"
 
 struct ansi_raster {
