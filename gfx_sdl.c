@@ -100,6 +100,7 @@ int gfx_sdl_main(uint16_t xsize, uint16_t ysize, char *WindowTitle)
     return 0;
 }
 
+
 int gfx_sdl_canvas_render(ANSICanvas *canvas, BitmapFont *myfont)
 {
     ANSIRaster *r = NULL;
@@ -107,11 +108,12 @@ int gfx_sdl_canvas_render(ANSICanvas *canvas, BitmapFont *myfont)
     assert(canvas);
     width = canvas_get_width(canvas);
     height = canvas_get_height(canvas);
-    printf("gfx_sdl_canvas_render(%ux%u)\n", width, height);
+    //printf("gfx_sdl_canvas_render(%ux%u)\n", width, height);
     for (uint16_t ii = 0; ii < height; ii++) {
         r = canvas_get_raster(canvas, ii);
         if (r) {
             for (uint16_t jj = 0; jj < r->bytes; jj++) {
+                /* FIXME: call gfx_sdl_canvas_render_xy() instead */
                 gfx_sdl_drawglyph(myfont, jj, ii, r->chardata[jj], r->fgcolors[jj], r->bgcolors[jj], r->attribs[jj]);
             }
         } else {
@@ -119,4 +121,16 @@ int gfx_sdl_canvas_render(ANSICanvas *canvas, BitmapFont *myfont)
         }
     }
     return 0;
+}
+
+int gfx_sdl_canvas_render_xy(ANSICanvas *canvas, BitmapFont *myfont, uint16_t x, uint16_t y)
+{
+    ANSIRaster *r = NULL;
+    assert(y <= 24);
+    r = canvas_get_raster(canvas, y);
+    assert(r);
+    assert(r->chardata);
+    assert(x < r->bytes);
+    gfx_sdl_drawglyph(myfont, x, y, r->chardata[x], r->fgcolors[x], r->bgcolors[x], r->attribs[x]);
+    return 1;
 }
