@@ -20,6 +20,23 @@ ANSICanvas *new_canvas()
 
 }
 
+int canvas_reindex(ANSICanvas *canvas)
+{
+    ANSIRaster *r = NULL;
+    uint16_t new_index = 0;
+    assert(canvas);
+    r = canvas->first_raster;
+    assert(r);
+    while (r->next_raster) {
+        r->index = new_index; 
+        new_index++;
+        r = r->next_raster;
+        }
+    r->index = new_index;
+    canvas->lines = new_index+1;
+    return 0;
+}
+
 ANSIRaster* canvas_get_raster(ANSICanvas *canvas, int line)
 {
     ANSIRaster *r = NULL;
@@ -37,6 +54,9 @@ ANSIRaster* canvas_get_raster(ANSICanvas *canvas, int line)
     while (r && raster_count < canvas->lines) {
         //    printf("checking raster with index; %d\n", r->index);
         if (raster_count == line) {
+            if (line != r->index) {
+                printf("line/index mismatch: %u -> %u\n", line, r->index);
+                }
             assert(line == r->index);
             return r;
         }

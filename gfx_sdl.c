@@ -128,6 +128,9 @@ int gfx_sdl_canvas_render_xy(ANSICanvas *canvas, BitmapFont *myfont, uint16_t x,
     ANSIRaster *r = NULL;
     assert(y <= 24);
     r = canvas_get_raster(canvas, y);
+    if (!r) {
+        printf("canvas_get_raster(%u) failed\n", y);
+        }
     assert(r);
     assert(r->chardata);
     assert(x < r->bytes);
