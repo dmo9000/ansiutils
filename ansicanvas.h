@@ -41,5 +41,6 @@ typedef struct display_colour DisplayColour;
 typedef struct display_colour RGBColour;
 RGBColour* canvas_displaycolour(uint8_t colour);
 
+int canvas_reindex(ANSICanvas *c);
 
 #endif /* __ANSICANVAS_H__ */
