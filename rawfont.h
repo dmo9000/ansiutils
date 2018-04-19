@@ -2,6 +2,7 @@
 
 #define __RAWFONT_H__
 
+
 struct bitmapfontheader {
                     unsigned char magic[3];
                     uint8_t version;
