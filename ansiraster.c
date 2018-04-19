@@ -213,3 +213,15 @@ bool raster_output(ANSIRaster *r, bool debug_mode, bool use_unicode, bool compre
     return true;
 
 }
+
+void raster_extend_length_to(ANSIRaster *r, uint16_t extrabytes)
+{
+
+    assert(r);
+    while (r-> bytes < extrabytes) {
+        raster_append_byte(r, ' ', 7, 0, ATTRIB_NONE, "true");
+    }
+
+    return;
+}
+

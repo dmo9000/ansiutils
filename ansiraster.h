@@ -24,10 +24,10 @@ struct ansi_raster {
 
 typedef struct ansi_raster   ANSIRaster;
 
+ANSIRaster *create_new_raster();
 bool raster_append_bytes(ANSIRaster *r, unsigned char *data, uint8_t bytes, ansicolor_t fg, ansicolor_t bg, attributes_t attr, bool debug);
 bool raster_append_byte(ANSIRaster *r, unsigned char data, ansicolor_t fg, ansicolor_t bg, attributes_t attr, bool debug);
-
-ANSIRaster *create_new_raster();
 bool raster_output(ANSIRaster *r, bool debug, bool use_unicode, bool compress, FILE *fh);
+void raster_extend_length_to(ANSIRaster *r, uint16_t extrabytes);
 
 #endif /* __ANSIRASTER_H__ */

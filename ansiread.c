@@ -33,7 +33,6 @@ extern bool debug_flag;
 static unsigned char filebuf[CHUNK_SIZE];
 
 bool ansi_to_canvas(ANSICanvas *c, unsigned char *buf, size_t nbytes, size_t offset);
-void raster_extend_length_to(ANSIRaster *r, uint16_t extrabytes);
 
 BitmapFont *bmf_load(char *filename);
 

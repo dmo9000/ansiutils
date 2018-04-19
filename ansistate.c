@@ -118,7 +118,6 @@ const char *ansi_state(int s);
 uint8_t ansiflags = 0;
 
 void dispatch_ansi_command(ANSICanvas *canvas, unsigned char c);
-void raster_extend_length_to(ANSIRaster *r, uint16_t extrabytes);
 
 void init_parameters()
 {
@@ -488,17 +487,6 @@ void dispatch_ansi_terminal_setup()
         printf("  ! UNKNOWN ANSI TERMINAL SETUP CODE\n");
         exit(1);
         break;
-    }
-
-    return;
-}
-
-void raster_extend_length_to(ANSIRaster *r, uint16_t extrabytes)
-{
-
-    assert(r);
-    while (r-> bytes < extrabytes) {
-        raster_append_byte(r, ' ', 7, 0, ATTRIB_NONE, "true");
     }
 
     return;

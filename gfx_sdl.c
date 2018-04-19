@@ -108,6 +108,10 @@ int gfx_sdl_canvas_render(ANSICanvas *canvas, BitmapFont *myfont)
     assert(canvas);
     width = canvas_get_width(canvas);
     height = canvas_get_height(canvas);
+
+		assert(width);
+		assert(height);
+
     //printf("gfx_sdl_canvas_render(%ux%u)\n", width, height);
     for (uint16_t ii = 0; ii < height; ii++) {
         r = canvas_get_raster(canvas, ii);
