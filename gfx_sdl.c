@@ -100,6 +100,11 @@ int gfx_sdl_main(uint16_t xsize, uint16_t ysize, char *WindowTitle)
     return 0;
 }
 
+void  gfx_sdl_clear()
+{
+    SDL_RenderClear( renderer);
+
+}
 
 int gfx_sdl_canvas_render(ANSICanvas *canvas, BitmapFont *myfont)
 {
