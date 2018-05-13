@@ -7,4 +7,4 @@ int gfx_sdl_drawglyph(BitmapFont *bmf, uint16_t px, uint16_t py, uint8_t glyph, 
 int gfx_sdl_expose();
 int gfx_sdl_canvas_render(ANSICanvas *canvas, BitmapFont *myfont);
 int gfx_sdl_canvas_render_xy(ANSICanvas *canvas, BitmapFont *myfont, uint16_t x, uint16_t y);
-
+void gfx_sdl_clear();
