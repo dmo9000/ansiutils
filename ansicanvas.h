@@ -11,8 +11,11 @@ struct ansi_canvas {
     uint16_t lines;
     struct ansi_raster *first_raster;
     int debug_level;
-		bool clear_flag;
-		bool compress_output;
+    bool clear_flag;
+	bool compress_output;
+    bool scroll_on_output;
+    bool allow_hard_clear;
+    bool repaint_entire_canvas;
 };
 
 typedef struct ansi_canvas   ANSICanvas;

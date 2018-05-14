@@ -160,9 +160,10 @@ bool send_byte_to_canvas(ANSICanvas *canvas, unsigned char c)
     fg = fgcolor;
     bg = bgcolor;
 
+
     if (current_x >= 80 && auto_line_wrap) {
         if (debug_flag) {
-        printf("  * AUTO LINE WRAP at [%u,%u]->[%u,%u]\n", current_x, current_y, current_x - 80, current_y+1);
+            printf("  * AUTO LINE WRAP at [%u,%u]->[%u,%u]\n", current_x, current_y, current_x - 80, current_y+1);
         }
         current_x -= 80;
         current_y ++;
@@ -193,6 +194,7 @@ bool send_byte_to_canvas(ANSICanvas *canvas, unsigned char c)
 
     assert(r->bytes >= (current_x+1));
 
+    /* ADJUSTMENT FOR LINEFEED */
 
     r->chardata[current_x] = c;
     r->fgcolors[current_x] = fg;
@@ -237,7 +239,7 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
             } else {
                 if (c == '\r' || c == '\n') {
                     if (debug_flag) {
-                    printf("LINE BREAK! (%u)\n", c);
+                        printf("LINE BREAK! (%u)\n", c);
                     }
                     current_x = 0;
                     if (c == '\n') {
@@ -324,8 +326,8 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
                 break;
             }
 
- 
-  
+
+
             if (c == 'B') {
                 current_y += (parameters[0] ? parameters[0] : 1);
                 clear_ansi_flags(FLAG_ALL);
@@ -387,7 +389,7 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
                 if (isdigit(c)) {
                     paramval = (paramval * 10) + (c - 0x30);
                     if (debug_flag) {
-                    printf(" cont integer parameter [%u], current_value = %u\n", paramidx, paramval);
+                        printf(" cont integer parameter [%u], current_value = %u\n", paramidx, paramval);
                     }
                 } else {
                     printf("error: expecting digit or seperator, got '%c' (0x%02x)\n", c, c);
@@ -408,7 +410,7 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
 //    assert(!last_c);
     assert (last_c || !last_c);
     if (debug_flag) {
-    printf("BLOCK DONE\n");
+        printf("BLOCK DONE\n");
     }
     return true;
 }
@@ -499,7 +501,7 @@ void dispatch_ansi_cursor_right(ANSICanvas *canvas)
     uint16_t extend_len = 0;
     if (debug_flag) {
         printf("  > move cursor right %u characters [%u,%u]->[%u,%u]\n", n, current_x, current_y, current_x+n, current_y);
-        }
+    }
     r = canvas_get_raster(canvas, current_y);
     if (!r) {
         if (!canvas_add_raster(canvas)) {
@@ -508,19 +510,19 @@ void dispatch_ansi_cursor_right(ANSICanvas *canvas)
         }
     }
     if (debug_flag) {
-    printf("current_y = %u\n", current_y);
+        printf("current_y = %u\n", current_y);
     }
     r = canvas_get_raster(canvas, current_y);
     assert(r);
     extend_len = current_x + n;
     if (r->bytes < extend_len) {
         if (debug_flag) {
-         printf("  > raster is too short (%u), extending to %u\n", r->bytes, extend_len);
+            printf("  > raster is too short (%u), extending to %u\n", r->bytes, extend_len);
         }
         raster_extend_length_to(r, ((extend_len)));
         if (debug_flag) {
             printf("  > raster is now length (%u)\n", r->bytes);
-            }
+        }
     }
     current_x += n;
     return;
@@ -533,11 +535,29 @@ void dispatch_ansi_cursor_left(ANSICanvas *canvas)
     return;
 }
 
+void canvas_clear(ANSICanvas *canvas)
+{
+    int ii = 0;
+    ANSIRaster *r = NULL;
+    r = canvas->first_raster;
+    assert(r);
+    while (r) {
+        assert (r);
+        assert (r->bytes);
+        assert (r->chardata);
+        for (ii = 0; ii < r->bytes; ii++) {
+            r->chardata[ii] = ' ';
+        }
+        r = r->next_raster;
+    }
+    return;
+}
+
 void dispatch_ansi_command(ANSICanvas *canvas, unsigned char c)
 {
     if (debug_flag) {
-    printf("dispatch_ansi_command('%c')\n", c);
-        }
+        printf("dispatch_ansi_command('%c')\n", c);
+    }
 
     switch (c) {
     case 'A':
@@ -552,6 +572,12 @@ void dispatch_ansi_command(ANSICanvas *canvas, unsigned char c)
         /* move home and clear screen - set the clear flag on the canvas if we encounter this */
         if (allow_clear) {
             canvas->clear_flag = true;
+        }
+        if (canvas->allow_hard_clear) {
+            /* blank and dirty the canvas */
+            printf("CLEAR SCREEN CALLED, AND HARD CLEAR ENABLED\n");
+            canvas_clear(canvas);
+            canvas->repaint_entire_canvas = true;
         }
         break;
     case 'C':

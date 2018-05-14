@@ -28,10 +28,10 @@ int canvas_reindex(ANSICanvas *canvas)
     r = canvas->first_raster;
     assert(r);
     while (r->next_raster) {
-        r->index = new_index; 
+        r->index = new_index;
         new_index++;
         r = r->next_raster;
-        }
+    }
     r->index = new_index;
     canvas->lines = new_index+1;
     return 0;
@@ -56,7 +56,7 @@ ANSIRaster* canvas_get_raster(ANSICanvas *canvas, int line)
         if (raster_count == line) {
             if (line != r->index) {
                 printf("line/index mismatch: %u -> %u\n", line, r->index);
-                }
+            }
             assert(line == r->index);
             return r;
         }

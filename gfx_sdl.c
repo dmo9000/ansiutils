@@ -114,8 +114,8 @@ int gfx_sdl_canvas_render(ANSICanvas *canvas, BitmapFont *myfont)
     width = canvas_get_width(canvas);
     height = canvas_get_height(canvas);
 
-		assert(width);
-		assert(height);
+    assert(width);
+    assert(height);
 
     //printf("gfx_sdl_canvas_render(%ux%u)\n", width, height);
     for (uint16_t ii = 0; ii < height; ii++) {
@@ -139,7 +139,7 @@ int gfx_sdl_canvas_render_xy(ANSICanvas *canvas, BitmapFont *myfont, uint16_t x,
     r = canvas_get_raster(canvas, y);
     if (!r) {
         printf("canvas_get_raster(%u) failed\n", y);
-        }
+    }
     assert(r);
     assert(r->chardata);
     assert(x < r->bytes);

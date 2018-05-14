@@ -148,7 +148,7 @@ int main(int argc, char *argv[])
         /* pad lines */
         for (int i = 0; i < canvas->lines; i++) {
             if (debug_flag) {
-            printf("\rPadding line %u/%u", i, canvas->lines);
+                printf("\rPadding line %u/%u", i, canvas->lines);
             }
             ANSIRaster *r = canvas_get_raster(canvas, i);
             if (r->bytes > 80) {
@@ -156,7 +156,7 @@ int main(int argc, char *argv[])
                     printf("\r\nTrimming line %u/%u\n", i, canvas->lines);
                 }
                 r->bytes = 80;
-                }
+            }
             if (r->bytes < 80) {
                 raster_extend_length_to(r, 80);
             }
