@@ -547,6 +547,9 @@ void canvas_clear(ANSICanvas *canvas)
         assert (r->chardata);
         for (ii = 0; ii < r->bytes; ii++) {
             r->chardata[ii] = ' ';
+            r->fgcolors[ii] = 7;
+            r->bgcolors[ii] = 0;
+            r->attribs[ii] = ATTRIB_NONE;
         }
         r = r->next_raster;
     }

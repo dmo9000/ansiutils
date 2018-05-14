@@ -142,7 +142,9 @@ int gfx_sdl_canvas_render_xy(ANSICanvas *canvas, BitmapFont *myfont, uint16_t x,
     }
     assert(r);
     assert(r->chardata);
-    assert(x < r->bytes);
-    gfx_sdl_drawglyph(myfont, x, y, r->chardata[x], r->fgcolors[x], r->bgcolors[x], r->attribs[x]);
+    //assert(x < r->bytes);
+    if (x < r->bytes) {
+        gfx_sdl_drawglyph(myfont, x, y, r->chardata[x], r->fgcolors[x], r->bgcolors[x], r->attribs[x]);
+    }
     return 1;
 }
