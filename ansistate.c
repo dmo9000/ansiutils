@@ -167,6 +167,10 @@ bool send_byte_to_canvas(ANSICanvas *canvas, unsigned char c)
         }
         current_x -= 80;
         current_y ++;
+        if (canvas->scroll_on_output) {
+                  assert(current_y < canvas->scroll_limit);
+                  }
+
     }
 
     r = canvas_get_raster(canvas, current_y);
@@ -245,6 +249,10 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
                     if (c == '\n') {
                         ANSIRaster *r = NULL;
                         current_y++;
+                        if (canvas->scroll_on_output) {
+                            assert(current_y < canvas->scroll_limit);
+                            }
+
                         r = canvas_get_raster(canvas, current_y);
                         if (!r) {
                             if (!canvas_add_raster(canvas)) {
@@ -261,6 +269,13 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
                     if (debug_flag) {
                         printf("output character '%c'\n", c);
                     }
+
+                    if (canvas->scroll_on_output) {
+                        assert(current_y < canvas->scroll_limit);
+                        printf("*** CANVAS SCROLL REQUEST ***\n");
+                        assert(NULL);
+                        }
+
                     if (!send_byte_to_canvas(canvas, c)) {
                         printf("ERROR writing byte to canvas at (%u, %u)\n", current_x, current_y);
                         exit(1);

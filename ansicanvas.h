@@ -14,6 +14,7 @@ struct ansi_canvas {
     bool clear_flag;
 	bool compress_output;
     bool scroll_on_output;
+    uint16_t scroll_limit;
     bool allow_hard_clear;
     bool repaint_entire_canvas;
 };
