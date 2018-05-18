@@ -17,6 +17,7 @@ struct ansi_canvas {
     uint16_t scroll_limit;
     bool allow_hard_clear;
     bool repaint_entire_canvas;
+    bool is_dirty;
 };
 
 typedef struct ansi_canvas   ANSICanvas;
