@@ -364,6 +364,22 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
                 break;
             }
 
+            if (c == 'J') {
+                assert(!paramidx);
+                /* means erase from current line to bottom of screen? currently not implemented */
+                printf("[ANSI J command not implemented]\n");
+                clear_ansi_flags(FLAG_ALL);
+                break;
+            }
+
+            if (c == 'K') {
+                assert(!paramidx);
+                /* means clear to end of current line - not implemented */
+                printf("[ANSI K command not implemented]\n");
+                clear_ansi_flags(FLAG_ALL);
+                break;
+                }
+
             if (isdigit(c)) {
                 paramval = c - 0x30;
                 if (debug_flag) {
@@ -371,7 +387,7 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
                 }
                 set_ansi_flags(FLAG_INT);
             } else {
-                printf("error: expecting digit, got '%c' (0x%02x), %u parameters\n", c, c, paramidx);
+                printf("error: expecting digit, got '%c' (0x%02x), %u parameter, paramval = %u\n", c, c, paramidx, paramval);
                 exit(1);
             }
             break;
