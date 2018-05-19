@@ -371,7 +371,7 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
                 }
                 set_ansi_flags(FLAG_INT);
             } else {
-                printf("error: expecting digit, got '%c' (0x%02x)\n", c, c);
+                printf("error: expecting digit, got '%c' (0x%02x), %u parameters\n", c, c, paramidx);
                 exit(1);
             }
             break;
