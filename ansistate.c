@@ -168,8 +168,8 @@ bool send_byte_to_canvas(ANSICanvas *canvas, unsigned char c)
         current_x -= 80;
         current_y ++;
         if (canvas->scroll_on_output) {
-                  assert(current_y < canvas->scroll_limit);
-                  }
+            assert(current_y < canvas->scroll_limit);
+        }
 
     }
 
@@ -213,6 +213,8 @@ bool send_byte_to_canvas(ANSICanvas *canvas, unsigned char c)
 
 bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_t offset)
 {
+    ANSIRaster *r = NULL;
+    int ii = 0;
     unsigned char c = 0, last_c = 0;
     size_t o = 0;
 
@@ -251,7 +253,7 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
                         current_y++;
                         if (canvas->scroll_on_output) {
                             assert(current_y < canvas->scroll_limit);
-                            }
+                        }
 
                         r = canvas_get_raster(canvas, current_y);
                         if (!r) {
@@ -274,7 +276,7 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
                         assert(current_y < canvas->scroll_limit);
                         printf("*** CANVAS SCROLL REQUEST ***\n");
                         assert(NULL);
-                        }
+                    }
 
                     if (!send_byte_to_canvas(canvas, c)) {
                         printf("ERROR writing byte to canvas at (%u, %u)\n", current_x, current_y);
@@ -369,16 +371,38 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
                 /* means erase from current line to bottom of screen? currently not implemented */
                 printf("[ANSI J command not implemented]\n");
                 clear_ansi_flags(FLAG_ALL);
+                int jj = current_y;
+                while (jj < canvas->lines) {
+                    r = canvas_get_raster(canvas, jj);
+                    assert(r);
+                    for (int ii = 0; ii <= r->bytes; ii++) {
+                        r->chardata[ii] = ' ';
+                        r->fgcolors[ii] = 7;
+                        r->bgcolors[ii] = 2;
+                        r->attribs[ii] = ATTRIB_NONE;
+                    }
+                    jj++;
+                }
+                canvas->repaint_entire_canvas = true;
                 break;
             }
 
             if (c == 'K') {
                 assert(!paramidx);
                 /* means clear to end of current line - not implemented */
-                printf("[ANSI K command not implemented]\n");
+                r = canvas_get_raster(canvas, current_y);
+                assert(r);
+                printf("+++ clearing line %u from %u to %u\n", current_y, current_x, r->bytes);
+                for (ii = 0; ii <= 79; ii++) {
+                    r->chardata[ii] = '*';
+                    r->bgcolors[ii] = 0;
+                    r->fgcolors[ii] = 7;
+                    r->attribs[ii] = ATTRIB_NONE;
+                }
+                canvas->repaint_entire_canvas = true;
                 clear_ansi_flags(FLAG_ALL);
                 break;
-                }
+            }
 
             if (isdigit(c)) {
                 paramval = c - 0x30;
