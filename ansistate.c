@@ -369,7 +369,7 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
             if (c == 'J') {
                 assert(!paramidx);
                 /* means erase from current line to bottom of screen? currently not implemented */
-                printf("[ANSI J command not implemented]\n");
+                //printf("[ANSI J command not implemented]\n");
                 clear_ansi_flags(FLAG_ALL);
                 int jj = current_y;
                 while (jj < canvas->lines) {
@@ -378,7 +378,7 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
                     for (int ii = 0; ii <= r->bytes; ii++) {
                         r->chardata[ii] = ' ';
                         r->fgcolors[ii] = 7;
-                        r->bgcolors[ii] = 2;
+                        r->bgcolors[ii] = 0;
                         r->attribs[ii] = ATTRIB_NONE;
                     }
                     jj++;
@@ -392,9 +392,9 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
                 /* means clear to end of current line - not implemented */
                 r = canvas_get_raster(canvas, current_y);
                 assert(r);
-                printf("+++ clearing line %u from %u to %u\n", current_y, current_x, r->bytes);
+               // printf("+++ clearing line %u from %u to %u\n", current_y, current_x, r->bytes);
                 for (ii = 0; ii <= 79; ii++) {
-                    r->chardata[ii] = '*';
+                    r->chardata[ii] = ' ';
                     r->bgcolors[ii] = 0;
                     r->fgcolors[ii] = 7;
                     r->attribs[ii] = ATTRIB_NONE;
