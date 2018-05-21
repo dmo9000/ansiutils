@@ -305,6 +305,18 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
 
         case (FLAG_1B | FLAG_5B):
 
+            if (c == 'm') {
+                assert(!paramcount);
+                assert(!paramidx);
+                assert(!parameters[0]); 
+                printf("*** raw m command - reset? ***\n");
+                fgcolor = 7;
+                bgcolor = 0;
+                attributes = ATTRIB_NONE;
+                clear_ansi_flags(FLAG_ALL);
+                break;
+                }
+
             if (c == ';') {
                 /* parameter with value 0 */
                 paramcount ++;
@@ -411,7 +423,7 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
                 set_ansi_flags(FLAG_INT);
             } else {
                 printf("error: expecting digit, got '%c' (0x%02x), %u parameter, paramval = %u\n", c, c, paramidx, paramval);
-                exit(1);
+                assert(NULL);
             }
             break;
         case (FLAG_1B | FLAG_5B | FLAG_INT):
@@ -447,7 +459,7 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
                     }
                 } else {
                     printf("error: expecting digit or seperator, got '%c' (0x%02x)\n", c, c);
-                    exit(1);
+                    assert(NULL);
                 }
             }
             break;
@@ -548,6 +560,38 @@ void dispatch_ansi_text_attributes()
             attributes |= ATTRIB_BOLD;
             goto next_parameter;
             break;
+        case 2:
+            if (debug_flag) {
+                printf("  * enable ATTRIB_HALFINTENSITY\n");
+            }
+            printf("[ATTRIB_HALFINTENSITY ON]\n");
+            attributes |= ATTRIB_HALFINTENSITY;
+            goto next_parameter;
+            break;
+        case 4:
+            if (debug_flag) {
+                printf("  * enable ATTRIB_UNDERLINE\n");
+            }
+            printf("[ATTRIB_UNDERLINE ON]\n");
+            attributes |= ATTRIB_UNDERLINE;
+            goto next_parameter;
+            break;
+        case 5:
+            if (debug_flag) {
+                printf("  * enable ATTRIB_BLINKING\n");
+            }
+            printf("[ATTRIB_BLINKING ON]\n");
+            attributes |= ATTRIB_BLINKING;
+            goto next_parameter;
+            break;
+        case 7:
+            if (debug_flag) {
+                printf("  * enable ATTRIB_REVERSE\n");
+            }
+            printf("[ATTRIB_REVERSE ON]\n");
+            attributes |= ATTRIB_REVERSE;
+            goto next_parameter;
+            break;
         case 21:
             if (debug_flag) {
                 printf("  * disable ATTRIB_BOLD\n");
@@ -555,14 +599,46 @@ void dispatch_ansi_text_attributes()
             attributes &= ~ATTRIB_BOLD;
             goto next_parameter;
             break;
+        case 22:
+            if (debug_flag) {
+                printf("  * disable ATTRIB_HALFINTENSITY\n");
+            }
+            printf("[ATTRIB_HALFINTENSITY OFF]\n");
+            attributes &= ~ATTRIB_HALFINTENSITY;
+            goto next_parameter;
+            break;
+        case 24:
+            if (debug_flag) {
+                printf("  * disable ATTRIB_UNDERLINE\n");
+            }
+            printf("[ATTRIB_UNDERLINE OFF]\n");
+            attributes &= ~ATTRIB_UNDERLINE;
+            goto next_parameter;
+            break;
+        case 25:
+            if (debug_flag) {
+                printf("  * disable ATTRIB_BLINKING\n");
+            }
+            printf("[ATTRIB_BLINKING OFF]\n");
+            attributes &= ~ATTRIB_BLINKING;
+            goto next_parameter;
+            break;
+        case 27:
+            if (debug_flag) {
+                printf("  * disable ATTRIB_REVERSE\n");
+            }
+            printf("[ATTRIB_REVERSE OFF]\n");
+            attributes &= ~ATTRIB_REVERSE;
+            goto next_parameter;
+            break;
         default:
-            printf("unknown 'm' parameter value: %u\n", parameters[i]);
-            exit(1);
+            printf("unknown 'm' parameter value: %u (paramidx=%u, ansiflags=%u)\n", parameters[i], paramidx, ansiflags);
+            assert(NULL);
             break;
         }
 
-        printf("unknown 'm' parameter value: %u\n", parameters[i]);
-        exit(1);
+        printf("unknown 'm' parameter value: %u (paramidx=%u, ansiflags=%u)\n", parameters[i], paramidx, ansiflags);
+        assert(NULL);
 
 next_parameter:
         ;
