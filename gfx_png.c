@@ -66,8 +66,14 @@ int gfx_png_drawglyph(BitmapFont *font, uint16_t px, uint16_t py, uint8_t glyph,
     png_bytep pixel;
 
     //printf("gfx_png_drawglyph(%u, %u, %u, %u, '%c')\n", px, py, font->header.px, font->header.py, glyph);
-    fgc = canvas_displaycolour(fg + ((attr & ATTRIB_BOLD ? 8 : 0)));
-    bgc = canvas_displaycolour(bg);
+   
+    if (attr & ATTRIB_REVERSE) {
+        bgc = canvas_displaycolour(fg + ((attr & ATTRIB_BOLD ? 8 : 0)));
+        fgc = canvas_displaycolour(bg);
+        } else {
+        fgc = canvas_displaycolour(fg + ((attr & ATTRIB_BOLD ? 8 : 0)));
+        bgc = canvas_displaycolour(bg);
+        }
 
     for (uint8_t ii = 0; ii < font->header.py; ii++) {
         h = 0;

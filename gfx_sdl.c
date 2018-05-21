@@ -23,10 +23,21 @@ int gfx_sdl_drawglyph(BitmapFont *font, uint16_t px, uint16_t py, uint8_t glyph,
     uint8_t rx = 0;
     uint8_t h = 0;
     SDL_Rect r;
+        
+
     //printf("gfx_sdl_drawglyph(%u, %u, %u, %u, '%c')\n", px, py, font->header.px, font->header.py, glyph);
-    //
-    fgc = canvas_displaycolour(fg + ((attr & ATTRIB_BOLD ? 8 : 0)));
-    bgc = canvas_displaycolour(bg);
+    
+    if (attr & ATTRIB_REVERSE) {
+        bgc = canvas_displaycolour(fg + ((attr & ATTRIB_BOLD ? 8 : 0)));
+        //bgc = canvas_displaycolour(fg + (((attr & ATTRIB_BOLD)|(!(attr & ATTRIB_HALFINTENSITY)) ? 8 : 0)));
+        fgc = canvas_displaycolour(bg);
+        } else {
+        fgc = canvas_displaycolour(fg + ((attr & ATTRIB_BOLD ? 8 : 0)));
+        //fgc = canvas_displaycolour(fg + (((attr & ATTRIB_BOLD)|(!(attr & ATTRIB_HALFINTENSITY)) ? 8 : 0)));
+        bgc = canvas_displaycolour(bg);
+        }
+
+    
 
 
     for (int ii = 0; ii < font->header.py; ii++) {
