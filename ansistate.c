@@ -43,10 +43,12 @@ extern int errno;
 #define SEQ_ANSI_CMD_H			11
 #define SEQ_ANSI_EXECUTED		12
 #define SEQ_NOOP			 	13
+#define SEQ_ANSI_FLAG_CURSOR    14
 
 #define ANSI_1B                 0x1b
 #define ANSI_5B                 0x5b
 #define ANSI_INTSEP             0x3b
+#define ANSI_CURSOR             0x3f
 
 static char *states[] = {
     "SEQ_ERR",
@@ -62,7 +64,8 @@ static char *states[] = {
     "SEQ_ANSI_CMD_D",
     "SEQ_ANSI_CMD_H",
     "SEQ_ANSI_EXECUTED",
-    "SEQ_NOOP"
+    "SEQ_NOOP",
+    "SEQ_ANSI_FLAG_CURSOR"
 };
 
 int saved_cursor_x = 0;
@@ -112,6 +115,7 @@ const char *ansi_state(int s);
 #define FLAG_1B     1
 #define FLAG_5B     2
 #define FLAG_INT    4
+#define FLAG_CURSOR 8
 #define FLAG_ALL    0xFF
 
 
@@ -298,6 +302,7 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
             set_ansi_flags(FLAG_5B);
             init_parameters();
             break;
+
         case (FLAG_1B | FLAG_5B):
 
             if (c == ';') {
@@ -324,15 +329,9 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
             }
 
             if (c == '?') {
-                /* non standard extension! */
-                printf( "(! non-standard extension (? ... -> l)\n");
-                o++;
-                while (c != 'l') {
-                    last_c = c;
-                    c = buf[o];
-                    o++;
-                }
-                clear_ansi_flags(FLAG_ALL);
+                /* set cursor visible or non-visible */
+                set_ansi_flags(FLAG_1B | FLAG_5B | FLAG_CURSOR);
+                printf("cursor handling code encountered\n");
                 break;
             }
 
@@ -392,7 +391,7 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
                 /* means clear to end of current line - not implemented */
                 r = canvas_get_raster(canvas, current_y);
                 assert(r);
-               // printf("+++ clearing line %u from %u to %u\n", current_y, current_x, r->bytes);
+                // printf("+++ clearing line %u from %u to %u\n", current_y, current_x, r->bytes);
                 for (ii = 0; ii <= 79; ii++) {
                     r->chardata[ii] = ' ';
                     r->bgcolors[ii] = 0;
@@ -450,6 +449,44 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
                     printf("error: expecting digit or seperator, got '%c' (0x%02x)\n", c, c);
                     exit(1);
                 }
+            }
+            break;
+
+        case (FLAG_1B | FLAG_5B | FLAG_CURSOR):
+            /* cursor visibility state */
+            printf("in cursor visibility state!\n");
+            switch(c) {
+            case '0':
+            case '1':
+            case '2':
+            case '3':
+            case '4':
+            case '5':
+            case '6':
+            case '7':
+            case '8':
+            case '9':
+                /* in number sequence */
+                paramval = (paramval * 10) + (c - 0x30);
+                break;
+            case 'h':
+                /* show cursor */
+                assert(paramval == 25);
+                printf("show cursor\n");
+                canvas->cursor_enabled = true;
+                clear_ansi_flags(FLAG_ALL);
+                break;
+            case 'l':
+                /* hide cursor */
+                assert(paramval == 25);
+                printf("hide cursor\n");
+                canvas->cursor_enabled = false;
+                clear_ansi_flags(FLAG_ALL);
+                break;
+            default:
+                printf("unknown cursor visibility command (%c), paramval = %u\n", c, paramval);
+                assert(NULL);
+                break;
             }
             break;
         default:

@@ -12,7 +12,7 @@ struct ansi_canvas {
     struct ansi_raster *first_raster;
     int debug_level;
     bool clear_flag;
-	bool compress_output;
+    bool compress_output;
     bool scroll_on_output;
     uint16_t scroll_limit;
     bool allow_hard_clear;
