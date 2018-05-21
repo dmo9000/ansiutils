@@ -19,6 +19,7 @@ struct ansi_canvas {
     bool repaint_entire_canvas;
     bool is_dirty;
     bool cursor_enabled;
+    uint16_t default_raster_length;
 };
 
 typedef struct ansi_canvas   ANSICanvas;

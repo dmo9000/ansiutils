@@ -415,6 +415,39 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
                 break;
             }
 
+            if (c == 'L') {
+                /* insert a line */
+                ANSIRaster *i = NULL;       /* new raster to be inserted */
+                ANSIRaster *p = NULL;       /* delete pointer */
+                ANSIRaster *l = NULL;       /* pointer to previous raster in list */
+                /* insert raster */
+                printf("insert raster ...\n");
+                assert(!paramidx);
+                assert(canvas->default_raster_length);
+                i = create_new_raster();
+                assert(i);
+                raster_extend_length_to(i, canvas->default_raster_length);
+                assert(i->bytes);
+                r = canvas_get_raster(canvas, current_y);
+                i->next_raster = r->next_raster;
+                r->next_raster = i;
+                p = i;
+                while (p->next_raster != NULL) {
+                    l = p;
+                    p = p->next_raster; 
+                } 
+                assert(!canvas_reindex(canvas));
+                printf("reached last raster, index = %u\n", p->index); 
+                assert(p->next_raster == NULL);                
+                assert(l->next_raster == p);
+                assert(l->index + 1 == p->index);
+                /* remove from list */
+                l->next_raster = NULL;                
+                
+
+                assert(NULL);
+                }
+
             if (isdigit(c)) {
                 paramval = c - 0x30;
                 if (debug_flag) {

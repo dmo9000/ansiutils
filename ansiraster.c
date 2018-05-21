@@ -13,6 +13,22 @@ ANSIRaster *create_new_raster()
 
 }
 
+bool raster_delete(ANSIRaster *d) 
+{
+    assert(d);
+    free(d->chardata);
+    free(d->fgcolors);
+    free(d->bgcolors);
+    free(d->attribs);
+    d->chardata = NULL;
+    d->fgcolors = NULL;
+    d->bgcolors = NULL;
+    d->attribs = NULL;
+    d->bytes = 0;
+    free(d);
+    return true; 
+}
+
 
 bool raster_append_bytes(ANSIRaster *r, unsigned char *data, uint8_t bytes, ansicolor_t fg, ansicolor_t bg, attributes_t attr, bool debug)
 {

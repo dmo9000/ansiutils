@@ -29,5 +29,7 @@ bool raster_append_bytes(ANSIRaster *r, unsigned char *data, uint8_t bytes, ansi
 bool raster_append_byte(ANSIRaster *r, unsigned char data, ansicolor_t fg, ansicolor_t bg, attributes_t attr, bool debug);
 bool raster_output(ANSIRaster *r, bool debug, bool use_unicode, bool compress, FILE *fh);
 void raster_extend_length_to(ANSIRaster *r, uint16_t extrabytes);
+bool raster_delete(ANSIRaster *d);
+
 
 #endif /* __ANSIRASTER_H__ */
