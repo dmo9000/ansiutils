@@ -416,6 +416,7 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
             }
 
             if (c == 'L') {
+                /* TODO: move the code below to a canvas_insert_raster() function */
                 /* insert a line */
                 ANSIRaster *i = NULL;       /* new raster to be inserted */
                 ANSIRaster *p = NULL;       /* delete pointer */
@@ -427,8 +428,9 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
                 i = create_new_raster();
                 assert(i);
                 raster_extend_length_to(i, canvas->default_raster_length);
-                assert(i->bytes);
-                r = canvas_get_raster(canvas, current_y);
+                assert(i->bytes == canvas->default_raster_length);
+                assert(current_y > 0);
+                r = canvas_get_raster(canvas, current_y-1);
                 i->next_raster = r->next_raster;
                 r->next_raster = i;
                 p = i;
@@ -443,10 +445,31 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
                 assert(l->index + 1 == p->index);
                 /* remove from list */
                 l->next_raster = NULL;                
-                
-
-                assert(NULL);
+                /* reindex again, to ensure line count is correct */
+                assert(!canvas_reindex(canvas));
+                canvas->repaint_entire_canvas = true;
+                canvas->is_dirty = true;
+                clear_ansi_flags(FLAG_ALL);
+                break;
                 }
+
+
+            if (c == 'M') {
+                ANSIRaster *d = NULL;
+                ANSIRaster *p = NULL;
+                printf("delete raster\n");               
+                assert(!paramidx);
+                p = canvas_get_raster(canvas, current_y-1);
+                d = p->next_raster;
+                p->next_raster = d->next_raster; 
+                raster_delete(d);
+                canvas_reindex(canvas);
+                canvas->repaint_entire_canvas = true;
+                canvas->is_dirty = true;
+                clear_ansi_flags(FLAG_ALL);
+                break;
+                }
+
 
             if (isdigit(c)) {
                 paramval = c - 0x30;

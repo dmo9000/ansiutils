@@ -168,7 +168,10 @@ uint16_t canvas_get_width(ANSICanvas *canvas)
     assert(canvas);
     for (int ii = 0; ii < canvas->lines; ii++) {
         r = canvas_get_raster(canvas, ii);
-        assert(r);
+        if (!r) {
+            printf("*** there were less rasters (%u) than expected (%u); did you forget to reindex?\n", ii, canvas->lines);
+            assert(r);
+            }
         if (r->bytes > width) {
             width = r->bytes;
         }
