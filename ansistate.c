@@ -370,7 +370,6 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
 
             if (c == 'H') {
                 /* HOME with 0 parameters */
-                printf("  ++ GOT HOME WITH 0 PARAMETERS\n");
                 current_x = 0;
                 current_y = 0;
                 clear_ansi_flags(FLAG_ALL);
