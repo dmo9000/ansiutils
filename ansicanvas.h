@@ -18,6 +18,7 @@ struct ansi_canvas {
     bool allow_hard_clear;
     bool repaint_entire_canvas;
     bool is_dirty;
+    bool cursor_enabled;
 };
 
 typedef struct ansi_canvas   ANSICanvas;
