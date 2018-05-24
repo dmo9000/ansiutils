@@ -50,9 +50,6 @@ int gfx_sdl_drawglyph(BitmapFont *font, uint16_t px, uint16_t py, uint8_t glyph,
             //printf("%u -> %u, ", r, jj);
             rx = font->fontdata[(glyph*font->header.py) + ii];
             if (rx & jj) {
-
-
-
                 SDL_SetRenderDrawColor( renderer, fgc->r, fgc->g, fgc->b, 255 );
                 SDL_RenderFillRect( renderer, &r );
                 //SDL_RenderDrawPoint(renderer, (px*16) + (h*2), (py*16) + (ii*2));
@@ -158,5 +155,36 @@ int gfx_sdl_canvas_render_xy(ANSICanvas *canvas, BitmapFont *myfont, uint16_t x,
     if (x < r->bytes) {
         gfx_sdl_drawglyph(myfont, x, y, r->chardata[x], r->fgcolors[x], r->bgcolors[x], r->attribs[x]);
     }
+    return 1;
+}
+
+int gfx_sdl_render_cursor(ANSICanvas *canvas, BitmapFont *myfont, uint16_t x,  uint16_t y, bool state)
+{
+    ANSIRaster *r = NULL;
+
+    assert(canvas);
+    assert(y <= 24);
+    r = canvas_get_raster(canvas, y);
+    if (!r) {
+        printf("canvas_get_raster(%u) failed\n", y);
+    }
+    assert(r);
+    if (!r->chardata) {
+        printf("+++ gfx_sdl_canvas_render_xy(%u,%u) -> failed\n", x, y);
+        assert(r->chardata);
+    }
+
+    
+    switch (state) {
+        case true:
+            if (canvas->cursor_enabled) {
+                gfx_sdl_drawglyph(myfont, x, y, ' ', 0, 7, ATTRIB_NONE);
+                } 
+            break;
+        case false:
+            gfx_sdl_drawglyph(myfont, x, y, r->chardata[x], r->fgcolors[x], r->bgcolors[x], r->attribs[x]);
+            break;
+        }
+
     return 1;
 }
