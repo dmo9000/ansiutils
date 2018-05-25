@@ -8,12 +8,38 @@
 
 SDL_Window* window;
 SDL_Renderer* renderer;
+SDL_Surface *tmpsurface;
 
 int gfx_sdl_expose()
 {
 
     SDL_RenderPresent(renderer);
     return 0;
+}
+
+int gfx_sdl_hwscroll()
+{
+
+    /* TODO: this is hardcoded for an 80x24 display and needs to be made more flexible */
+    SDL_Rect s, d;
+    SDL_Surface* winsurf;
+
+    winsurf = SDL_GetWindowSurface(window);
+    assert(winsurf);
+
+    s.x = 0;
+    s.y = 16;
+    s.w = 640;
+    s.h = 384 - 16;
+
+    d.x = 0;
+    d.y = 0;
+    d.w = 640;
+    d.h = 384 - 16;
+
+    assert(!SDL_BlitSurface(winsurf, &s, tmpsurface, &d));
+    assert(!SDL_BlitSurface(tmpsurface, &d, winsurf, &d));
+    return 1;
 }
 
 int gfx_sdl_drawglyph(BitmapFont *font, uint16_t px, uint16_t py, uint8_t glyph, uint8_t fg, uint8_t bg, uint8_t attr)
@@ -83,6 +109,8 @@ int gfx_sdl_main(uint16_t xsize, uint16_t ysize, char *WindowTitle)
     }
 
     window = SDL_CreateWindow(WindowTitle, posX, posY, sizeX, sizeY, 0 );
+    tmpsurface = SDL_CreateRGBSurface(0, 640, 384, 24, 0, 0, 0, 0);
+    assert(tmpsurface);
 
     if ( window == NULL )
     {
