@@ -9,6 +9,7 @@ KNOWN BUGS
 FEATURES
 ==
 
+* OpenGL render target support (WIP) 
 * packaging for Open/Net/FreeBSD
 * packaging for Solaris
 * packaging for Debian
