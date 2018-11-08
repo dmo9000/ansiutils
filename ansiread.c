@@ -38,12 +38,16 @@ BitmapFont *bmf_load(char *filename);
 
 pthread_t graphics_thread;
 
+uint16_t gfx_opengl_width = 0;
+uint16_t gfx_opengl_height = 0;
+
+
 void rungraphics()
 {
 
     printf("rungraphics()\r\n");
     fflush(NULL);
-    gfx_opengl_main(640, 384, "MyAmazingWindowTitle");
+    gfx_opengl_main(gfx_opengl_width, gfx_opengl_height, "MyAmazingWindowTitle");
     while (1) { }
 }
 
@@ -211,9 +215,13 @@ int main(int argc, char *argv[])
         printf("Rendering OpenGL preview ...\n");
         //gfx_sdl_main((width*8), (height*16), input_filename);
 
+
+				gfx_opengl_width = (width*8);
+				gfx_opengl_height = (height*16);
+
 				pthread_create( &graphics_thread, NULL, rungraphics, NULL);
 
-				sleep(3);
+				sleep(1);
 
         gfx_opengl_canvas_render(canvas, myfont);
         gfx_opengl_expose();
