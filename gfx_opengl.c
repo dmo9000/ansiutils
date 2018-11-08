@@ -80,6 +80,7 @@ void reshape_window(GLsizei w, GLsizei h)
 void setupTexture()
 {
 
+		printf("setupTexture()\r\n");
 
     // Clear screen
     /*
@@ -309,7 +310,7 @@ int gfx_opengl_canvas_render(ANSICanvas *canvas, BitmapFont *myfont)
     assert(width);
     assert(height);
 
-    //printf("gfx_opengl_canvas_render(%ux%u)\n", width, height);
+    printf("gfx_opengl_canvas_render(%ux%u)\n", width, height);
     for (uint16_t ii = 0; ii < height; ii++) {
         r = canvas_get_raster(canvas, ii);
         if (r) {

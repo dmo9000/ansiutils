@@ -91,10 +91,12 @@ int main(int argc, char *argv[])
             graphic_preview = true;
             text_output = false;
             break;
+#ifndef __MINGW__
         case 'o':
             png_filename = strdup(optarg);
             text_output = false;
             break;
+#endif
         case 'p':
             /* enable line padding */
             auto_line_padding = true;
@@ -219,12 +221,14 @@ int main(int argc, char *argv[])
 				while (1) { } 
     }
 
+#ifndef __MINGW__
     if (png_filename) {
         printf("Rendering PNG output to %s ...\n", png_filename);
         gfx_png_main((width*8), (height*16));
         gfx_png_canvas_render(canvas, myfont);
         gfx_png_export(png_filename);
     }
+#endif
 
     exit (0);
 }
