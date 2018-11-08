@@ -47,7 +47,7 @@ void rungraphics()
 
     printf("rungraphics()\r\n");
     fflush(NULL);
-    gfx_opengl_main(gfx_opengl_width, gfx_opengl_height, "MyAmazingWindowTitle");
+    gfx_opengl_main(gfx_opengl_width, gfx_opengl_height, "ansiread OpenGL preview");
     while (1) { }
 }
 
