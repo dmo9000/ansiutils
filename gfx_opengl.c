@@ -32,8 +32,27 @@ extern BitmapFont *myfont;
 unsigned char kbbuf[MAX_KBBUF_LEN];
 volatile uint8_t kbbuf_len = 0;
 
-extern uint16_t gfx_opengl_width; 
-extern uint16_t gfx_opengl_height;
+uint16_t gfx_opengl_width;
+uint16_t gfx_opengl_height;
+
+
+uint16_t gfx_opengl_getwidth()
+{
+    return gfx_opengl_width;
+}
+
+uint16_t gfx_opengl_getheight()
+{
+    return gfx_opengl_height;
+}
+
+void grx_opengl_setdimensions(uint16_t w, uint16_t h)
+{
+
+    gfx_opengl_width = w;
+    gfx_opengl_height = h;
+
+}
 
 void updateTexture()
 {
@@ -81,8 +100,8 @@ void reshape_window(GLsizei w, GLsizei h)
 void setupTexture()
 {
 
-		printf("setupTexture(%ux%u)\r\n", gfx_opengl_width, gfx_opengl_height);
-		screenData = malloc(gfx_opengl_width * gfx_opengl_height * 3);
+    printf("setupTexture(%ux%u)\r\n", gfx_opengl_width, gfx_opengl_height);
+    screenData = malloc(gfx_opengl_width * gfx_opengl_height * 3);
 
     // Clear screen
     /*
@@ -118,17 +137,17 @@ void setupTexture()
 
 void setTexturePixel(int x, int y, u8 r, u8 g, u8 b)
 {
-		unsigned char *scrP;
-		scrP = screenData;
+    unsigned char *scrP;
+    scrP = screenData;
 
-		scrP += (y * gfx_opengl_width * 3) + (x * 3);
-		*scrP = r;
-		scrP++;
-		*scrP = g;
-		scrP++;
-		*scrP = b;
+    scrP += (y * gfx_opengl_width * 3) + (x * 3);
+    *scrP = r;
+    scrP++;
+    *scrP = g;
+    scrP++;
+    *scrP = b;
 
-   //	screenData[y][x][0] = r;
+    //	screenData[y][x][0] = r;
     //screenData[y][x][1] = g;
     //screenData[y][x][2] = b;
 }
@@ -165,23 +184,23 @@ int gfx_opengl_hwscroll()
     d.h = 384 - 16;
     */
 
-/*
-    for(int y = 0; y < (SCREEN_HEIGHT - 16); y++)  {
-        for(int x = 0; x < SCREEN_WIDTH; x++) {
-            screenData[y][x][0] = screenData[y+16][x][0];
-            screenData[y][x][1] = screenData[y+16][x][1];
-            screenData[y][x][2] = screenData[y+16][x][2];
+    /*
+        for(int y = 0; y < (SCREEN_HEIGHT - 16); y++)  {
+            for(int x = 0; x < SCREEN_WIDTH; x++) {
+                screenData[y][x][0] = screenData[y+16][x][0];
+                screenData[y][x][1] = screenData[y+16][x][1];
+                screenData[y][x][2] = screenData[y+16][x][2];
+            }
         }
-    }
 
-    for(int y = (SCREEN_HEIGHT-16); y < (SCREEN_HEIGHT); y++)  {
-        for(int x = 0; x < SCREEN_WIDTH; x++) {
-            screenData[y][x][0] = 0;
-            screenData[y][x][1] = 0;
-            screenData[y][x][2] = 0;
+        for(int y = (SCREEN_HEIGHT-16); y < (SCREEN_HEIGHT); y++)  {
+            for(int x = 0; x < SCREEN_WIDTH; x++) {
+                screenData[y][x][0] = 0;
+                screenData[y][x][1] = 0;
+                screenData[y][x][2] = 0;
+            }
         }
-    }
-*/
+    */
 
 //    assert(!OGL_BlitSurface(winsurf, &s, tmpsurface, &d));
 
@@ -215,14 +234,14 @@ int gfx_opengl_drawglyph(BitmapFont *font, uint16_t px, uint16_t py, uint8_t gly
             rx = font->fontdata[(glyph*font->header.py) + ii];
 
             if (rx & jj) {
-                    setTexturePixel((px*8) + h, (py*16)+(ii*2), fgc->r, fgc->g, fgc->b);
-                    setTexturePixel((px*8) + h, (py*16)+(ii*2)+1, fgc->r, fgc->g, fgc->b);
+                setTexturePixel((px*8) + h, (py*16)+(ii*2), fgc->r, fgc->g, fgc->b);
+                setTexturePixel((px*8) + h, (py*16)+(ii*2)+1, fgc->r, fgc->g, fgc->b);
 //                setTexturePixel((px*8) + h, (py*16)+(ii*2), 255, 255, 255);
 //                setTexturePixel((px*8) + h, (py*16)+(ii*2)+1, 255, 255, 255);
 //                    printf("X");
             } else {
-                    setTexturePixel((px*8) + h, (py*16)+(ii*2), bgc->r, bgc->g, bgc->b);
-                    setTexturePixel((px*8) + h, (py*16)+(ii*2)+1, bgc->r, bgc->g, bgc->b);
+                setTexturePixel((px*8) + h, (py*16)+(ii*2), bgc->r, bgc->g, bgc->b);
+                setTexturePixel((px*8) + h, (py*16)+(ii*2)+1, bgc->r, bgc->g, bgc->b);
 //                setTexturePixel((px*8) + h, (py*16)+(ii*2), 0, 0, 0);
 //                setTexturePixel((px*8) + h, (py*16)+(ii*2)+1, 0, 0, 0);
 //                    printf(" ");
@@ -291,8 +310,8 @@ int gfx_opengl_main(uint16_t xsize, uint16_t ysize, char *WindowTitle)
 
 //    display_width = SCREEN_WIDTH * modifier;
 //    display_height = SCREEN_HEIGHT * modifier;
-		display_width = xsize;
-		display_height = ysize;
+    display_width = xsize;
+    display_height = ysize;
 
     glutInitWindowSize(display_width, display_height);
 //    glutInitWindowPosition(320, 320);

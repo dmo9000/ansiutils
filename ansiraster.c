@@ -13,7 +13,7 @@ ANSIRaster *create_new_raster()
 
 }
 
-bool raster_delete(ANSIRaster *d) 
+bool raster_delete(ANSIRaster *d)
 {
     assert(d);
     free(d->chardata);
@@ -26,7 +26,7 @@ bool raster_delete(ANSIRaster *d)
     d->attribs = NULL;
     d->bytes = 0;
     free(d);
-    return true; 
+    return true;
 }
 
 

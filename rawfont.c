@@ -24,15 +24,14 @@ extern int gfx_opengl_expose();
 
 pthread_t graphics_thread;
 
-uint16_t gfx_opengl_width = 0;
-uint16_t gfx_opengl_height = 0;
 
 void rungraphics()
 {
 
     printf("rungraphics()\r\n");
     fflush(NULL);
-    gfx_opengl_main(640, 384, "rawfont viewer");
+    //gfx_opengl_main(640, 384, "rawfont viewer");
+    gfx_opengl_main(gfx_opengl_getwidth(), gfx_opengl_getheight(), "ansiread OpenGL preview");
     while (1) { }
 }
 
@@ -51,15 +50,10 @@ int main(int argc, char *argv[])
 
     my_canvas = new_canvas();
 
-		gfx_opengl_width = 640;
-		gfx_opengl_height = 384;
+    grx_opengl_setdimensions(640, 384);
+    pthread_create( &graphics_thread, NULL, rungraphics, NULL);
 
-
-    //gfx_opengl_main((CANVAS_WIDTH*8), (CANVAS_HEIGHT*16), "BMF Font Render Test");
-		
-		pthread_create( &graphics_thread, NULL, rungraphics, NULL);
-
-		sleep(1);
+    sleep(1);
 
     for (int kk = 0; kk < 256; kk++) {
         gfx_opengl_drawglyph(myfont, (kk % CANVAS_WIDTH), (kk / CANVAS_WIDTH), kk, 7, 0, ATTRIB_NONE);

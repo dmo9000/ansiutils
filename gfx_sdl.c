@@ -49,19 +49,19 @@ int gfx_sdl_drawglyph(BitmapFont *font, uint16_t px, uint16_t py, uint8_t glyph,
     uint8_t rx = 0;
     uint8_t h = 0;
     SDL_Rect r;
-        
+
 
     //printf("gfx_sdl_drawglyph(%u, %u, %u, %u, '%c')\n", px, py, font->header.px, font->header.py, glyph);
-    
+
     /* TODO: this is still messed up with respect to halfintensity */
 
     if (attr & ATTRIB_REVERSE) {
         bgc = canvas_displaycolour(fg + ((attr & ATTRIB_BOLD ? 8 : 0)));
         fgc = canvas_displaycolour(bg);
-        } else {
+    } else {
         fgc = canvas_displaycolour(fg + ((attr & ATTRIB_BOLD ? 8 : 0)));
         bgc = canvas_displaycolour(bg);
-        }
+    }
 
     for (int ii = 0; ii < font->header.py; ii++) {
         h = 0;
@@ -202,17 +202,17 @@ int gfx_sdl_render_cursor(ANSICanvas *canvas, BitmapFont *myfont, uint16_t x,  u
         assert(r->chardata);
     }
 
-    
+
     switch (state) {
-        case true:
-            if (canvas->cursor_enabled) {
-                gfx_sdl_drawglyph(myfont, x, y, ' ', 0, 7, ATTRIB_NONE);
-                } 
-            break;
-        case false:
-            gfx_sdl_drawglyph(myfont, x, y, r->chardata[x], r->fgcolors[x], r->bgcolors[x], r->attribs[x]);
-            break;
+    case true:
+        if (canvas->cursor_enabled) {
+            gfx_sdl_drawglyph(myfont, x, y, ' ', 0, 7, ATTRIB_NONE);
         }
+        break;
+    case false:
+        gfx_sdl_drawglyph(myfont, x, y, r->chardata[x], r->fgcolors[x], r->bgcolors[x], r->attribs[x]);
+        break;
+    }
 
     return 1;
 }

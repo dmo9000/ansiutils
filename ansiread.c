@@ -38,16 +38,12 @@ BitmapFont *bmf_load(char *filename);
 
 pthread_t graphics_thread;
 
-uint16_t gfx_opengl_width = 0;
-uint16_t gfx_opengl_height = 0;
-
-
 void rungraphics()
 {
 
     printf("rungraphics()\r\n");
     fflush(NULL);
-    gfx_opengl_main(gfx_opengl_width, gfx_opengl_height, "ansiread OpenGL preview");
+    gfx_opengl_main(gfx_opengl_getwidth(), gfx_opengl_getheight(), "ansiread OpenGL preview");
     while (1) { }
 }
 
@@ -71,7 +67,7 @@ int main(int argc, char *argv[])
     bool enable_utf8 = true;
     bool enable_compression = false;
 
-		printf("ansiread starting ...\n");
+    printf("ansiread starting ...\n");
     if (argc < 2) {
         printf("usage: ansiread <filename.ans>\n");
         exit(1);
@@ -133,7 +129,7 @@ int main(int argc, char *argv[])
     lstat(input_filename, &sbuf);
 #else
     stat(input_filename, &sbuf);
-#endif /* __MINGW__*/ 
+#endif /* __MINGW__*/
     printf("filesize = %lu\n", sbuf.st_size);
     assert(sbuf.st_size);
     total_length = sbuf.st_size;
@@ -216,19 +212,20 @@ int main(int argc, char *argv[])
         //gfx_sdl_main((width*8), (height*16), input_filename);
 
 
-				gfx_opengl_width = (width*8);
-				gfx_opengl_height = (height*16);
+//				gfx_opengl_width = (width*8);
+//				gfx_opengl_height = (height*16);
+        grx_opengl_setdimensions(width*8, height*16);
 
-				pthread_create( &graphics_thread, NULL, rungraphics, NULL);
+        pthread_create( &graphics_thread, NULL, rungraphics, NULL);
 
-				sleep(1);
+        sleep(1);
 
         gfx_opengl_canvas_render(canvas, myfont);
         gfx_opengl_expose();
 
         printf("Hit ENTER to close preview.\n");
         //while (!getchar()) { }
-				while (1) { } 
+        while (1) { }
     }
 
 #ifndef __MINGW__

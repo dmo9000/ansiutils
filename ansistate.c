@@ -308,14 +308,14 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
             if (c == 'm') {
                 assert(!paramcount);
                 assert(!paramidx);
-                assert(!parameters[0]); 
+                assert(!parameters[0]);
                 printf("*** raw m command - reset? ***\n");
                 fgcolor = 7;
                 bgcolor = 0;
                 attributes = ATTRIB_NONE;
                 clear_ansi_flags(FLAG_ALL);
                 break;
-                }
+            }
 
             if (c == ';') {
                 /* parameter with value 0 */
@@ -435,39 +435,39 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
                 p = i;
                 while (p->next_raster != NULL) {
                     l = p;
-                    p = p->next_raster; 
-                } 
+                    p = p->next_raster;
+                }
                 assert(!canvas_reindex(canvas));
-                printf("reached last raster, index = %u\n", p->index); 
-                assert(p->next_raster == NULL);                
+                printf("reached last raster, index = %u\n", p->index);
+                assert(p->next_raster == NULL);
                 assert(l->next_raster == p);
                 assert(l->index + 1 == p->index);
                 /* remove from list */
-                l->next_raster = NULL;                
+                l->next_raster = NULL;
                 /* reindex again, to ensure line count is correct */
                 assert(!canvas_reindex(canvas));
                 canvas->repaint_entire_canvas = true;
                 canvas->is_dirty = true;
                 clear_ansi_flags(FLAG_ALL);
                 break;
-                }
+            }
 
 
             if (c == 'M') {
                 ANSIRaster *d = NULL;
                 ANSIRaster *p = NULL;
-                printf("delete raster\n");               
+                printf("delete raster\n");
                 assert(!paramidx);
                 p = canvas_get_raster(canvas, current_y-1);
                 d = p->next_raster;
-                p->next_raster = d->next_raster; 
+                p->next_raster = d->next_raster;
                 raster_delete(d);
                 canvas_reindex(canvas);
                 canvas->repaint_entire_canvas = true;
                 canvas->is_dirty = true;
                 clear_ansi_flags(FLAG_ALL);
                 break;
-                }
+            }
 
 
             if (isdigit(c)) {
