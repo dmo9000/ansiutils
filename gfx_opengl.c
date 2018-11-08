@@ -20,12 +20,8 @@ int modifier = 2;
 extern int g_trace;
 
 typedef unsigned char u8;
-//u8 screenData[SCREEN_HEIGHT][SCREEN_WIDTH][3];
-//u8 *screenData[][][];
-//u8 ***screenData;
 u8 *screenData;
 int gfx_opengl_drawglyph(BitmapFont *font, uint16_t px, uint16_t py, uint8_t glyph, uint8_t fg, uint8_t bg, uint8_t attr);
-//char *p = "HELLO WORLD THIS IS YOUR CAPTAIN SPEAKING PT2, PLEASE STANDBY";
 extern BitmapFont *myfont;
 
 #define MAX_KBBUF_LEN	256
@@ -57,7 +53,6 @@ void grx_opengl_setdimensions(uint16_t w, uint16_t h)
 void updateTexture()
 {
 
-//    glTexSubImage2D(GL_TEXTURE_2D, 0,0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, GL_RGB, GL_UNSIGNED_BYTE, (GLvoid*)screenData);
     glTexSubImage2D(GL_TEXTURE_2D, 0,0, 0, gfx_opengl_width, gfx_opengl_height, GL_RGB, GL_UNSIGNED_BYTE, (GLvoid*)screenData);
 
     glBegin( GL_QUADS );
@@ -82,8 +77,6 @@ void display()
 
 void reshape_window(GLsizei w, GLsizei h)
 {
-    //w = SCREEN_WIDTH;
-    //h = SCREEN_HEIGHT;
     printf("reshape_window(w=%u,h=%u)\n", w, h);
     glClearColor(0.0f, 0.0f, 0.5f, 0.0f);
     glMatrixMode(GL_PROJECTION);
@@ -100,28 +93,10 @@ void reshape_window(GLsizei w, GLsizei h)
 void setupTexture()
 {
 
-    printf("setupTexture(%ux%u)\r\n", gfx_opengl_width, gfx_opengl_height);
+    //printf("setupTexture(%ux%u)\r\n", gfx_opengl_width, gfx_opengl_height);
     screenData = malloc(gfx_opengl_width * gfx_opengl_height * 3);
 
-    // Clear screen
-    /*
-    for(int y = 0; y < SCREEN_HEIGHT; ++y)  {
-        for(int x = 0; x < SCREEN_WIDTH; ++x) {
-            if (y % 2) {
-                screenData[y][x][0] = 255;
-                screenData[y][x][1] = 0;
-                screenData[y][x][2] = 0;
-            } else {
-                screenData[y][x][0] = 0;
-                screenData[y][x][1] = 255;
-                screenData[y][x][2] = 0;
-            }
-        }
-    }
-    	*/
-
     // Create a texture
-    //glTexImage2D(GL_TEXTURE_2D, 0, 3, SCREEN_WIDTH, SCREEN_HEIGHT, 0, GL_RGB, GL_UNSIGNED_BYTE, (GLvoid*)screenData);
     glTexImage2D(GL_TEXTURE_2D, 0, 3, gfx_opengl_width, gfx_opengl_height, 0, GL_RGB, GL_UNSIGNED_BYTE, (GLvoid*)screenData);
 
     // Set up the texture
@@ -147,16 +122,12 @@ void setTexturePixel(int x, int y, u8 r, u8 g, u8 b)
     scrP++;
     *scrP = b;
 
-    //	screenData[y][x][0] = r;
-    //screenData[y][x][1] = g;
-    //screenData[y][x][2] = b;
 }
 
 
 int gfx_opengl_expose()
 {
 
-//   OGL_RenderPresent(renderer);
     return 0;
 }
 
@@ -164,48 +135,30 @@ int gfx_opengl_hwscroll()
 {
 
     int x =0, y = 0;
+		char *src_addr, *dest_addr = NULL;
 //	printf("gfx_opengl_hwscroll()\r\n");
-    /* TODO: this is hardcoded for an 80x24 display and needs to be made more flexible */
-//    OGL_Rect s, d;
-//    OGL_Surface* winsurf;
 
-//    winsurf = OGL_GetWindowSurface(window);
-//    assert(winsurf);
+    src_addr = screenData;
+    dest_addr = screenData;
+    src_addr += (y * gfx_opengl_width * 3) + (x * 3);
+    dest_addr += ((y+16) * gfx_opengl_width * 3) + (x * 3);
 
-    /*
-    s.x = 0;
-    s.y = 16;
-    s.w = 640;
-    s.h = 384 - 16;
+		for (int y = 0; y < gfx_opengl_height - 16; y++) {
+            //for(int x = 0; x < gfx_opengl_width; x++) {
+    				src_addr = screenData;
+				    dest_addr = screenData;
+				    src_addr += ((y+16) * gfx_opengl_width * 3); //+ (x * 3);
+				    dest_addr += (y * gfx_opengl_width * 3); // + (x * 3);
+						memcpy(dest_addr, src_addr, gfx_opengl_width *3);
+						//}
+		}	
 
-    d.x = 0;
-    d.y = 0;
-    d.w = 640;
-    d.h = 384 - 16;
-    */
+        for(int y = (gfx_opengl_height-16); y < (gfx_opengl_height); y++)  {
+				    dest_addr = screenData;
+				    dest_addr += (y * gfx_opengl_width * 3); // + (x * 3);
+						memset(dest_addr, 0, gfx_opengl_width *3);
+						}
 
-    /*
-        for(int y = 0; y < (SCREEN_HEIGHT - 16); y++)  {
-            for(int x = 0; x < SCREEN_WIDTH; x++) {
-                screenData[y][x][0] = screenData[y+16][x][0];
-                screenData[y][x][1] = screenData[y+16][x][1];
-                screenData[y][x][2] = screenData[y+16][x][2];
-            }
-        }
-
-        for(int y = (SCREEN_HEIGHT-16); y < (SCREEN_HEIGHT); y++)  {
-            for(int x = 0; x < SCREEN_WIDTH; x++) {
-                screenData[y][x][0] = 0;
-                screenData[y][x][1] = 0;
-                screenData[y][x][2] = 0;
-            }
-        }
-    */
-
-//    assert(!OGL_BlitSurface(winsurf, &s, tmpsurface, &d));
-
-//    assert(!OGL_BlitSurface(winsurf, &s, tmpsurface, &d));
-//    assert(!OGL_BlitSurface(tmpsurface, &d, winsurf, &d));
     return 1;
 }
 
@@ -236,14 +189,10 @@ int gfx_opengl_drawglyph(BitmapFont *font, uint16_t px, uint16_t py, uint8_t gly
             if (rx & jj) {
                 setTexturePixel((px*8) + h, (py*16)+(ii*2), fgc->r, fgc->g, fgc->b);
                 setTexturePixel((px*8) + h, (py*16)+(ii*2)+1, fgc->r, fgc->g, fgc->b);
-//                setTexturePixel((px*8) + h, (py*16)+(ii*2), 255, 255, 255);
-//                setTexturePixel((px*8) + h, (py*16)+(ii*2)+1, 255, 255, 255);
 //                    printf("X");
             } else {
                 setTexturePixel((px*8) + h, (py*16)+(ii*2), bgc->r, bgc->g, bgc->b);
                 setTexturePixel((px*8) + h, (py*16)+(ii*2)+1, bgc->r, bgc->g, bgc->b);
-//                setTexturePixel((px*8) + h, (py*16)+(ii*2), 0, 0, 0);
-//                setTexturePixel((px*8) + h, (py*16)+(ii*2)+1, 0, 0, 0);
 //                    printf(" ");
             }
             h++;
@@ -276,13 +225,6 @@ void process_Normal_Keys(int key, int x, int y)
 
     switch (key)
     {
-    /*
-    *        case 27 :      break;
-    *               case 100 : printf("GLUT_KEY_LEFT %d\n",key);   break;
-    *                      case 102: printf("GLUT_KEY_RIGHT %d\n",key);  ;  break;
-    *                             case 101   : printf("GLUT_KEY_UP %d\n",key);  ;  break;
-    *                                    case 103 : printf("GLUT_KEY_DOWN %d\n",key);  ;  break;
-    *                                          */
     default:
         //printf("GLUT_KEY(%d)\r\n", key);
         //output_character(key);
