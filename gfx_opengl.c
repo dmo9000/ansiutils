@@ -64,7 +64,7 @@ void reshape_window(GLsizei w, GLsizei h)
 {
     //w = SCREEN_WIDTH;
     //h = SCREEN_HEIGHT;
-    //printf("reshape_window(w=%u,h=%u)\n", w, h);
+    printf("reshape_window(w=%u,h=%u)\n", w, h);
     glClearColor(0.0f, 0.0f, 0.5f, 0.0f);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
@@ -274,8 +274,10 @@ int gfx_opengl_main(uint16_t xsize, uint16_t ysize, char *WindowTitle)
     //glutInit(0, NULL);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA);
 
-    display_width = SCREEN_WIDTH * modifier;
-    display_height = SCREEN_HEIGHT * modifier;
+//    display_width = SCREEN_WIDTH * modifier;
+//    display_height = SCREEN_HEIGHT * modifier;
+		display_width = xsize;
+		display_height = ysize;
 
     glutInitWindowSize(display_width, display_height);
 //    glutInitWindowPosition(320, 320);
@@ -311,7 +313,7 @@ int gfx_opengl_canvas_render(ANSICanvas *canvas, BitmapFont *myfont)
     assert(height);
 
     printf("gfx_opengl_canvas_render(%ux%u)\n", width, height);
-    for (uint16_t ii = 0; ii < height; ii++) {
+    for (uint16_t ii = 0; ii < 24; ii++) {
         r = canvas_get_raster(canvas, ii);
         if (r) {
             for (uint16_t jj = 0; jj < r->bytes; jj++) {
