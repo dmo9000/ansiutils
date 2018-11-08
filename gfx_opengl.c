@@ -200,16 +200,16 @@ int gfx_opengl_drawglyph(BitmapFont *font, uint16_t px, uint16_t py, uint8_t gly
             rx = font->fontdata[(glyph*font->header.py) + ii];
 
             if (rx & jj) {
-//                    setTexturePixel((px*8) + h, (py*16)+(ii*2), fgc->r, fgc->g, fgc->b);
-//                    setTexturePixel((px*8) + h, (py*16)+(ii*2)+1, fgc->r, fgc->g, fgc->b);
-                setTexturePixel((px*8) + h, (py*16)+(ii*2), 255, 255, 255);
-                setTexturePixel((px*8) + h, (py*16)+(ii*2)+1, 255, 255, 255);
+                    setTexturePixel((px*8) + h, (py*16)+(ii*2), fgc->r, fgc->g, fgc->b);
+                    setTexturePixel((px*8) + h, (py*16)+(ii*2)+1, fgc->r, fgc->g, fgc->b);
+//                setTexturePixel((px*8) + h, (py*16)+(ii*2), 255, 255, 255);
+//                setTexturePixel((px*8) + h, (py*16)+(ii*2)+1, 255, 255, 255);
 //                    printf("X");
             } else {
-//                    setTexturePixel((px*8) + h, (py*16)+(ii*2), bgc->r, bgc->g, bgc->b);
-//                    setTexturePixel((px*8) + h, (py*16)+(ii*2)+1, bgc->r, bgc->g, bgc->b);
-                setTexturePixel((px*8) + h, (py*16)+(ii*2), 0, 0, 0);
-                setTexturePixel((px*8) + h, (py*16)+(ii*2)+1, 0, 0, 0);
+                    setTexturePixel((px*8) + h, (py*16)+(ii*2), bgc->r, bgc->g, bgc->b);
+                    setTexturePixel((px*8) + h, (py*16)+(ii*2)+1, bgc->r, bgc->g, bgc->b);
+//                setTexturePixel((px*8) + h, (py*16)+(ii*2), 0, 0, 0);
+//                setTexturePixel((px*8) + h, (py*16)+(ii*2)+1, 0, 0, 0);
 //                    printf(" ");
             }
             h++;
