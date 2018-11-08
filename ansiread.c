@@ -1,5 +1,4 @@
 #define _POSIX_C_SOURCE	200112L
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -14,6 +13,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <getopt.h>
+#include <pthread.h>
 #include "ansicanvas.h"
 #include "rawfont.h"
 #include "gfx.h"
@@ -35,6 +35,17 @@ static unsigned char filebuf[CHUNK_SIZE];
 bool ansi_to_canvas(ANSICanvas *c, unsigned char *buf, size_t nbytes, size_t offset);
 
 BitmapFont *bmf_load(char *filename);
+
+pthread_t graphics_thread;
+
+void rungraphics()
+{
+
+    printf("rungraphics()\r\n");
+    fflush(NULL);
+    gfx_opengl_main(640, 384, "MyAmazingWindowTitle");
+    while (1) { }
+}
 
 int main(int argc, char *argv[])
 {
@@ -195,13 +206,17 @@ int main(int argc, char *argv[])
 
 
     if (graphic_preview) {
-        printf("Rendering SDL preview ...\n");
-        gfx_sdl_main((width*8), (height*16), input_filename);
-        gfx_sdl_canvas_render(canvas, myfont);
-        gfx_sdl_expose();
+        printf("Rendering OpenGL preview ...\n");
+        //gfx_sdl_main((width*8), (height*16), input_filename);
+
+				pthread_create( &graphics_thread, NULL, rungraphics, NULL);
+
+        gfx_opengl_canvas_render(canvas, myfont);
+        gfx_opengl_expose();
+
         printf("Hit ENTER to close preview.\n");
-        while (!getchar()) {
-        }
+        //while (!getchar()) { }
+				while (1) { } 
     }
 
     if (png_filename) {

@@ -31,8 +31,8 @@ tdftool: $(TDFTOOL_OBJS) libansicanvas.a
 bmf/8x8.bmf: Makefile pf/8x8.pf
 	( echo -ne "BMF\x00\x08\x08\x00\x01" && cat pf/8x8.pf ) > bmf/8x8.bmf
 
-ansiread: $(ANSIREAD_OBJS) libansicanvas.a
-	$(CC) $(CFLAGS) $(LDFLAGS) -o ansiread $(ANSIREAD_OBJS) -L. -lansicanvas -lpng -lSDL2 -lansisdlcanvas -lm
+ansiread: $(ANSIREAD_OBJS) libansicanvas.a bmf.o gfx_opengl.o
+	$(CC) $(CFLAGS) $(LDFLAGS) -o ansiread $(ANSIREAD_OBJS) gfx_opengl.o bmf.o -L. -lansicanvas -lpng -lm -lpthread
 
 rawfont: $(OBJS) libansicanvas.a
 	$(CC) $(CFLAGS) $(LDFLAGS) -o rawfont $(OBJS) -L. -lansicanvas -lm -lpthread
