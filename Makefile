@@ -35,7 +35,7 @@ ansiread: $(ANSIREAD_OBJS) libansicanvas.a
 	$(CC) $(CFLAGS) $(LDFLAGS) -o ansiread $(ANSIREAD_OBJS) -L. -lansicanvas -lpng -lSDL2 -lansisdlcanvas -lm
 
 rawfont: $(OBJS) libansicanvas.a
-	$(CC) $(CFLAGS) $(LDFLAGS) -o rawfont $(OBJS) -L. -lansicanvas -lSDL2 -lansisdlcanvas -lm
+	$(CC) $(CFLAGS) $(LDFLAGS) -o rawfont $(OBJS) -L. -lansicanvas -lm -lpthread
 
 clean:
 	rm -f tdftool rawfont ansiread *.o *.a *.core
