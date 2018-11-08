@@ -213,6 +213,8 @@ int main(int argc, char *argv[])
 
 				pthread_create( &graphics_thread, NULL, rungraphics, NULL);
 
+				sleep(3);
+
         gfx_opengl_canvas_render(canvas, myfont);
         gfx_opengl_expose();
 
