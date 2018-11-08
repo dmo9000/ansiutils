@@ -1,0 +1,56 @@
+CC=/usr/bin/x86_64-w64-mingw32-gcc-6.4.0.exe
+#CC=gcc
+#CC=clang
+#CFLAGS = -g -ggdb -Wall -Werror
+CFLAGS = -I/usr/x86_64-w64-mingw32/sys-root/mingw/include/ -Wall --std=c99 -g -ggdb -D__MINGW__=1
+#LDFLAGS=-L/usr/x86_64-w64-mingw32/sys-root/mingw/lib/ -lSDL2 -lglu32 -lopengl32 -lglut -lm  -lwsock32 -pthread
+LDFLAGS=-L/usr/x86_64-w64-mingw32/sys-root/mingw/lib/ -lSDL2 -lm  -lwsock32 
+
+TDFTOOL_OBJS=tdftool.o tdffont.o sauce.o
+OBJS=rawfont.o ansiload.o
+ANSIREAD_OBJS=ansiread.o gfx_png.o gfx_opengl.o 
+LIBANSICANVAS_OBJS=ansiraster.o ansicanvas.o ansistate.o utf8.o 
+LIBANSISDLCANVAS_OBJS=gfx_sdl.o bmf.o
+TESTSAMPLE=../THEDRAWFONTS/BLACKX.TDF
+
+all: libansicanvas.a libansisdlcanvas.a tdftool rawfont ansiread bmf/8x8.bmf
+
+sample:
+	@./tdftool -c ${TESTSAMPLE} ABC
+
+sampledebug:
+	@./tdftool -d -c ${TESTSAMPLE} ABC | more
+
+libansisdlcanvas.a: $(LIBANSISDLCANVAS_OBJS)
+	ar cru libansisdlcanvas.a $(LIBANSISDLCANVAS_OBJS)
+
+libansicanvas.a: $(LIBANSICANVAS_OBJS)
+	ar cru libansicanvas.a $(LIBANSICANVAS_OBJS)
+
+tdftool: $(TDFTOOL_OBJS) libansicanvas.a
+	$(CC) -o tdftool $(TDFTOOL_OBJS) -L. -lansicanvas -lwsock32 -lm
+
+bmf/8x8.bmf: Makefile pf/8x8.pf
+	( echo -ne "BMF\x00\x08\x08\x00\x01" && cat pf/8x8.pf ) > bmf/8x8.bmf
+
+ansiread: $(ANSIREAD_OBJS) libansicanvas.a libansisdlcanvas.a
+	$(CC) $(CFLAGS) -o ansiread $(ANSIREAD_OBJS) -L/usr/x86_64-w64-mingw32/sys-root/mingw/bin/ -L/usr/x86_64-w64-mingw32/sys-root/mingw/lib -lSDL2  -L. -lansicanvas -lpng -lansisdlcanvas -lm 
+
+rawfont: $(OBJS) gfx_opengl.o libansicanvas.a libansisdlcanvas.a
+	$(CC) $(CFLAGS) -o rawfont $(OBJS) gfx_opengl.o   -L. -lglut -lglu32 -lopengl32  -lansicanvas -lm 
+
+clean:
+	rm -f tdftool.exe rawfont.exe ansiread.exe *.o *.a *.core
+
+veryclean: clean
+	rm -rf tests/pass/*.ans
+	rm -rf tests/fail/*.ans
+	rm -rf tests/pass/utf8/*.ans
+
+
+install:
+	sudo cp tdftool /usr/bin/tdftool
+	sudo cp *.a /usr/lib/
+
+test: tdftool
+	./test.sh

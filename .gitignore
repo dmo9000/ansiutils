@@ -6,3 +6,4 @@ tests/
 *.o
 *.a
 core
+*.exe

@@ -1,4 +1,6 @@
+#ifndef __MINGW__
 #include <arpa/inet.h>
+#endif
 #include <getopt.h>
 #include <ctype.h>
 #include <libgen.h>

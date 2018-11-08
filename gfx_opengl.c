@@ -182,7 +182,7 @@ int gfx_opengl_drawglyph(BitmapFont *font, uint16_t px, uint16_t py, uint8_t gly
     uint8_t rx = 0;
     uint8_t h = 0;
 
-//    printf("gfx_opengl_drawglyph(%u, %u, %u, %u, '%c', fg=%u, bg=%u)\n", px, py, font->header.px, font->header.py, glyph, fg, bg);
+    //printf("gfx_opengl_drawglyph(%u, %u, %u, %u, '%c', fg=%u, bg=%u)\n", px, py, font->header.px, font->header.py, glyph, fg, bg);
 
     if (attr & ATTRIB_REVERSE) {
         bgc = canvas_displaycolour(fg + ((attr & ATTRIB_BOLD ? 8 : 0)));

@@ -22,7 +22,7 @@
 /* Prototype missing from c99 */
 char *strdup(const char *s);
 
-extern int errno;
+//extern int errno;
 extern bool auto_line_wrap;
 extern bool allow_clear;
 bool auto_line_padding = false;
@@ -56,6 +56,7 @@ int main(int argc, char *argv[])
     bool enable_utf8 = true;
     bool enable_compression = false;
 
+		printf("ansiread starting ...\n");
     if (argc < 2) {
         printf("usage: ansiread <filename.ans>\n");
         exit(1);
@@ -111,7 +112,11 @@ int main(int argc, char *argv[])
 
     input_filename = (char *) argv[optind];
 
+#ifndef __MINGW__
     lstat(input_filename, &sbuf);
+#else
+    stat(input_filename, &sbuf);
+#endif /* __MINGW__*/ 
     printf("filesize = %lu\n", sbuf.st_size);
     assert(sbuf.st_size);
     total_length = sbuf.st_size;

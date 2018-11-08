@@ -5,7 +5,7 @@ CFLAGS = -Wall --std=c99 -g -ggdb
 LDFLAGS=-lGL -lGLU -lglut -lm -pthread
 
 TDFTOOL_OBJS=tdftool.o tdffont.o sauce.o
-OBJS=gfx_sdl.o gfx_opengl.o rawfont.o ansiload.o
+OBJS=gfx_opengl.o rawfont.o ansiload.o
 ANSIREAD_OBJS=ansiread.o gfx_png.o 
 LIBANSICANVAS_OBJS=ansiraster.o ansicanvas.o ansistate.o utf8.o 
 LIBANSISDLCANVAS_OBJS=gfx_sdl.o bmf.o
