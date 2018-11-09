@@ -77,7 +77,7 @@ void display()
 
 void reshape_window(GLsizei w, GLsizei h)
 {
-    printf("reshape_window(w=%u,h=%u)\n", w, h);
+    //printf("reshape_window(w=%u,h=%u)\r\n", w, h);
     glClearColor(0.0f, 0.0f, 0.5f, 0.0f);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
@@ -135,29 +135,29 @@ int gfx_opengl_hwscroll()
 {
 
     int x =0, y = 0;
-		char *src_addr, *dest_addr = NULL;
-//	printf("gfx_opengl_hwscroll()\r\n");
+    char *src_addr, *dest_addr = NULL;
+    //printf("gfx_opengl_hwscroll()\r\n");
 
     src_addr = screenData;
     dest_addr = screenData;
     src_addr += (y * gfx_opengl_width * 3) + (x * 3);
     dest_addr += ((y+16) * gfx_opengl_width * 3) + (x * 3);
 
-		for (int y = 0; y < gfx_opengl_height - 16; y++) {
-            //for(int x = 0; x < gfx_opengl_width; x++) {
-    				src_addr = screenData;
-				    dest_addr = screenData;
-				    src_addr += ((y+16) * gfx_opengl_width * 3); //+ (x * 3);
-				    dest_addr += (y * gfx_opengl_width * 3); // + (x * 3);
-						memcpy(dest_addr, src_addr, gfx_opengl_width *3);
-						//}
-		}	
+    for (int y = 0; y < gfx_opengl_height - 16; y++) {
+        //for(int x = 0; x < gfx_opengl_width; x++) {
+        src_addr = screenData;
+        dest_addr = screenData;
+        src_addr += ((y+16) * gfx_opengl_width * 3); //+ (x * 3);
+        dest_addr += (y * gfx_opengl_width * 3); // + (x * 3);
+        memcpy(dest_addr, src_addr, gfx_opengl_width *3);
+        //}
+    }
 
-        for(int y = (gfx_opengl_height-16); y < (gfx_opengl_height); y++)  {
-				    dest_addr = screenData;
-				    dest_addr += (y * gfx_opengl_width * 3); // + (x * 3);
-						memset(dest_addr, 0, gfx_opengl_width *3);
-						}
+    for(int y = (gfx_opengl_height-16); y < (gfx_opengl_height); y++)  {
+        dest_addr = screenData;
+        dest_addr += (y * gfx_opengl_width * 3); // + (x * 3);
+        memset(dest_addr, 0, gfx_opengl_width *3);
+    }
 
     return 1;
 }
@@ -169,6 +169,14 @@ int gfx_opengl_drawglyph(BitmapFont *font, uint16_t px, uint16_t py, uint8_t gly
     RGBColour *bgc;
     uint8_t rx = 0;
     uint8_t h = 0;
+
+    /*
+    if (py >=24 ) {
+    	printf("drawglyph(line %u) out of bounds\r\n", py);
+    	assert(NULL);
+    	return 0;
+    }
+    */
 
     //printf("gfx_opengl_drawglyph(%u, %u, %u, %u, '%c', fg=%u, bg=%u)\n", px, py, font->header.px, font->header.py, glyph, fg, bg);
 
@@ -288,13 +296,15 @@ int gfx_opengl_canvas_render(ANSICanvas *canvas, BitmapFont *myfont)
     assert(width);
     assert(height);
 
-    printf("gfx_opengl_canvas_render(%ux%u)\n", width, height);
+//    printf("gfx_opengl_canvas_render(%ux%u, %u)\r\n", width, height, canvas->lines);
     for (uint16_t ii = 0; ii < height; ii++) {
         r = canvas_get_raster(canvas, ii);
         if (r) {
             for (uint16_t jj = 0; jj < r->bytes; jj++) {
                 /* FIXME: call gfx_opengl_canvas_render_xy() instead */
-                gfx_opengl_drawglyph(myfont, jj, ii, r->chardata[jj], r->fgcolors[jj], r->bgcolors[jj], r->attribs[jj]);
+                if (ii < canvas->lines && (canvas->scroll_limit ? (ii < canvas->scroll_limit) : ii < canvas->lines)) {
+                    gfx_opengl_drawglyph(myfont, jj, ii, r->chardata[jj], r->fgcolors[jj], r->bgcolors[jj], r->attribs[jj]);
+                }
             }
         } else {
             printf("canvas data missing for raster %u\n", ii);
@@ -307,7 +317,11 @@ int gfx_opengl_canvas_render_xy(ANSICanvas *canvas, BitmapFont *myfont, uint16_t
 {
     ANSIRaster *r = NULL;
 
-    assert(y <= 24);
+    if (y > canvas->scroll_limit) {
+        //printf("y > 24 (=%u) ; canvas->scroll_limit = %u\r\n", y, canvas->scroll_limit);
+        return 0;
+    }
+
     r = canvas_get_raster(canvas, y);
     if (!r) {
         printf("canvas_get_raster(%u) failed\n", y);
@@ -329,7 +343,14 @@ int gfx_opengl_render_cursor(ANSICanvas *canvas, BitmapFont *myfont, uint16_t x,
     ANSIRaster *r = NULL;
 
     assert(canvas);
-    assert(y <= 24);
+
+//		printf("gfx_opengl_render_cursor(0x%lx, 0x%lx, %u, %u, %s)\r\n", canvas, myfont, x, y, (state ? "true" : "false"));
+
+    if (y >=24) {
+        return 0;
+    }
+    assert(y < 24);
+
     r = canvas_get_raster(canvas, y);
     if (!r) {
         printf("canvas_get_raster(%u) failed\n", y);

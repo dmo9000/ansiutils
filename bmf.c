@@ -36,11 +36,11 @@ BitmapFont *bmf_load(char *filename)
         exit(1);
     }
 
-    printf("Magic:   [%c%c%c]\n", myfont->header.magic[0], myfont->header.magic[1], myfont->header.magic[2]);
-    printf("Version: [%u]\n", myfont->header.version);
-    printf("Columns: [%u]\n", myfont->header.px);
-    printf("Rows:    [%u]\n", myfont->header.py);
-    printf("Glyphs:  [%u]\n", myfont->header.glyphs);
+    printf("Magic:   [%c%c%c]\r\n", myfont->header.magic[0], myfont->header.magic[1], myfont->header.magic[2]);
+    printf("Version: [%u]\r\n", myfont->header.version);
+    printf("Columns: [%u]\r\n", myfont->header.px);
+    printf("Rows:    [%u]\r\n", myfont->header.py);
+    printf("Glyphs:  [%u]\r\n", myfont->header.glyphs);
 
     assert(myfont->header.magic[0] == 'B');
     assert(myfont->header.magic[1] == 'M');
@@ -63,7 +63,7 @@ BitmapFont *bmf_load(char *filename)
     }
 
 
-    printf("expected and found %lu bytes\n", (myfont->size));
+//    printf("expected and found %lu bytes\r\n", (myfont->size));
 
     assert(fseek(rawfont, sizeof(BitmapFontHeader), SEEK_SET) == 0);
 
@@ -80,7 +80,7 @@ BitmapFont *bmf_load(char *filename)
         rd += (r * (myfont->header.py));
     }
 
-    printf("read %lu bytes\n", (long unsigned int) rd);
+//   printf("read %lu bytes\r\n", (long unsigned int) rd);
     fclose(rawfont);
 
     return (myfont);
