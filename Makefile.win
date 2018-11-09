@@ -30,7 +30,7 @@ libansicanvas.a: $(LIBANSICANVAS_OBJS)
 tdftool: $(TDFTOOL_OBJS) libansicanvas.a
 	$(CC) -o tdftool $(TDFTOOL_OBJS) -L. -lansicanvas -lwsock32 -lm
 
-bmf/8x8.bmf: Makefile pf/8x8.pf
+bmf/8x8.bmf: Makefile.win pf/8x8.pf
 	( echo -ne "BMF\x00\x08\x08\x00\x01" && cat pf/8x8.pf ) > bmf/8x8.bmf
 
 ansiread: $(ANSIREAD_OBJS) libansicanvas.a libansisdlcanvas.a gfx_opengl.o bmf.o
