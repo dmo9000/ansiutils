@@ -214,7 +214,7 @@ int main(int argc, char *argv[])
 
 //				gfx_opengl_width = (width*8);
 //				gfx_opengl_height = (height*16);
-        grx_opengl_setdimensions(width*8, height*16);
+        gfx_opengl_setdimensions(width*8, height*16);
 
         pthread_create( &graphics_thread, NULL, rungraphics, NULL);
 

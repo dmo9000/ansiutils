@@ -50,7 +50,7 @@ int main(int argc, char *argv[])
 
     my_canvas = new_canvas();
 
-    grx_opengl_setdimensions(640, 384);
+    gfx_opengl_setdimensions(640, 384);
     pthread_create( &graphics_thread, NULL, rungraphics, NULL);
 
     sleep(1);

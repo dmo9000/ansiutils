@@ -42,7 +42,7 @@ uint16_t gfx_opengl_getheight()
     return gfx_opengl_height;
 }
 
-void grx_opengl_setdimensions(uint16_t w, uint16_t h)
+void gfx_opengl_setdimensions(uint16_t w, uint16_t h)
 {
 
     gfx_opengl_width = w;
