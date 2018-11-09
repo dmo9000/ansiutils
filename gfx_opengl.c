@@ -246,7 +246,7 @@ void process_Normal_Keys(int key, int x, int y)
 }
 
 
-int gfx_opengl_main(uint16_t xsize, uint16_t ysize, char *WindowTitle)
+int gfx_opengl_main(uint16_t xsize, uint16_t ysize, int multiplier, char *WindowTitle)
 {
     int posX = 100;
     int posY = 200;
@@ -263,7 +263,7 @@ int gfx_opengl_main(uint16_t xsize, uint16_t ysize, char *WindowTitle)
     display_width = xsize;
     display_height = ysize;
 
-    glutInitWindowSize(display_width, display_height);
+    glutInitWindowSize(display_width*multiplier, display_height*multiplier);
 //    glutInitWindowPosition(320, 320);
     glutCreateWindow(WindowTitle);
 

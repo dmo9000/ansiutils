@@ -43,7 +43,7 @@ void rungraphics()
 
     printf("rungraphics()\r\n");
     fflush(NULL);
-    gfx_opengl_main(gfx_opengl_getwidth(), gfx_opengl_getheight(), "ansiread OpenGL preview");
+    gfx_opengl_main(gfx_opengl_getwidth(), gfx_opengl_getheight(), 1, "ansiread OpenGL preview");
     while (1) { }
 }
 

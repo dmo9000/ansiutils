@@ -5,7 +5,9 @@
 #include <assert.h>
 #include <errno.h>
 #include <pthread.h>
+#include "ansicanvas.h"
 #include "rawfont.h"
+#include "gfx_opengl.h"
 #include "tdf.h"
 #include "tdffont.h"
 #include "ansiraster.h"
@@ -18,8 +20,7 @@ ANSICanvas *my_canvas = NULL;
 BitmapFont *bmf_load(char *filename);
 
 extern int ansi_read(char *ansi_file_name);
-extern int gfx_opengl_main(uint16_t, uint16_t, char *WindowTitle);
-extern int gfx_opengl_drawglyph(BitmapFont *font, uint8_t px, uint8_t py, uint8_t glyph, uint8_t fg, uint8_t bg, uint8_t attr);
+//extern int gfx_opengl_drawglyph(BitmapFont *font, uint8_t px, uint8_t py, uint8_t glyph, uint8_t fg, uint8_t bg, uint8_t attr);
 extern int gfx_opengl_expose();
 
 pthread_t graphics_thread;
@@ -31,7 +32,7 @@ void rungraphics()
     printf("rungraphics()\r\n");
     fflush(NULL);
     //gfx_opengl_main(640, 384, "rawfont viewer");
-    gfx_opengl_main(gfx_opengl_getwidth(), gfx_opengl_getheight(), "ansiread OpenGL preview");
+    gfx_opengl_main(gfx_opengl_getwidth(), gfx_opengl_getheight(), 1, "ansiread OpenGL preview");
     while (1) { }
 }
 
