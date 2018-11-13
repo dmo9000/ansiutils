@@ -20,7 +20,7 @@ int modifier = 2;
 extern int g_trace;
 
 typedef unsigned char u8;
-u8 *screenData;
+u8 *screenData = NULL;
 int gfx_opengl_drawglyph(BitmapFont *font, uint16_t px, uint16_t py, uint8_t glyph, uint8_t fg, uint8_t bg, uint8_t attr);
 extern BitmapFont *myfont;
 
@@ -113,6 +113,11 @@ void setupTexture()
 void setTexturePixel(int x, int y, u8 r, u8 g, u8 b)
 {
     unsigned char *scrP;
+
+		/* FIXME: busy wait until surface becomes available */
+
+		if (!screenData) return;
+
     scrP = screenData;
 
     scrP += (y * gfx_opengl_width * 3) + (x * 3);
