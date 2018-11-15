@@ -31,6 +31,7 @@ volatile uint8_t kbbuf_len = 0;
 uint16_t gfx_opengl_width;
 uint16_t gfx_opengl_height;
 
+static bool glut_initialised = false;
 
 uint16_t gfx_opengl_getwidth()
 {
@@ -72,7 +73,9 @@ void display()
 {
     glClear(GL_COLOR_BUFFER_BIT);
     updateTexture();
-    glutSwapBuffers();
+    if (glut_initialised) {
+        glutSwapBuffers();
+    }
 }
 
 void reshape_window(GLsizei w, GLsizei h)
@@ -114,9 +117,9 @@ void setTexturePixel(int x, int y, u8 r, u8 g, u8 b)
 {
     unsigned char *scrP;
 
-		/* FIXME: busy wait until surface becomes available */
+    /* FIXME: busy wait until surface becomes available */
 
-		if (!screenData) return;
+    if (!screenData) return;
 
     scrP = screenData;
 
@@ -278,6 +281,8 @@ int gfx_opengl_main(uint16_t xsize, uint16_t ysize, int multiplier, char *Window
     glutKeyboardFunc( process_Normal_Keys );
 
     setupTexture();
+
+    glut_initialised = true;
 
     glutMainLoop();
 
