@@ -387,3 +387,26 @@ int gfx_opengl_render_cursor(ANSICanvas *canvas, BitmapFont *myfont, uint16_t x,
 
     return 1;
 }
+
+/* compat functions for z80p - need to refactor */
+
+int tty_getbuflen()
+{
+	return kbbuf_len;
+
+}
+
+int tty_popkeybuf()
+{
+	return input_character();
+}
+
+int tty_processinput()
+{
+	if (!kbbuf_len) {
+		return 0;
+		}
+	return 1;
+}
+
+
