@@ -10,8 +10,20 @@ ANSIREAD_OBJS=ansiread.o gfx_png.o
 LIBANSICANVAS_OBJS=ansiraster.o ansicanvas.o ansistate.o utf8.o 
 LIBANSISDLCANVAS_OBJS=gfx_sdl.o bmf.o
 TESTSAMPLE=../THEDRAWFONTS/BLACKX.TDF
+GITHASH=`git log --pretty=format:'%h' -n 1`
+COLUMNS=80
 
-all: libansicanvas.a libansisdlcanvas.a tdftool rawfont ansiread bmf/8x8.bmf
+all: libansicanvas.a libansisdlcanvas.a tdftool rawfont ansiread bmf/8x8.bmf documentation
+
+documentation:
+	printf "\n\n" > ansiutils.ans
+	./tdftool -c ../THEDRAWFONTS/BOARDX.TDF ANSIUTILS | sed -e "s/^/          /" >> ansiutils.ans
+	#printf "\n\n        (git hash ${GITHASH})\n\n" >> ansiutils.ans
+	printf "\n        ANSIREAD OPTIONS:\n\n" >> ansiutils.ans
+	./ansiread | sed -e "s/^/          /" | ./ansiread - >> ansiutils.ans
+	./ansiread -o ansiutils.png ansiutils.ans
+
+
 
 sample:
 	@./tdftool -c ${TESTSAMPLE} ABC

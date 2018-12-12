@@ -47,6 +47,27 @@ void rungraphics()
     while (1) { }
 }
 
+void usage()
+{
+	printf("\n");
+	printf("usage: ansiread [options] <input-filename>\n");
+	printf("\n");
+	printf("    (use \"-\" character for <input-filename> to read from stdin)\n");
+	printf("\n");
+	printf("    -c                       output in CP437 rather than UTF-8 (default)\n");
+	printf("    -f <output-file>         write output to file instead of stdout\n");
+	printf("    -g                       enable (OpenGL) preview mode\n");
+#ifndef __MINGW__
+	printf("    -o <output-png-file>     write PNG output to <output-png-filename> (not supported on Windows)\n");
+#endif 
+	printf("    -p                       enable line padding (to 80 characters)\n");
+	printf("    -r                       set enable-clear-mode (allow ANSI control codes that clear the canvas)\n");
+	printf("    -w                       set enable-auto-line-wrap (for input that assumes tty is 80 columns)\n");
+	printf("    -z                       enable compressed color codes for stdout or file output\n");
+	printf("\n");
+	return;
+}
+
 int main(int argc, char *argv[])
 {
     FILE *ansfile = NULL;
@@ -67,13 +88,6 @@ int main(int argc, char *argv[])
     bool enable_utf8 = true;
     bool enable_compression = false;
     bool read_from_stdin = false;
-
-    /*
-    if (argc < 2) {
-    printf("usage: ansiread <filename.ans>\n");
-    exit(1);
-    }
-    */
 
     while ((c = getopt (argc, argv, "wf:o:rgczp")) != -1) {
         switch (c)
@@ -104,12 +118,11 @@ int main(int argc, char *argv[])
             auto_line_padding = true;
             break;
         case 'r':
-            printf("ALLOW CLEAR MODE SET\n");
+            //printf("ALLOW CLEAR MODE SET\n");
             allow_clear = true;
             break;
         case 'w':
-            /* append sauce record */
-            printf("WRAP MODE ENABLED\n");
+            //printf("WRAP MODE ENABLED\n");
             auto_line_wrap = true;
             break;
         case 'z':
@@ -126,7 +139,8 @@ int main(int argc, char *argv[])
     }
 
     if (optind == argc) {
-        printf("usage: ansiread <filename.ans>\n");
+        //printf("usage: ansiread <filename.ans>\n");
+				usage();
         exit(1);
     }
 
@@ -141,9 +155,8 @@ int main(int argc, char *argv[])
     if (input_filename[0] == '-' && strlen(input_filename) == 1) {
         read_from_stdin = true;
         ansfile = stdin;
-        printf("offset = %u, total_length = %u\r\n", offset, total_length);
     } else {
-        printf("filesize = %lu\n", sbuf.st_size);
+        fprintf(stderr, "filesize = %lu\n", sbuf.st_size);
         assert(sbuf.st_size);
         total_length = sbuf.st_size;
         ansfile = fopen(input_filename, "rb");
@@ -174,7 +187,7 @@ int main(int argc, char *argv[])
         };
         offset+=bytes_read;
     }
-    printf("[%ld] total bytes processed\n", offset);
+    fprintf(stderr, "* [%ld] total bytes processed\n", offset);
     fclose(ansfile);
 
     if (auto_line_padding) {
@@ -202,13 +215,13 @@ int main(int argc, char *argv[])
     height = canvas_get_height(canvas);
 
 
-    printf("canvas dimensions: %u x %u\n", width, height);
+    fprintf(stderr, "* canvas dimensions: %u x %u\n", width, height);
 
     if (text_output) {
         if (output_filename) {
-            printf("Rendering to file, with compression %s\n", (enable_compression ? "enabled" : "disabled"));
+            fprintf(stderr, "* rendering to file, with compression %s\n", (enable_compression ? "enabled" : "disabled"));
         } else {
-            printf("Rendering to tty, with compression %s\n", (enable_compression ? "enabled" : "disabled"));
+            fprintf(stderr, "* rendering to tty, with compression %s\n", (enable_compression ? "enabled" : "disabled"));
         }
         canvas_output(canvas, enable_utf8,output_filename);
     }

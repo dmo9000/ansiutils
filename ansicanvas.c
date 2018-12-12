@@ -133,7 +133,7 @@ bool canvas_output(ANSICanvas *my_canvas, bool use_unicode, char *filename)
 
             if (!r->bytes && !r->chardata) {
                 /* blank/missing raster */
-                printf("line %u is missing/truncated\n", ii);
+                //fprintf(stderr, "- line %u is missing/truncated\n", ii);
             } else {
                 raster_output(r, false, use_unicode, my_canvas->compress_output, fh);
                 fputc('\n', fh);
