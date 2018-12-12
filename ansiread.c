@@ -66,12 +66,14 @@ int main(int argc, char *argv[])
     bool text_output = true;
     bool enable_utf8 = true;
     bool enable_compression = false;
+    bool read_from_stdin = false;
 
-    printf("ansiread starting ...\n");
+    /*
     if (argc < 2) {
-        printf("usage: ansiread <filename.ans>\n");
-        exit(1);
+    printf("usage: ansiread <filename.ans>\n");
+    exit(1);
     }
+    */
 
     while ((c = getopt (argc, argv, "wf:o:rgczp")) != -1) {
         switch (c)
@@ -123,6 +125,11 @@ int main(int argc, char *argv[])
 
     }
 
+    if (optind == argc) {
+        printf("usage: ansiread <filename.ans>\n");
+        exit(1);
+    }
+
     input_filename = (char *) argv[optind];
 
 #ifndef __MINGW__
@@ -130,12 +137,17 @@ int main(int argc, char *argv[])
 #else
     stat(input_filename, &sbuf);
 #endif /* __MINGW__*/
-    printf("filesize = %lu\n", sbuf.st_size);
-    assert(sbuf.st_size);
-    total_length = sbuf.st_size;
 
-
-    ansfile = fopen(input_filename, "rb");
+    if (input_filename[0] == '-' && strlen(input_filename) == 1) {
+        read_from_stdin = true;
+        ansfile = stdin;
+        printf("offset = %u, total_length = %u\r\n", offset, total_length);
+    } else {
+        printf("filesize = %lu\n", sbuf.st_size);
+        assert(sbuf.st_size);
+        total_length = sbuf.st_size;
+        ansfile = fopen(input_filename, "rb");
+    }
 
     if (!ansfile) {
         printf("cannot open: %s: %s\n", input_filename, strerror(errno));
@@ -151,8 +163,12 @@ int main(int argc, char *argv[])
         canvas->compress_output = true;
     }
 
-    while (!feof(ansfile) && !ferror(ansfile) && offset < total_length) {
+    while (!feof(ansfile) && !ferror(ansfile) && ((!read_from_stdin) && offset < total_length) || (read_from_stdin)) {
         bytes_read = fread((unsigned char *) &filebuf, 1, CHUNK_SIZE, ansfile);
+        if (bytes_read == 0) {
+            break;
+        }
+        //printf("offset = %u, bytes_read = %u\n", offset, bytes_read);
         if (!ansi_to_canvas(canvas, (unsigned char *) &filebuf, bytes_read, offset)) {
             break;
         };
