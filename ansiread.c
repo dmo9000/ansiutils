@@ -54,16 +54,16 @@ void usage()
 	printf("\n");
 	printf("    (use \"-\" character for <input-filename> to read from stdin)\n");
 	printf("\n");
-	printf("    -c                       output in CP437 rather than UTF-8 (default)\n");
-	printf("    -f <output-file>         write output to file instead of stdout\n");
-	printf("    -g                       enable (OpenGL) preview mode\n");
+	printf("    -c              output in CP437 rather than UTF-8 (default)\n");
+	printf("    -f <output>     write output to file instead of stdout\n");
+	printf("    -g              enable (OpenGL) preview mode\n");
 #ifndef __MINGW__
-	printf("    -o <output-png-file>     write PNG output to <output-png-filename> (not supported on Windows)\n");
+	printf("    -o <output>     write PNG output to <output-png-filename> (not supported on Windows)\n");
 #endif 
-	printf("    -p                       enable line padding (to 80 characters)\n");
-	printf("    -r                       set enable-clear-mode (allow ANSI control codes that clear the canvas)\n");
-	printf("    -w                       set enable-auto-line-wrap (for input that assumes tty is 80 columns)\n");
-	printf("    -z                       enable compressed color codes for stdout or file output\n");
+	printf("    -p              enable line padding (to 80 characters)\n");
+	printf("    -r              set enable-clear-mode (allow ANSI control codes that clear the canvas)\n");
+	printf("    -w              set enable-auto-line-wrap (for input that assumes tty is 80 columns)\n");
+	printf("    -z              enable compressed color codes for stdout or file output\n");
 	printf("\n");
 	return;
 }
