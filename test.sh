@@ -29,7 +29,7 @@ runtest () {
             fi
 
        echo "-> CP437 [$testcount/$TESTTOTAL] $TDFFILE" > output.ans
-        ./tdftool -c ../THEDRAWFONTS/${TDFFILE} "TDFTool" 1>output.ans 2>output.ans
+        ./tdftool -c ../THEDRAWFONTS/${TDFFILE} "ANSIUTILS" 1>output.ans 2>output.ans
         STATUS=$?
         if [ ${STATUS} == 0 ]; then
             mv output.ans tests/pass/cp437/${OUTNAME}.ans ;
