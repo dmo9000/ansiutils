@@ -41,7 +41,7 @@ pthread_t graphics_thread;
 void rungraphics()
 {
 
-    printf("rungraphics()\r\n");
+    //printf("rungraphics()\r\n");
     fflush(NULL);
     gfx_opengl_main(gfx_opengl_getwidth(), gfx_opengl_getheight(), 1, "ansiread OpenGL preview");
     while (1) { }
