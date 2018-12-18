@@ -125,7 +125,7 @@ BitmapFont *bmf_load(char *filename)
     }
 
 
-    printf("expected and found %lu bytes\n", (myfont->size));
+    printf("expected and found %lu bytes\n", ((long unsigned int) myfont->size));
 
     assert(fseek(rawfont, sizeof(BitmapFontHeader), SEEK_SET) == 0);
 
