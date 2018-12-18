@@ -521,7 +521,7 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
 
         case (FLAG_1B | FLAG_5B | FLAG_CURSOR):
             /* cursor visibility state */
-            printf("in cursor visibility state!\n");
+            //printf("in cursor visibility state!\n");
             switch(c) {
             case '0':
             case '1':

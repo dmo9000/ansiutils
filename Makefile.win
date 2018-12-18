@@ -1,4 +1,4 @@
-CC=/usr/bin/x86_64-w64-mingw32-gcc-6.4.0.exe
+CC=/usr/bin/x86_64-w64-mingw32-gcc.exe
 #CC=gcc
 #CC=clang
 #CFLAGS = -g -ggdb -Wall -Werror
