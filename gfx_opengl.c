@@ -46,6 +46,7 @@ uint16_t gfx_opengl_getheight()
 void gfx_opengl_setdimensions(uint16_t w, uint16_t h)
 {
 
+		printf("gfx_opengl_setdimenions(%u, %u)\n", w, h);
     gfx_opengl_width = w;
     gfx_opengl_height = h;
 
@@ -58,13 +59,13 @@ void updateTexture()
 
     glBegin( GL_QUADS );
     glTexCoord2d(0.0, 0.0);
-    glVertex2d(0.0,       0.0);
+    glVertex2d(0.0, 0.0);
     glTexCoord2d(1.0, 0.0);
     glVertex2d(display_width, 0.0);
     glTexCoord2d(1.0, 1.0);
     glVertex2d(display_width, display_height);
     glTexCoord2d(0.0, 1.0);
-    glVertex2d(0.0,       display_height);
+    glVertex2d(0.0,  display_height);
     glEnd();
 }
 
