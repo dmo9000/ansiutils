@@ -176,7 +176,7 @@ int main(int argc, char *argv[])
         canvas->compress_output = true;
     }
 
-    while (!feof(ansfile) && !ferror(ansfile) && ((!read_from_stdin) && offset < total_length) || (read_from_stdin)) {
+    while ((!feof(ansfile) && !ferror(ansfile) && ((!read_from_stdin) && offset < total_length)) || (read_from_stdin)) {
         bytes_read = fread((unsigned char *) &filebuf, 1, CHUNK_SIZE, ansfile);
         if (bytes_read == 0) {
             break;

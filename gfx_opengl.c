@@ -261,10 +261,12 @@ void process_Normal_Keys(int key, int x, int y)
 
 int gfx_opengl_main(uint16_t xsize, uint16_t ysize, int multiplier, char *WindowTitle)
 {
+	/*
     int posX = 100;
     int posY = 200;
     int sizeX = xsize;
     int sizeY =  ysize;
+	*/
     int argc = 0;
     char *argv[] = { NULL };
     glutInit(&argc, argv);
