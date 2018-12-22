@@ -469,19 +469,19 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
                 break;
             }
 
-						if (c == 'D') {
-								/* rubout/delete? */
-								fprintf(stderr, "[RUBOUT/DELETE]\n");
-								if (current_x ){
-													current_x --;
-													} else {
-													current_y --;
-													current_x = (CONSOLE_WIDTH-1); 
-													}
-								canvas->is_dirty = true;
+            if (c == 'D') {
+                /* rubout/delete? */
+                fprintf(stderr, "[RUBOUT/DELETE]\n");
+                if (current_x ) {
+                    current_x --;
+                } else {
+                    current_y --;
+                    current_x = (CONSOLE_WIDTH-1);
+                }
+                canvas->is_dirty = true;
                 clear_ansi_flags(FLAG_ALL);
-								break;
-								}
+                break;
+            }
 
 
             if (isdigit(c)) {

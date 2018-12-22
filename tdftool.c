@@ -15,17 +15,17 @@ int getopt(int argc, char * const argv[], const char *optstring);
 
 void usage()
 {
-  printf("\n");
-  printf("usage: tdftool [options] <tdf-font> \"your text here\"\n");
-  printf("\n");
-	printf("    -l              list mode\n");
-  printf("    -d              increase debugging level (use up to four times)\n");
-  printf("    -v              render vertically instead of horizontally\n");
-  printf("    -f <n>          use specified subfont\n");
-	printf("    -c              render to CP437 glyphs instead of UTF-8\n");
-  printf("    -s              append SAUCE record\n");
-  printf("\n");
-  return;
+    printf("\n");
+    printf("usage: tdftool [options] <tdf-font> \"your text here\"\n");
+    printf("\n");
+    printf("    -l              list mode\n");
+    printf("    -d              increase debugging level (use up to four times)\n");
+    printf("    -v              render vertically instead of horizontally\n");
+    printf("    -f <n>          use specified subfont\n");
+    printf("    -c              render to CP437 glyphs instead of UTF-8\n");
+    printf("    -s              append SAUCE record\n");
+    printf("\n");
+    return;
 }
 
 
@@ -83,19 +83,19 @@ int main(int argc, char *argv[])
             use_unicode = false;
             break;
 //        case 'o':
-            /* output filename */
-            //output_filename = strdup((char *) optarg);
+        /* output filename */
+        //output_filename = strdup((char *) optarg);
 //            break;
 
         case '?':
             if (optopt == 'c') {
                 printf ("Option -%c requires an argument.\n", optopt);
-								usage();
+                usage();
                 exit(1);
             }
             else if (isprint (optopt)) {
                 printf ("Unknown option `-%c'.\n", optopt);
-								usage();
+                usage();
                 exit(1);
             }
             else {
@@ -136,7 +136,7 @@ int main(int argc, char *argv[])
 
     if (!tdf_file) {
         //printf("Error opening %s\n", input_filename);
-				usage();
+        usage();
         exit(1);
     }
 

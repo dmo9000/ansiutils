@@ -83,7 +83,7 @@ int gfx_png_drawglyph(BitmapFont *font, uint16_t px, uint16_t py, uint8_t glyph,
             rx = font->fontdata[(glyph*font->header.py) + ii];
 
 //            if (rx & jj) {
-				if (rx & jj || ((attr & ATTRIB_UNDERLINE) && (ii == font->header.py - 1)))	 {
+            if (rx & jj || ((attr & ATTRIB_UNDERLINE) && (ii == font->header.py - 1)))	 {
                 row = row_pointers[(py*16) + (ii*2)];
                 pixel = &(row[((px*8) + h) * 4]);
                 pixel[0] = fgc->r;

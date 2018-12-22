@@ -32,8 +32,10 @@ void rungraphics()
     printf("rungraphics()\r\n");
     fflush(NULL);
     //gfx_opengl_main(640, 384, "rawfont viewer");
-    gfx_opengl_main(gfx_opengl_getwidth(), gfx_opengl_getheight(), 1, "ansiread OpenGL preview");
-    while (1) { }
+    gfx_opengl_main(my_canvas, gfx_opengl_getwidth(), gfx_opengl_getheight(), 1, "ansiread OpenGL preview");
+    while (1) {
+        sleep(1);
+    }
 }
 
 int main(int argc, char *argv[])
@@ -63,6 +65,7 @@ int main(int argc, char *argv[])
 
     gfx_opengl_expose();
     while (!getchar()) {
+        sleep(1);
     }
     exit(0);
 

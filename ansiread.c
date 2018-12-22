@@ -22,6 +22,8 @@
 /* Prototype missing from c99 */
 char *strdup(const char *s);
 
+ANSICanvas *canvas = NULL;
+
 //extern int errno;
 extern bool auto_line_wrap;
 extern bool allow_clear;
@@ -43,29 +45,31 @@ void rungraphics()
 
     //printf("rungraphics()\r\n");
     fflush(NULL);
-    gfx_opengl_main(gfx_opengl_getwidth(), gfx_opengl_getheight(), 1, "ansiread OpenGL preview");
-    while (1) { }
+    gfx_opengl_main(canvas, gfx_opengl_getwidth(), gfx_opengl_getheight(), 1, "ansiread OpenGL preview");
+    while (1) {
+        sleep(1);
+    }
 }
 
 void usage()
 {
-	printf("\n");
-	printf("usage: ansiread [options] <input-filename>\n");
-	printf("\n");
-	printf("    (use \"-\" character for <input-filename> to read from stdin)\n");
-	printf("\n");
-	printf("    -c              output in CP437 rather than UTF-8 (default)\n");
-	printf("    -f <output>     write output to file instead of stdout\n");
-	printf("    -g              enable (OpenGL) preview mode\n");
+    printf("\n");
+    printf("usage: ansiread [options] <input-filename>\n");
+    printf("\n");
+    printf("    (use \"-\" character for <input-filename> to read from stdin)\n");
+    printf("\n");
+    printf("    -c              output in CP437 rather than UTF-8 (default)\n");
+    printf("    -f <output>     write output to file instead of stdout\n");
+    printf("    -g              enable (OpenGL) preview mode\n");
 #ifndef __MINGW__
-	printf("    -o <output>     write PNG output to <output-png-filename> (not supported on Windows)\n");
-#endif 
-	printf("    -p              enable line padding (to 80 characters)\n");
-	printf("    -r              set enable-clear-mode (allow ANSI control codes that clear the canvas)\n");
-	printf("    -w              set enable-auto-line-wrap (for input that assumes tty is 80 columns)\n");
-	printf("    -z              enable compressed color codes for stdout or file output\n");
-	printf("\n");
-	return;
+    printf("    -o <output>     write PNG output to <output-png-filename> (not supported on Windows)\n");
+#endif
+    printf("    -p              enable line padding (to 80 characters)\n");
+    printf("    -r              set enable-clear-mode (allow ANSI control codes that clear the canvas)\n");
+    printf("    -w              set enable-auto-line-wrap (for input that assumes tty is 80 columns)\n");
+    printf("    -z              enable compressed color codes for stdout or file output\n");
+    printf("\n");
+    return;
 }
 
 int main(int argc, char *argv[])
@@ -75,7 +79,7 @@ int main(int argc, char *argv[])
     struct stat sbuf;
     size_t total_length = 0;
     off_t offset = 0;
-    ANSICanvas *canvas = NULL;
+//    ANSICanvas *canvas = NULL;
     uint16_t width = 0, height = 0;
     BitmapFont *myfont = NULL;
     char *font_filename = NULL;
@@ -140,7 +144,7 @@ int main(int argc, char *argv[])
 
     if (optind == argc) {
         //printf("usage: ansiread <filename.ans>\n");
-				usage();
+        usage();
         exit(1);
     }
 
@@ -253,8 +257,10 @@ int main(int argc, char *argv[])
         gfx_opengl_expose();
 
         printf("Hit ENTER to close preview.\n");
-        //while (!getchar()) { }
-        while (1) { }
+        while (!getchar() && !tty_getbuflen()) {
+            sleep(1);
+        }
+        //while (1) { }
     }
 
 #ifndef __MINGW__

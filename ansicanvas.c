@@ -7,6 +7,11 @@
 
 RGBColour rgbcolours[16];
 
+bool canvas_is_dirty(ANSICanvas *c)
+{
+    return c->is_dirty;
+}
+
 ANSICanvas *new_canvas()
 {
 

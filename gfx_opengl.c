@@ -30,8 +30,9 @@ volatile uint8_t kbbuf_len = 0;
 
 uint16_t gfx_opengl_width;
 uint16_t gfx_opengl_height;
-
 static bool glut_initialised = false;
+
+ANSICanvas *myCanvas = NULL;
 
 uint16_t gfx_opengl_getwidth()
 {
@@ -46,7 +47,7 @@ uint16_t gfx_opengl_getheight()
 void gfx_opengl_setdimensions(uint16_t w, uint16_t h)
 {
 
-		printf("gfx_opengl_setdimenions(%u, %u)\n", w, h);
+    printf("gfx_opengl_setdimenions(%u, %u)\n", w, h);
     gfx_opengl_width = w;
     gfx_opengl_height = h;
 
@@ -54,6 +55,17 @@ void gfx_opengl_setdimensions(uint16_t w, uint16_t h)
 
 void updateTexture()
 {
+    if (!myCanvas) return;
+
+    if (canvas_is_dirty(myCanvas)) {
+        //printf("updateTexture() dirty\n");
+        myCanvas->is_dirty=false;
+    } else {
+        //printf("updateTexture() clean\n");
+        usleep(5000);
+        pthread_yield();
+        return;
+    }
 
     glTexSubImage2D(GL_TEXTURE_2D, 0,0, 0, gfx_opengl_width, gfx_opengl_height, GL_RGB, GL_UNSIGNED_BYTE, (GLvoid*)screenData);
 
@@ -67,16 +79,22 @@ void updateTexture()
     glTexCoord2d(0.0, 1.0);
     glVertex2d(0.0,  display_height);
     glEnd();
+
+    if (glut_initialised) {
+        glutSwapBuffers();
+    }
+
+
 }
 
 
 void display()
 {
-    glClear(GL_COLOR_BUFFER_BIT);
+    //glClear(GL_COLOR_BUFFER_BIT);
     updateTexture();
-    if (glut_initialised) {
-        glutSwapBuffers();
-    }
+//    if (glut_initialised) {
+//        glutSwapBuffers();
+//    }
 }
 
 void reshape_window(GLsizei w, GLsizei h)
@@ -138,7 +156,9 @@ void setTexturePixel(int x, int y, u8 r, u8 g, u8 b)
 
 int gfx_opengl_expose()
 {
-
+    printf("gfx_opengl_expose()\n");
+    assert(myCanvas);
+    myCanvas->is_dirty = true;
     return 0;
 }
 
@@ -259,22 +279,13 @@ void process_Normal_Keys(int key, int x, int y)
 }
 
 
-int gfx_opengl_main(uint16_t xsize, uint16_t ysize, int multiplier, char *WindowTitle)
+int gfx_opengl_main(ANSICanvas *c, uint16_t xsize, uint16_t ysize, int multiplier, char *WindowTitle)
 {
-	/*
-    int posX = 100;
-    int posY = 200;
-    int sizeX = xsize;
-    int sizeY =  ysize;
-	*/
     int argc = 0;
     char *argv[] = { NULL };
     glutInit(&argc, argv);
-    //glutInit(0, NULL);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA);
 
-//    display_width = SCREEN_WIDTH * modifier;
-//    display_height = SCREEN_HEIGHT * modifier;
     display_width = xsize;
     display_height = ysize;
 
@@ -286,6 +297,9 @@ int gfx_opengl_main(uint16_t xsize, uint16_t ysize, int multiplier, char *Window
     glutIdleFunc(display);
     glutReshapeFunc(reshape_window);
     glutKeyboardFunc( process_Normal_Keys );
+
+    assert(c);
+    myCanvas = c;
 
     setupTexture();
 
