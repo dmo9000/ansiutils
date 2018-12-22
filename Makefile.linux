@@ -11,9 +11,11 @@ LIBANSICANVAS_OBJS=ansiraster.o ansicanvas.o ansistate.o utf8.o
 LIBANSISDLCANVAS_OBJS=gfx_sdl.o bmf.o
 TESTSAMPLE=../THEDRAWFONTS/BLACKX.TDF
 GITHASH=`git log --pretty=format:'%h' -n 1`
+GITORIGIN=`git config --get remote.origin.url`
 DATE=`date +%Y-%m-%d`
 COLUMNS=80
 PADDING=`printf '%*s' 110`
+
 
 all: libansicanvas.a libansisdlcanvas.a tdftool rawfont ansiread bmf/8x8.bmf documentation
 
@@ -25,10 +27,11 @@ documentation:
 	./ansiread | sed -e "s/^/          /" | ./ansiread -z - >> ansiutils.ans
 	printf "\n        \x1B\x5B1m\x1B\x5B4m\x1B\x5B36mTDFTOOL USAGE\x1B\x5B24m:\x1B\x5B21m\n\n" >> ansiutils.ans
 	./tdftool | sed -e "s/^/          /" | ./ansiread -z - >> ansiutils.ans
-	printf "\n\n    \x1B\x5B30m\x1B\x5B1m    (${DATE} git #${GITHASH})\x1B\x5B0m\x1B\x5B21m\n\n" >> ansiutils.ans
+	printf "\n        \x1B\x5B1m\x1B\x5B4m\x1B\x5B36mRECENT CHANGES\x1B\x5B24m:\x1B\x5B21m\n\n" >> ansiutils.ans
+	./gitxtract.sh | sed -e "s/^/           /" | ./ansiread -z - >> ansiutils.ans
+	printf "\n\n    \x1B\x5B30m\x1B\x5B1m    (${DATE} git #${GITHASH} ${GITORIGIN})\x1B\x5B0m\x1B\x5B21m\n\n" >> ansiutils.ans
 	echo "${PADDING}" >> ansiutils.ans
 	./ansiread -o ansiutils.png ansiutils.ans
-
 
 sample:
 	@./tdftool -c ${TESTSAMPLE} ABC
@@ -61,7 +64,6 @@ veryclean: clean
 	rm -rf tests/pass/*.ans
 	rm -rf tests/fail/*.ans
 	rm -rf tests/pass/utf8/*.ans
-
 
 install:
 	sudo cp tdftool /usr/bin/tdftool

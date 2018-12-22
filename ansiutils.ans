@@ -37,7 +37,17 @@
 [40;37m              -s              append SAUCE record[0m
 [40;37m          [0m
 
+        [1m[4m[36mRECENT CHANGES[24m:[21m
 
-    [30m[1m    (2018-12-22 git #3a085ec)[0m[21m
+[40;37m           4ecb728 * Minor update.[0m
+[40;37m           3a085ec * gfx_open_main() now needs to have canvas passed as first argument.[0m
+[40;37m                   * Removed OpenGL redraw when no changes for display, vastly reducing[0m
+[40;37m                     CPU usage.[0m
+[40;37m           86821e7 * Merge branch 'master' of https://github.com/dmo9000/ansiutils[0m
+[40;37m           c637f93 * Support DEL/RUB[0m
+[40;37m           9c09b7f * updates.[0m
+
+
+    [30m[1m    (2018-12-23 git #4ecb728 https://github.com/dmo9000/ansiutils.git)[0m[21m
 
                                                                                                               

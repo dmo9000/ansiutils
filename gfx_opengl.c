@@ -59,9 +59,11 @@ void updateTexture()
 
     if (canvas_is_dirty(myCanvas)) {
         //printf("updateTexture() dirty\n");
+    		myCanvas->is_dirty=false;
     } else {
-        //printf("updateTexture() clean\n");
-        usleep(5000);
+     //   printf("updateTexture() clean\n");
+        usleep(10000);
+				pthread_yield();
         return;
     }
 
@@ -82,7 +84,6 @@ void updateTexture()
         glutSwapBuffers();
     }
 
-    myCanvas->is_dirty=false;
 
 }
 
@@ -167,7 +168,7 @@ int gfx_opengl_hwscroll()
 
     int x =0, y = 0;
     char *src_addr, *dest_addr = NULL;
-    printf("gfx_opengl_hwscroll()\r\n");
+//    printf("gfx_opengl_hwscroll()\r\n");
 
     src_addr = screenData;
     dest_addr = screenData;
@@ -190,7 +191,7 @@ int gfx_opengl_hwscroll()
         memset(dest_addr, 0, gfx_opengl_width *3);
     }
 
-		myCanvas->is_dirty=true;
+//		myCanvas->is_dirty=true;
     return 1;
 }
 
@@ -404,6 +405,8 @@ int gfx_opengl_render_cursor(ANSICanvas *canvas, BitmapFont *myfont, uint16_t x,
         gfx_opengl_drawglyph(myfont, x, y, r->chardata[x], r->fgcolors[x], r->bgcolors[x], r->attribs[x]);
         break;
     }
+
+		canvas->is_dirty=true;
 
     return 1;
 }

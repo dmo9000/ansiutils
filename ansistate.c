@@ -661,6 +661,11 @@ void dispatch_ansi_text_attributes()
             attributes |= ATTRIB_REVERSE;
             goto next_parameter;
             break;
+				case 10:
+						/* primary - default font - currently no effect */
+						printf("[DEFAULT FONT:10m]\n");
+						goto next_parameter;
+						break;
         case 21:
             if (debug_flag) {
                 printf("  * disable ATTRIB_BOLD\n");
@@ -700,6 +705,16 @@ void dispatch_ansi_text_attributes()
             attributes &= ~ATTRIB_REVERSE;
             goto next_parameter;
             break;
+				case 39:
+						/* default foreground color - currently not implemented*/
+						printf("[39m:DEFAULT FOREGROUND COLOR::NOT IMPLEMENTED YET]\n");
+						goto next_parameter;
+						break;
+				case 49:
+						/* default background color - currently not implemented*/
+						printf("[39m:DEFAULT BACKGROUND COLOR::NOT IMPLEMENTED YET]\n");
+						goto next_parameter;
+						break;
         default:
             printf("unknown 'm' parameter value: %u (paramidx=%u, ansiflags=%u)\n", parameters[i], paramidx, ansiflags);
             assert(NULL);
@@ -804,10 +819,18 @@ void dispatch_ansi_command(ANSICanvas *canvas, unsigned char c)
         /* move cursor up parameter[0] rows without changing column */
         current_y-=(parameters[0] ? parameters[0] : 1);
         break;
+		case 'b':
+				/* testing */
+				printf("[1B 5B 62:SRL - SCROLL LEFT? NOT IMPLEMENTED]\n");
+				break;
     case 'B':
         /* move cursor down parameter[0] rows without changing column */
         current_y+=(parameters[0] ? parameters[0] : 1);
         break;
+		case 'G':
+				/* unix mode reset? not implemented! */
+				printf("[1B 5B 62:UMR - UNIX MODE RESET? NOT IMPLEMENTED!]\n");
+				break;
     case 'J':
         /* move home and clear screen - set the clear flag on the canvas if we encounter this */
         if (allow_clear) {
@@ -824,6 +847,10 @@ void dispatch_ansi_command(ANSICanvas *canvas, unsigned char c)
         /* move cursor to the right N characters */
         dispatch_ansi_cursor_right(canvas);
         break;
+    case 'd':
+				/* testing - space supress reset? */
+				printf("[1B 5B 64:SSR - SPACE SUPPRESS RESET? NOT IMPLEMENTED]\n");
+				break;
     case 'D':
         /* move cursor to the left N characters */
         dispatch_ansi_cursor_left(canvas);
@@ -842,6 +869,11 @@ void dispatch_ansi_command(ANSICanvas *canvas, unsigned char c)
             current_x = parameters[1];
         }
         break;
+		case 'M':
+				/* see: http://www2.gar.no/glinkj/help/cmds/vipa.htm */
+				/* delete line - UE4 prototype has implementation of this*/
+				printf("{DL	Delete line	esc [ M	1B 5B 4D} - NOT IMPLEMENTED\n");
+				break;
     case 'm':
         /* text attributes */
         dispatch_ansi_text_attributes();
@@ -852,6 +884,7 @@ void dispatch_ansi_command(ANSICanvas *canvas, unsigned char c)
         break;
     default:
         printf("+++ unknown ansi command '%c'\n", c);
+				assert(NULL);
         exit(1);
         break;
     }
