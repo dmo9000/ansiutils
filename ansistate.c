@@ -171,6 +171,7 @@ bool send_byte_to_canvas(ANSICanvas *canvas, unsigned char c)
     if (c == 7) {
         /* BEL - currently not implemented. Hook it up to a SID emulator
         		perhaps? :^) */
+        printf("[TERMINAL BEL]\n");
         return true;
     }
 
