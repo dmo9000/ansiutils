@@ -122,10 +122,67 @@ const char *ansi_state(int s);
 #define FLAG_CURSOR 8
 #define FLAG_ALL    0xFF
 
-
 uint8_t ansiflags = 0;
 
+/* set this to the fd of the parent process if you want to be able to
+   respond to DA ("device attribute") requests */
+
+int process_fd = -1;
+unsigned char ansi_seqbuf[MAX_ANSI];
+uint8_t ansi_offset = 0;
+
+
 void dispatch_ansi_command(ANSICanvas *canvas, unsigned char c);
+
+
+void ansi_debug_dump()
+{
+    int i = 0;
+    printf("ansi_debug_dump():\n");
+    printf("ansi_offset = %u\n", ansi_offset);
+    printf("paramidx = %u\n", paramidx);
+    printf("\n");
+    printf("Flags:\n");
+
+    if (!ansiflags) {
+        printf("FLAG_NONE\n");
+    }
+
+    if (ansiflags & FLAG_1B) {
+        printf("  FLAG_1B\n");
+    }
+    if (ansiflags & FLAG_5B) {
+        printf("  FLAG_5B\n");
+    }
+    if (ansiflags & FLAG_INT) {
+        printf("  FLAG_INT\n");
+    }
+    if (ansiflags & FLAG_CURSOR) {
+        printf("  FLAG_CURSOR\n");
+    }
+
+    printf("Sequence:\n  ");
+
+    for (i = 0; i < ansi_offset; i++) {
+        if (ansi_seqbuf[i] == 0x1B) {
+            printf("<ESC> ");
+        } else {
+            if (ansi_seqbuf[i] >= 128) {
+                printf("{%02X} ", ansi_seqbuf[i]);
+            } else {
+                printf("%c ",  ansi_seqbuf[i]);
+            }
+        }
+    }
+    printf("\n  ");
+    for (i = 0; i < ansi_offset; i++) {
+        printf("%02X ", ansi_seqbuf[i]);
+    }
+    printf("\n\n");
+    fflush(NULL);
+    exit(1);
+
+}
 
 void init_parameters()
 {
@@ -167,6 +224,9 @@ bool send_byte_to_canvas(ANSICanvas *canvas, unsigned char c)
     //fg = fgcolor + ((attributes & ATTRIB_BOLD) ? 8 : 0);
     fg = fgcolor;
     bg = bgcolor;
+
+    /* perhaps these should be moved to the tty, since they are not
+    		ANSI, but terminal control codes */
 
     if (c == 7) {
         /* BEL - currently not implemented. Hook it up to a SID emulator
@@ -261,6 +321,12 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
             }
 
             if (c == ANSI_1B) {
+                /* ansi_offset should be 0 when we receive this */
+                ansi_offset = 0;
+                //assert(!ansi_offset);
+                ansi_seqbuf[ansi_offset] = 0x1B;
+                ansi_offset++;
+
                 if (debug_flag) {
                     printf("ANSI_1B\n");
                 }
@@ -310,7 +376,7 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
             break;
         case FLAG_1B:
             if (c != ANSI_5B) {
-                printf("error: ANSI_5B expected\n");
+                printf("error: ANSI_5B expected, received %d (0x%02x)\n", c, c);
                 /* not sure what to do here */
                 clear_ansi_flags(FLAG_ALL);
                 break;
@@ -318,6 +384,9 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
             if (debug_flag) {
                 printf("ANSI_5B\n");
             }
+            ansi_seqbuf[ansi_offset] = 0x5B;
+            ansi_offset++;
+
             set_ansi_flags(FLAG_5B);
             init_parameters();
             break;
@@ -362,7 +431,9 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
             if (c == '?') {
                 /* set cursor visible or non-visible */
                 set_ansi_flags(FLAG_1B | FLAG_5B | FLAG_CURSOR);
-                printf("cursor handling code encountered\n");
+                //printf("cursor handling code encountered\n");
+                ansi_seqbuf[ansi_offset] = '?';
+                ansi_offset++;
                 break;
             }
 
@@ -567,25 +638,75 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
             case '8':
             case '9':
                 /* in number sequence */
+                ansi_seqbuf[ansi_offset] = c;
+                ansi_offset++;
                 paramval = (paramval * 10) + (c - 0x30);
                 break;
             case 'h':
-                /* show cursor */
-                assert(paramval == 25);
-                printf("show cursor\n");
-                canvas->cursor_enabled = true;
+                /* see:
+                	 http://ascii-table.com/ansi-escape-sequences-vt-100.php
+                */
+                ansi_seqbuf[ansi_offset] = 'h';
+                ansi_offset++;
+
+                switch(paramval) {
+                case 7:
+                    fprintf(stderr, "Esc[?7h 	Set auto-wrap mode 	DECAWM \n");
+                    clear_ansi_flags(FLAG_ALL);
+                    break;
+                case 25:
+                    printf("*** hide cursor\n");
+                    canvas->cursor_enabled = false;
+                    clear_ansi_flags(FLAG_ALL);
+                default:
+                    fprintf(stderr, "+++ unimplemented ?<n>h code\n");
+                    fprintf(stderr, "+++ received <nn>h, <nn> was %u\n", paramval);
+                    ansi_debug_dump();
+                    break;
+                }
                 clear_ansi_flags(FLAG_ALL);
                 break;
             case 'l':
-                /* hide cursor */
-                if (paramval != 25) {
-                    fprintf(stderr, "+++ received l, but paramval was %u, not 25 - ignoring \n", paramval);
+                /* see:
+                	 http://ascii-table.com/ansi-escape-sequences-vt-100.php
+                */
+
+                ansi_seqbuf[ansi_offset] = 'l';
+                ansi_offset++;
+
+                switch(paramval) {
+                case 1:
+                    fprintf(stderr, "Esc[?1l 	Set cursor key to cursor 	DECCKM \n");
                     clear_ansi_flags(FLAG_ALL);
-                    return true;
+                    break;
+                case 3:
+                    fprintf(stderr, "Esc[?3l 	Set number of columns to 80 	DECCOLM\n");
+                    clear_ansi_flags(FLAG_ALL);
+                    break;
+                case 4:
+                    fprintf(stderr, "Esc[?4l 	Set jump scrolling 	DECSCLM\n");
+                    clear_ansi_flags(FLAG_ALL);
+                    break;
+                case 5:
+                    fprintf(stderr, "Esc[?5l 	Set normal video on screen 	DECSCNM \n");
+                    clear_ansi_flags(FLAG_ALL);
+                    break;
+                case 6:
+                    fprintf(stderr, "Esc[?6l 	Set origin to absolute 	DECOM\n");
+                    clear_ansi_flags(FLAG_ALL);
+                    break;
+                case 25:
+                    /* show cursor */
+                    printf("*** show cursor\n");
+                    canvas->cursor_enabled = true;
+                    clear_ansi_flags(FLAG_ALL);
+                    break;
+                default:
+                    fprintf(stderr, "+++ unimplemented ?<n>l code\n");
+                    fprintf(stderr, "+++ received <nn>l, <nn> was %u\n", paramval);
+                    ansi_debug_dump();
+                    break;
                 }
-                assert(paramval == 25);
-                printf("hide cursor\n");
-                canvas->cursor_enabled = false;
                 clear_ansi_flags(FLAG_ALL);
                 break;
             default:
@@ -601,10 +722,6 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
         }
         o++;
     }
-//    c = 0;
-//    last_c = 0;
-//    assert(!c);
-//    assert(!last_c);
 fallback_exit:
     assert (last_c || !last_c);
     if (debug_flag) {
@@ -909,7 +1026,13 @@ void dispatch_ansi_command(ANSICanvas *canvas, unsigned char c)
         break;
     case 'c':
         /* device attributes */
-        fprintf(stderr, "UNIMPLEMENTED { DA	Device attributes	esc [ c	1B 5B 63 }");
+        fprintf(stderr, "UNIMPLEMENTED { DA	Device attributes	esc [ c	1B 5B 63 }\n");
+        if (process_fd != -1) {
+            printf("(responding to DA on fd %d)\n", process_fd);
+            write(process_fd, "\x1b\x5b"">c", 4);
+            return;
+        }
+        assert(process_fd == -1);
         break;
     default:
         printf("+++ unknown ansi command '%c'\n", c);
