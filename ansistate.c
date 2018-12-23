@@ -578,6 +578,11 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
                 break;
             case 'l':
                 /* hide cursor */
+                if (paramval != 25) {
+                    fprintf(stderr, "+++ received l, but paramval was %u, not 25 - ignoring \n", paramval);
+                    clear_ansi_flags(FLAG_ALL);
+                    return true;
+                }
                 assert(paramval == 25);
                 printf("hide cursor\n");
                 canvas->cursor_enabled = false;
@@ -600,6 +605,7 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
 //    last_c = 0;
 //    assert(!c);
 //    assert(!last_c);
+fallback_exit:
     assert (last_c || !last_c);
     if (debug_flag) {
         printf("BLOCK DONE\n");
@@ -891,7 +897,7 @@ void dispatch_ansi_command(ANSICanvas *canvas, unsigned char c)
     case 'M':
         /* see: http://www2.gar.no/glinkj/help/cmds/vipa.htm */
         /* delete line - UE4 prototype has implementation of this*/
-        printf("{DL	Delete line	esc [ M	1B 5B 4D} - NOT IMPLEMENTED\n");
+        fprintf(stderr, "UNIMPLEMENTED {DL	Delete line	esc [ M	1B 5B 4D}\n");
         break;
     case 'm':
         /* text attributes */
@@ -900,6 +906,10 @@ void dispatch_ansi_command(ANSICanvas *canvas, unsigned char c)
     case 'h':
         /* terminal setup */
         dispatch_ansi_terminal_setup();
+        break;
+    case 'c':
+        /* device attributes */
+        fprintf(stderr, "UNIMPLEMENTED { DA	Device attributes	esc [ c	1B 5B 63 }");
         break;
     default:
         printf("+++ unknown ansi command '%c'\n", c);
