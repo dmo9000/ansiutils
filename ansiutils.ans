@@ -39,13 +39,13 @@
 
         [1m[4m[36mRECENT CHANGES[24m:[21m
 
+[40;37m           1c828e5 * WIP basic regression tests on rendered output.[0m
+[40;37m           5108133 * Debugging dump WIP.[0m
 [40;37m           ed34772 * WIP starting to look at trying to pass vttest.[0m
 [40;37m           c4760bb * Comment added.[0m
 [40;37m           7768142 * POC implementation of HTAB and BEL.[0m
-[40;37m           89e7e68 * Added recent git summary to the generated README.[0m
-[40;37m           4ecb728 * Minor update.[0m
 
 
-    [30m[1m    (2018-12-24 git #ed34772 https://github.com/dmo9000/ansiutils.git)[0m[21m
+    [30m[1m    (2018-12-24 git #1c828e5 https://github.com/dmo9000/ansiutils.git)[0m[21m
 
                                                                                                               

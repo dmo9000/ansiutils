@@ -16,8 +16,10 @@ DATE=`date +%Y-%m-%d`
 COLUMNS=80
 PADDING=`printf '%*s' 110`
 
+all: libansicanvas.a libansisdlcanvas.a tdftool rawfont ansiread bmf/8x8.bmf documentation test-regress
 
-all: libansicanvas.a libansisdlcanvas.a tdftool rawfont ansiread bmf/8x8.bmf documentation
+test-regress:
+	./test-regress.sh
 
 documentation:
 	printf "\n\n" > ansiutils.ans
