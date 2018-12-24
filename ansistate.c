@@ -250,13 +250,13 @@ bool send_byte_to_canvas(ANSICanvas *canvas, unsigned char c)
     if (c == 7) {
         /* BEL - currently not implemented. Hook it up to a SID emulator
         		perhaps? :^) */
-        printf("[TERMINAL BEL]\n");
+        //printf("[TERMINAL BEL]\n");
         return true;
     }
 
     if (c == 9) {
         /* TAB */
-        printf("[TAB DETECTED]\n");
+        //printf("[TAB DETECTED]\n");
         current_x = current_x + TABWIDTH;
         current_x = (current_x / TABWIDTH) * TABWIDTH;
         return true;
@@ -434,7 +434,7 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
                 assert(!paramcount);
                 assert(!paramidx);
                 assert(!parameters[0]);
-                printf("*** raw m command - reset? ***\n");
+                //printf("*** raw m command - reset? ***\n");
                 fgcolor = 7;
                 bgcolor = 0;
                 attributes = ATTRIB_NONE;
@@ -587,7 +587,7 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
                 ANSIRaster *d = NULL;
                 ANSIRaster *p = NULL;
                 ANSIRaster *n = NULL;
-                printf("delete raster\n");
+    //            printf("delete raster\n");
                 assert(!paramidx);
                 p = canvas_get_raster(canvas, current_y-1);
                 d = p->next_raster;
@@ -879,7 +879,6 @@ void dispatch_ansi_text_attributes()
             if (debug_flag) {
                 printf("  * enable ATTRIB_REVERSE\n");
             }
-            printf("[ATTRIB_REVERSE ON]\n");
             attributes |= ATTRIB_REVERSE;
             goto next_parameter;
             break;
@@ -1057,8 +1056,8 @@ void dispatch_ansi_command(ANSICanvas *canvas, unsigned char c)
         break;
     case 'b':
         /* testing - probably wrong since it's supposed to be able to repeat the last control sequence as well */
-        fprintf(stderr, "[REP  Repeat Char or Control    Esc [ Pn b                   1]\n");
-        fprintf(stderr, "last_character=%u (0x%2x), repeat=%d\n",  last_character, last_character, parameters[0]);
+        //fprintf(stderr, "[REP  Repeat Char or Control    Esc [ Pn b                   1]\n");
+        //fprintf(stderr, "last_character=%u (0x%2x), repeat=%d\n",  last_character, last_character, parameters[0]);
         //ansi_debug_dump();
         assert(parameters[0]);
         repeat_char = malloc(parameters[0]);
@@ -1102,7 +1101,7 @@ void dispatch_ansi_command(ANSICanvas *canvas, unsigned char c)
         ansi_seqbuf[ansi_offset] = 'd';
         ansi_offset++;
         /* testing - space supress reset? */
-        printf("[1B 5B <nn> 64:VPA - VERTICAL POSITION ABSOLUTE:Y=%u]\n", parameters[0]);
+        //printf("[1B 5B <nn> 64:VPA - VERTICAL POSITION ABSOLUTE:Y=%u]\n", parameters[0]);
         /* leave x position where it is, but move y to line 0 */
         assert((parameters[0] - 1) >= 0);
         current_y = parameters[0] - 1;
@@ -1131,8 +1130,8 @@ void dispatch_ansi_command(ANSICanvas *canvas, unsigned char c)
     case 'M':
         /* see: http://www2.gar.no/glinkj/help/cmds/vipa.htm */
         /* delete line - UE4 prototype has implementation of this*/
-        fprintf(stderr, "[DELETE LINES %u:%d]\n", current_y, parameters[0]);
-        fprintf(stderr, "default raster length = %u\n", canvas->default_raster_length);
+        //fprintf(stderr, "[DELETE LINES %u:%d]\n", current_y, parameters[0]);
+        //fprintf(stderr, "default raster length = %u\n", canvas->default_raster_length);
         assert(paramidx == 1);
         for (i = 0; i < parameters[0]; i++) {
             /* add raster to end */
@@ -1141,7 +1140,7 @@ void dispatch_ansi_command(ANSICanvas *canvas, unsigned char c)
             canvas_reindex(canvas);
         }
         for (i = 0; i < parameters[0]; i++) {
-            printf("delete raster %u\n", i);
+            //printf("delete raster %u\n", i);
             p = canvas_get_raster(canvas, current_y-1);
             d = p->next_raster;
             p->next_raster = d->next_raster;
@@ -1153,8 +1152,6 @@ void dispatch_ansi_command(ANSICanvas *canvas, unsigned char c)
         canvas->is_dirty = true;
         clear_ansi_flags(FLAG_ALL);
         break;
-        fprintf(stderr, "UNIMPLEMENTED {DL	Delete line	esc [ M	1B 5B 4D}\n");
-        ansi_debug_dump();
         break;
     case 'm':
         /* text attributes */
