@@ -378,7 +378,7 @@ int gfx_opengl_render_cursor(ANSICanvas *canvas, BitmapFont *myfont, uint16_t x,
 
     assert(canvas);
 
-//		printf("gfx_opengl_render_cursor(0x%lx, 0x%lx, %u, %u, %s)\r\n", canvas, myfont, x, y, (state ? "true" : "false"));
+		//printf("gfx_opengl_render_cursor(0x%lx, 0x%lx, %u, %u, %s)\r\n", canvas, myfont, x, y, (state ? "true" : "false"));
 
     if (y >=24) {
         return 0;

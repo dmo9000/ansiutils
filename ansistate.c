@@ -75,7 +75,6 @@ static char *states[] = {
 int saved_cursor_x = 0;
 int saved_cursor_y = 0;
 
-
 char ansi_mode = SEQ_NONE;
 char last_ansi_mode = SEQ_NONE;
 int ansioffset = 0;
@@ -146,6 +145,7 @@ int  ansi_setdebug(bool debugstate)
     debug_flag = debugstate;
 
 }
+
 
 void ansi_debug_dump()
 {
@@ -530,16 +530,16 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
                 r = canvas_get_raster(canvas, current_y);
                 assert(r);
                 // printf("+++ clearing line %u from %u to %u\n", current_y, current_x, r->bytes);
-								/*
+                /*
                 for (ii = 0; ii <= 79; ii++) {
-                    r->chardata[ii] = ' ';
-                    r->bgcolors[ii] = 0;
-                    r->fgcolors[ii] = 7;
-                    r->attribs[ii] = ATTRIB_NONE;
+                r->chardata[ii] = ' ';
+                r->bgcolors[ii] = 0;
+                r->fgcolors[ii] = 7;
+                r->attribs[ii] = ATTRIB_NONE;
                 }
-								*/
+                */
                 //canvas->repaint_entire_canvas = true;
-								//canvas->is_dirty = true;
+                //canvas->is_dirty = true;
                 clear_ansi_flags(FLAG_ALL);
                 break;
             }
@@ -594,8 +594,8 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
                 p->next_raster = d->next_raster;
                 raster_delete(d);
                 canvas_reindex(canvas);
-								n = canvas_add_raster(canvas);
-								raster_extend_length_to(n, canvas->default_raster_length);
+                n = canvas_add_raster(canvas);
+                raster_extend_length_to(n, canvas->default_raster_length);
                 canvas_reindex(canvas);
                 canvas->repaint_entire_canvas = true;
                 canvas->is_dirty = true;
@@ -605,10 +605,10 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
 
             if (c == 'D') {
                 /* rubout/delete? */
-								
-								if (debug_flag) {
-	                fprintf(stderr, "[RUBOUT/DELETE]\n");
-									}
+
+                if (debug_flag) {
+                    fprintf(stderr, "[RUBOUT/DELETE]\n");
+                }
                 if (current_x ) {
                     current_x --;
                 } else {
@@ -719,7 +719,9 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
                 case 25:
                     printf("*** hide cursor\n");
                     canvas->cursor_enabled = false;
+                    canvas->is_dirty=true;
                     clear_ansi_flags(FLAG_ALL);
+                    break;
                 case 40:
                     /* no idea - https://psi-matrix.eu/wordpress/wp-content/uploads/2016/08/Programmers-Guide-DEC-LA324-1.pdf ? */
                     /* CR acts as new line?? */
@@ -771,6 +773,7 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
                     /* show cursor */
                     printf("*** show cursor\n");
                     canvas->cursor_enabled = true;
+                    canvas->is_dirty=true;
                     clear_ansi_flags(FLAG_ALL);
                     break;
                 case 45:
@@ -927,13 +930,13 @@ void dispatch_ansi_text_attributes()
         case 39:
             /* default foreground color - currently not implemented*/
             //printf("[39m:DEFAULT FOREGROUND COLOR::NOT IMPLEMENTED YET]\n");
-						fgcolor = default_fgcolor;
+            fgcolor = default_fgcolor;
             goto next_parameter;
             break;
         case 49:
             /* default background color - currently not implemented*/
             //printf("[39m:DEFAULT BACKGROUND COLOR::NOT IMPLEMENTED YET]\n");
-						bgcolor = default_bgcolor;
+            bgcolor = default_bgcolor;
             goto next_parameter;
             break;
         default:
@@ -1128,14 +1131,14 @@ void dispatch_ansi_command(ANSICanvas *canvas, unsigned char c)
     case 'M':
         /* see: http://www2.gar.no/glinkj/help/cmds/vipa.htm */
         /* delete line - UE4 prototype has implementation of this*/
-				fprintf(stderr, "[DELETE LINES %u:%d]\n", current_y, parameters[0]);
-				fprintf(stderr, "default raster length = %u\n", canvas->default_raster_length);
+        fprintf(stderr, "[DELETE LINES %u:%d]\n", current_y, parameters[0]);
+        fprintf(stderr, "default raster length = %u\n", canvas->default_raster_length);
         assert(paramidx == 1);
         for (i = 0; i < parameters[0]; i++) {
             /* add raster to end */
             n = canvas_add_raster(canvas);
-						raster_extend_length_to(n, canvas->default_raster_length);
-						canvas_reindex(canvas);
+            raster_extend_length_to(n, canvas->default_raster_length);
+            canvas_reindex(canvas);
         }
         for (i = 0; i < parameters[0]; i++) {
             printf("delete raster %u\n", i);
