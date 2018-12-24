@@ -90,6 +90,10 @@ uint8_t last_character = 0;
 uint16_t current_x = 0;
 uint16_t current_y = 0;
 
+
+ansicolor_t default_fgcolor = 7;
+ansicolor_t default_bgcolor = 0;
+
 ansicolor_t fgcolor = 7;
 ansicolor_t bgcolor = 0;
 
@@ -526,13 +530,16 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
                 r = canvas_get_raster(canvas, current_y);
                 assert(r);
                 // printf("+++ clearing line %u from %u to %u\n", current_y, current_x, r->bytes);
+								/*
                 for (ii = 0; ii <= 79; ii++) {
                     r->chardata[ii] = ' ';
                     r->bgcolors[ii] = 0;
                     r->fgcolors[ii] = 7;
                     r->attribs[ii] = ATTRIB_NONE;
                 }
-                canvas->repaint_entire_canvas = true;
+								*/
+                //canvas->repaint_entire_canvas = true;
+								//canvas->is_dirty = true;
                 clear_ansi_flags(FLAG_ALL);
                 break;
             }
@@ -598,7 +605,10 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
 
             if (c == 'D') {
                 /* rubout/delete? */
-                fprintf(stderr, "[RUBOUT/DELETE]\n");
+								
+								if (debug_flag) {
+	                fprintf(stderr, "[RUBOUT/DELETE]\n");
+									}
                 if (current_x ) {
                     current_x --;
                 } else {
@@ -872,7 +882,7 @@ void dispatch_ansi_text_attributes()
             break;
         case 10:
             /* primary - default font - currently no effect */
-            printf("[DEFAULT FONT:10m]\n");
+            //printf("[DEFAULT FONT:10m]\n");
             goto next_parameter;
             break;
         case 21:
@@ -916,12 +926,14 @@ void dispatch_ansi_text_attributes()
             break;
         case 39:
             /* default foreground color - currently not implemented*/
-            printf("[39m:DEFAULT FOREGROUND COLOR::NOT IMPLEMENTED YET]\n");
+            //printf("[39m:DEFAULT FOREGROUND COLOR::NOT IMPLEMENTED YET]\n");
+						fgcolor = default_fgcolor;
             goto next_parameter;
             break;
         case 49:
             /* default background color - currently not implemented*/
-            printf("[39m:DEFAULT BACKGROUND COLOR::NOT IMPLEMENTED YET]\n");
+            //printf("[39m:DEFAULT BACKGROUND COLOR::NOT IMPLEMENTED YET]\n");
+						bgcolor = default_bgcolor;
             goto next_parameter;
             break;
         default:
