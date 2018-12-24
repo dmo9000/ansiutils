@@ -135,6 +135,13 @@ uint8_t ansi_offset = 0;
 void dispatch_ansi_command(ANSICanvas *canvas, unsigned char c);
 
 
+int  ansi_setdebug(bool debugstate)
+{
+
+		debug_flag = debugstate;
+
+}
+
 void ansi_debug_dump()
 {
     int i = 0;
@@ -160,6 +167,13 @@ void ansi_debug_dump()
     if (ansiflags & FLAG_CURSOR) {
         printf("  FLAG_CURSOR\n");
     }
+
+		printf("Parameters:\n\n");
+
+		for (i = 0; i < paramidx; i++) {
+				printf("parameter[%u] = %u\n", i, parameters[i]);
+				}
+		printf("\n\n");
 
     printf("Sequence:\n  ");
 
@@ -270,7 +284,7 @@ bool send_byte_to_canvas(ANSICanvas *canvas, unsigned char c)
     }
 
     if (debug_flag) {
-        printf("send_byte_to_canvas(%u, %u): retrieved raster line %u (%u bytes)\n", current_x, current_y, current_y, r->bytes);
+        //printf("send_byte_to_canvas(%u, %u): retrieved raster line %u (%u bytes)\n", current_x, current_y, current_y, r->bytes);
     }
     if ((current_x+1) > r->bytes) {
         if (debug_flag) {
@@ -392,6 +406,14 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
             break;
 
         case (FLAG_1B | FLAG_5B):
+
+						if (c == 'r') {
+								/* see http://www2.gar.no/glinkj/help/cmds/ansa.htm */
+								/* SCR - scrolling region */
+								fprintf(stderr, "SCR	Scrolling region	esc [ r	1B 5B 72\n");
+                clear_ansi_flags(FLAG_ALL);
+								break;
+								}
 
             if (c == 'm') {
                 assert(!paramcount);
@@ -573,15 +595,28 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
                 break;
             }
 
+						if (c == 'd') {
+							/* SSR - SPACE SUPPRESS RESET  */
+							fprintf(stderr, "[SSR]\n");
+							current_y = 0;
+							canvas->is_dirty = true;
+							clear_ansi_flags(FLAG_ALL);
+							break;
+							}
 
             if (isdigit(c)) {
+								ansi_seqbuf[ansi_offset] = c;
+								ansi_offset++;
                 paramval = c - 0x30;
                 if (debug_flag) {
                     printf("start integer parameter [%u], current_value = %u\n", paramidx, paramval);
                 }
                 set_ansi_flags(FLAG_INT);
             } else {
+								ansi_seqbuf[ansi_offset] = c;
+								ansi_offset++;
                 printf("error: expecting digit, got '%c' (0x%02x), %u parameter, paramval = %u\n", c, c, paramidx, paramval);
+								ansi_debug_dump();
                 assert(NULL);
             }
             break;
@@ -612,6 +647,8 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
                 clear_ansi_flags(FLAG_INT);
             } else {
                 if (isdigit(c)) {
+										ansi_seqbuf[ansi_offset] = c;
+										ansi_offset++;
                     paramval = (paramval * 10) + (c - 0x30);
                     if (debug_flag) {
                         printf(" cont integer parameter [%u], current_value = %u\n", paramidx, paramval);
@@ -658,6 +695,12 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
                     printf("*** hide cursor\n");
                     canvas->cursor_enabled = false;
                     clear_ansi_flags(FLAG_ALL);
+                case 40:
+                    /* no idea - https://psi-matrix.eu/wordpress/wp-content/uploads/2016/08/Programmers-Guide-DEC-LA324-1.pdf ? */
+                    /* CR acts as new line?? */
+                    fprintf(stderr, "[UNKNOWN - CR acts as new line?]\n");
+                    clear_ansi_flags(FLAG_ALL);
+                    break;
                 default:
                     fprintf(stderr, "+++ unimplemented ?<n>h code\n");
                     fprintf(stderr, "+++ received <nn>h, <nn> was %u\n", paramval);
@@ -695,10 +738,19 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
                     fprintf(stderr, "Esc[?6l 	Set origin to absolute 	DECOM\n");
                     clear_ansi_flags(FLAG_ALL);
                     break;
+                case 8:
+                    fprintf(stderr, "Esc[?8l 	Reset auto-repeat mode 	DECARM \n");
+                    clear_ansi_flags(FLAG_ALL);
+                    break;
                 case 25:
                     /* show cursor */
                     printf("*** show cursor\n");
                     canvas->cursor_enabled = true;
+                    clear_ansi_flags(FLAG_ALL);
+                    break;
+                case 45:
+                    /* no idea - vttest sends this ? */
+                    fprintf(stderr, "[UNKNOWN - vttest - FIXME]\n");
                     clear_ansi_flags(FLAG_ALL);
                     break;
                 default:
@@ -724,9 +776,9 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
     }
 fallback_exit:
     assert (last_c || !last_c);
-    if (debug_flag) {
-        printf("BLOCK DONE\n");
-    }
+    //if (debug_flag) {
+        //printf("BLOCK DONE\n");
+    //}
     return true;
 }
 
@@ -990,8 +1042,23 @@ void dispatch_ansi_command(ANSICanvas *canvas, unsigned char c)
         dispatch_ansi_cursor_right(canvas);
         break;
     case 'd':
+				/* this seems to be SSR, but with a parameter - let's complain if the parameter is not "1" for now,
+						since that's all we've seen */
+				ansi_seqbuf[ansi_offset] = 'd';
+				ansi_offset++;
         /* testing - space supress reset? */
-        printf("[1B 5B 64:SSR - SPACE SUPPRESS RESET? NOT IMPLEMENTED]\n");
+        printf("[1B 5B <nn> 64:SSR - PARAMETERIZED SPACE SUPPRESS RESET]\n");
+				/* leave x position where it is, but move y to line 0 */
+
+				ansi_debug_dump();
+
+				assert(!paramidx);
+				assert(parameters[0] == 1);
+
+				current_y = 0;
+
+				clear_ansi_flags(FLAG_ALL);
+				canvas->is_dirty= true;
         break;
     case 'D':
         /* move cursor to the left N characters */
@@ -1035,7 +1102,10 @@ void dispatch_ansi_command(ANSICanvas *canvas, unsigned char c)
         assert(process_fd == -1);
         break;
     default:
+				ansi_seqbuf[ansi_offset] = c;
+				ansi_offset++;
         printf("+++ unknown ansi command '%c'\n", c);
+				ansi_debug_dump();
         assert(NULL);
         exit(1);
         break;

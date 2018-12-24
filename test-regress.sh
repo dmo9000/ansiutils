@@ -20,3 +20,5 @@ if [ $TEST == "13f407c7449784c5674808abd7193bdd" ]; then
 	exit 1  
 	fi
 
+# for later ... image comparison of contents (ignore metadata)
+# identify -quiet -format "%# " fruit1.png fruit2.png
