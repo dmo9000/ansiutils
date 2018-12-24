@@ -85,6 +85,7 @@ uint8_t paramval = 0;
 uint8_t paramcount = 0;
 off_t offset = 0;
 off_t current_escape_address = 0;
+uint8_t last_character = 0;
 
 uint16_t current_x = 0;
 uint16_t current_y = 0;
@@ -138,7 +139,7 @@ void dispatch_ansi_command(ANSICanvas *canvas, unsigned char c);
 int  ansi_setdebug(bool debugstate)
 {
 
-		debug_flag = debugstate;
+    debug_flag = debugstate;
 
 }
 
@@ -168,12 +169,12 @@ void ansi_debug_dump()
         printf("  FLAG_CURSOR\n");
     }
 
-		printf("Parameters:\n\n");
+    printf("Parameters:\n\n");
 
-		for (i = 0; i < paramidx; i++) {
-				printf("parameter[%u] = %u\n", i, parameters[i]);
-				}
-		printf("\n\n");
+    for (i = 0; i < paramidx; i++) {
+        printf("parameter[%u] = %u\n", i, parameters[i]);
+    }
+    printf("\n\n");
 
     printf("Sequence:\n  ");
 
@@ -372,7 +373,8 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
 
                 } else {
                     if (debug_flag) {
-                        printf("output character '%c'\n", c);
+                        printf("output character '%c' [%c]\n", c,  (attributes & ATTRIB_REVERSE ? 'R' : ' '));
+                        last_character = c;
                     }
 
                     if (canvas->scroll_on_output) {
@@ -407,13 +409,13 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
 
         case (FLAG_1B | FLAG_5B):
 
-						if (c == 'r') {
-								/* see http://www2.gar.no/glinkj/help/cmds/ansa.htm */
-								/* SCR - scrolling region */
-								fprintf(stderr, "SCR	Scrolling region	esc [ r	1B 5B 72\n");
+            if (c == 'r') {
+                /* see http://www2.gar.no/glinkj/help/cmds/ansa.htm */
+                /* SCR - scrolling region */
+                fprintf(stderr, "SCR	Scrolling region	esc [ r	1B 5B 72\n");
                 clear_ansi_flags(FLAG_ALL);
-								break;
-								}
+                break;
+            }
 
             if (c == 'm') {
                 assert(!paramcount);
@@ -595,28 +597,28 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
                 break;
             }
 
-						if (c == 'd') {
-							/* SSR - SPACE SUPPRESS RESET  */
-							fprintf(stderr, "[SSR]\n");
-							current_y = 0;
-							canvas->is_dirty = true;
-							clear_ansi_flags(FLAG_ALL);
-							break;
-							}
+            if (c == 'd') {
+                /* SSR - SPACE SUPPRESS RESET  */
+                fprintf(stderr, "[SSR]\n");
+                current_y = 0;
+                canvas->is_dirty = true;
+                clear_ansi_flags(FLAG_ALL);
+                break;
+            }
 
             if (isdigit(c)) {
-								ansi_seqbuf[ansi_offset] = c;
-								ansi_offset++;
+                ansi_seqbuf[ansi_offset] = c;
+                ansi_offset++;
                 paramval = c - 0x30;
                 if (debug_flag) {
                     printf("start integer parameter [%u], current_value = %u\n", paramidx, paramval);
                 }
                 set_ansi_flags(FLAG_INT);
             } else {
-								ansi_seqbuf[ansi_offset] = c;
-								ansi_offset++;
+                ansi_seqbuf[ansi_offset] = c;
+                ansi_offset++;
                 printf("error: expecting digit, got '%c' (0x%02x), %u parameter, paramval = %u\n", c, c, paramidx, paramval);
-								ansi_debug_dump();
+                ansi_debug_dump();
                 assert(NULL);
             }
             break;
@@ -629,7 +631,7 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
                 }
                 paramidx++;
                 if (debug_flag) {
-                    printf("got alphabetical '%c', dispatching\n", c);
+                    printf("got alphabetical '%c', dispatching with parameter count %d\n", c, paramidx);
                 }
                 dispatch_ansi_command(canvas, c);
                 clear_ansi_flags(FLAG_1B | FLAG_5B | FLAG_INT);
@@ -647,8 +649,8 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
                 clear_ansi_flags(FLAG_INT);
             } else {
                 if (isdigit(c)) {
-										ansi_seqbuf[ansi_offset] = c;
-										ansi_offset++;
+                    ansi_seqbuf[ansi_offset] = c;
+                    ansi_offset++;
                     paramval = (paramval * 10) + (c - 0x30);
                     if (debug_flag) {
                         printf(" cont integer parameter [%u], current_value = %u\n", paramidx, paramval);
@@ -777,7 +779,7 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
 fallback_exit:
     assert (last_c || !last_c);
     //if (debug_flag) {
-        //printf("BLOCK DONE\n");
+    //printf("BLOCK DONE\n");
     //}
     return true;
 }
@@ -1004,9 +1006,15 @@ void canvas_clear(ANSICanvas *canvas)
 
 void dispatch_ansi_command(ANSICanvas *canvas, unsigned char c)
 {
+
+    int i = 0;
+    uint8_t *repeat_char = NULL;
     if (debug_flag) {
         printf("dispatch_ansi_command('%c')\n", c);
     }
+
+    ansi_seqbuf[ansi_offset] = 'b';
+    ansi_offset++;
 
     switch (c) {
     case 'A':
@@ -1014,8 +1022,19 @@ void dispatch_ansi_command(ANSICanvas *canvas, unsigned char c)
         current_y-=(parameters[0] ? parameters[0] : 1);
         break;
     case 'b':
-        /* testing */
-        printf("[1B 5B 62:SRL - SCROLL LEFT? NOT IMPLEMENTED]\n");
+        /* testing - probably wrong since it's supposed to be able to repeat the last control sequence as well */
+        fprintf(stderr, "[REP  Repeat Char or Control    Esc [ Pn b                   1]\n");
+        fprintf(stderr, "last_character=%u (0x%2x), repeat=%d\n",  last_character, last_character, parameters[0]);
+        //ansi_debug_dump();
+        assert(parameters[0]);
+        repeat_char = malloc(parameters[0]);
+        for (i = 0 ; i < parameters[0]; i++) {
+            repeat_char[i] = last_character;
+            //send_byte_to_canvas(canvas, last_character);
+        }
+        clear_ansi_flags(FLAG_ALL);
+        ansi_to_canvas(canvas, repeat_char, parameters[0], 0);
+        free(repeat_char);
         break;
     case 'B':
         /* move cursor down parameter[0] rows without changing column */
@@ -1023,7 +1042,7 @@ void dispatch_ansi_command(ANSICanvas *canvas, unsigned char c)
         break;
     case 'G':
         /* unix mode reset? not implemented! */
-        printf("[1B 5B 62:UMR - UNIX MODE RESET? NOT IMPLEMENTED!]\n");
+        fprintf(stderr, "[1B 5B 62:UMR - UNIX MODE RESET? NOT IMPLEMENTED!]\n");
         break;
     case 'J':
         /* move home and clear screen - set the clear flag on the canvas if we encounter this */
@@ -1042,23 +1061,19 @@ void dispatch_ansi_command(ANSICanvas *canvas, unsigned char c)
         dispatch_ansi_cursor_right(canvas);
         break;
     case 'd':
-				/* this seems to be SSR, but with a parameter - let's complain if the parameter is not "1" for now,
-						since that's all we've seen */
-				ansi_seqbuf[ansi_offset] = 'd';
-				ansi_offset++;
+        /* this seems to be SSR, but with a parameter - let's complain if the parameter is not "1" for now,
+        		since that's all we've seen */
+        ansi_seqbuf[ansi_offset] = 'd';
+        ansi_offset++;
         /* testing - space supress reset? */
-        printf("[1B 5B <nn> 64:SSR - PARAMETERIZED SPACE SUPPRESS RESET]\n");
-				/* leave x position where it is, but move y to line 0 */
+        printf("[1B 5B <nn> 64:VPA - VERTICAL POSITION ABSOLUTE:Y=%u]\n", parameters[0]);
+        /* leave x position where it is, but move y to line 0 */
 
-				ansi_debug_dump();
+        assert((parameters[0] - 1) >= 0);
+        current_y = parameters[0] - 1;
 
-				assert(!paramidx);
-				assert(parameters[0] == 1);
-
-				current_y = 0;
-
-				clear_ansi_flags(FLAG_ALL);
-				canvas->is_dirty= true;
+        clear_ansi_flags(FLAG_ALL);
+        canvas->is_dirty= true;
         break;
     case 'D':
         /* move cursor to the left N characters */
@@ -1102,10 +1117,10 @@ void dispatch_ansi_command(ANSICanvas *canvas, unsigned char c)
         assert(process_fd == -1);
         break;
     default:
-				ansi_seqbuf[ansi_offset] = c;
-				ansi_offset++;
+        ansi_seqbuf[ansi_offset] = c;
+        ansi_offset++;
         printf("+++ unknown ansi command '%c'\n", c);
-				ansi_debug_dump();
+        ansi_debug_dump();
         assert(NULL);
         exit(1);
         break;
