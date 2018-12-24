@@ -4,6 +4,7 @@
 #include <stdbool.h>
 #include <string.h>
 #include <assert.h>
+#include <pthread.h>
 #include <time.h>
 #include "rawfont.h"
 #include "ansicanvas.h"
@@ -34,6 +35,8 @@ static bool glut_initialised = false;
 
 ANSICanvas *myCanvas = NULL;
 
+pthread_mutex_t gfx_mutex;
+
 uint16_t gfx_opengl_getwidth()
 {
     return gfx_opengl_width;
@@ -43,6 +46,7 @@ uint16_t gfx_opengl_getheight()
 {
     return gfx_opengl_height;
 }
+
 
 void gfx_opengl_setdimensions(uint16_t w, uint16_t h)
 {
@@ -59,13 +63,19 @@ void updateTexture()
 
     if (canvas_is_dirty(myCanvas)) {
         //printf("updateTexture() dirty\n");
-    		myCanvas->is_dirty=false;
     } else {
      //   printf("updateTexture() clean\n");
         usleep(10000);
 				pthread_yield();
         return;
     }
+
+	 	if (pthread_mutex_trylock(&gfx_mutex) != 0) {
+						usleep(10000);
+            pthread_yield();
+						return;
+    }
+
 
     glTexSubImage2D(GL_TEXTURE_2D, 0,0, 0, gfx_opengl_width, gfx_opengl_height, GL_RGB, GL_UNSIGNED_BYTE, (GLvoid*)screenData);
 
@@ -84,6 +94,8 @@ void updateTexture()
         glutSwapBuffers();
     }
 
+ 		myCanvas->is_dirty=false;
+		pthread_mutex_unlock(&gfx_mutex);
 
 }
 
@@ -157,9 +169,15 @@ void setTexturePixel(int x, int y, u8 r, u8 g, u8 b)
 
 int gfx_opengl_expose()
 {
-    printf("gfx_opengl_expose()\n");
+//  printf("gfx_opengl_expose()\n");
     assert(myCanvas);
+		 while (pthread_mutex_trylock(&gfx_mutex) != 0) {
+            usleep(10000);
+   	 }
+
     myCanvas->is_dirty = true;
+		pthread_mutex_unlock(&gfx_mutex);
+		
     return 0;
 }
 
@@ -213,6 +231,10 @@ int gfx_opengl_drawglyph(BitmapFont *font, uint16_t px, uint16_t py, uint8_t gly
 
     //printf("gfx_opengl_drawglyph(%u, %u, %u, %u, '%c', fg=%u, bg=%u)\n", px, py, font->header.px, font->header.py, glyph, fg, bg);
 
+		while (pthread_mutex_trylock(&gfx_mutex) != 0) {
+            usleep(10000);
+    }
+
     if (attr & ATTRIB_REVERSE) {
         bgc = canvas_displaycolour(fg + ((attr & ATTRIB_BOLD ? 8 : 0)));
         fgc = canvas_displaycolour(bg);
@@ -242,6 +264,9 @@ int gfx_opengl_drawglyph(BitmapFont *font, uint16_t px, uint16_t py, uint8_t gly
         }
         //  printf("\n");
     }
+
+		pthread_mutex_unlock(&gfx_mutex);
+
     return 0;
 }
 
