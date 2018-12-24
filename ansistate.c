@@ -298,6 +298,10 @@ bool send_byte_to_canvas(ANSICanvas *canvas, unsigned char c)
 
     /* ADJUSTMENT FOR LINEFEED */
 
+    if (debug_flag) {
+        printf(">> [%c] {%u,%u} %u,%u [%c]\r\n", c,  current_x, current_y, fg, bg, (attributes & ATTRIB_REVERSE ? 'R' : ' '));
+    }
+
     r->chardata[current_x] = c;
     r->fgcolors[current_x] = fg;
     r->bgcolors[current_x] = bg;
@@ -408,6 +412,11 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
             break;
 
         case (FLAG_1B | FLAG_5B):
+
+            /* FIXME: starting to see a lot of duplication here, of commands with no parameters vs
+            		commands with parameters. need to take a look whether we can rationalize this without breaking
+            		too much */
+
 
             if (c == 'r') {
                 /* see http://www2.gar.no/glinkj/help/cmds/ansa.htm */
@@ -570,12 +579,16 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
             if (c == 'M') {
                 ANSIRaster *d = NULL;
                 ANSIRaster *p = NULL;
+                ANSIRaster *n = NULL;
                 printf("delete raster\n");
                 assert(!paramidx);
                 p = canvas_get_raster(canvas, current_y-1);
                 d = p->next_raster;
                 p->next_raster = d->next_raster;
                 raster_delete(d);
+                canvas_reindex(canvas);
+								n = canvas_add_raster(canvas);
+								raster_extend_length_to(n, canvas->default_raster_length);
                 canvas_reindex(canvas);
                 canvas->repaint_entire_canvas = true;
                 canvas->is_dirty = true;
@@ -1007,13 +1020,19 @@ void canvas_clear(ANSICanvas *canvas)
 void dispatch_ansi_command(ANSICanvas *canvas, unsigned char c)
 {
 
+    /* this should be called 'dispatch_ansi_command_with_parameter' - in fact, parameterized vs non-parameterized
+    	 implementations need to be merged to prevent too much duplication of code */
+
+    ANSIRaster *d = NULL;
+    ANSIRaster *p = NULL;
+    ANSIRaster *n = NULL;
     int i = 0;
     uint8_t *repeat_char = NULL;
     if (debug_flag) {
         printf("dispatch_ansi_command('%c')\n", c);
     }
 
-    ansi_seqbuf[ansi_offset] = 'b';
+    ansi_seqbuf[ansi_offset] = c;
     ansi_offset++;
 
     switch (c) {
@@ -1034,6 +1053,8 @@ void dispatch_ansi_command(ANSICanvas *canvas, unsigned char c)
         }
         clear_ansi_flags(FLAG_ALL);
         ansi_to_canvas(canvas, repeat_char, parameters[0], 0);
+        canvas->repaint_entire_canvas = true;
+        canvas->is_dirty = true;
         free(repeat_char);
         break;
     case 'B':
@@ -1068,11 +1089,10 @@ void dispatch_ansi_command(ANSICanvas *canvas, unsigned char c)
         /* testing - space supress reset? */
         printf("[1B 5B <nn> 64:VPA - VERTICAL POSITION ABSOLUTE:Y=%u]\n", parameters[0]);
         /* leave x position where it is, but move y to line 0 */
-
         assert((parameters[0] - 1) >= 0);
         current_y = parameters[0] - 1;
-
         clear_ansi_flags(FLAG_ALL);
+        canvas->repaint_entire_canvas = true;
         canvas->is_dirty= true;
         break;
     case 'D':
@@ -1096,7 +1116,30 @@ void dispatch_ansi_command(ANSICanvas *canvas, unsigned char c)
     case 'M':
         /* see: http://www2.gar.no/glinkj/help/cmds/vipa.htm */
         /* delete line - UE4 prototype has implementation of this*/
+				fprintf(stderr, "[DELETE LINES %u:%d]\n", current_y, parameters[0]);
+				fprintf(stderr, "default raster length = %u\n", canvas->default_raster_length);
+        assert(paramidx == 1);
+        for (i = 0; i < parameters[0]; i++) {
+            /* add raster to end */
+            n = canvas_add_raster(canvas);
+						raster_extend_length_to(n, canvas->default_raster_length);
+						canvas_reindex(canvas);
+        }
+        for (i = 0; i < parameters[0]; i++) {
+            printf("delete raster %u\n", i);
+            p = canvas_get_raster(canvas, current_y-1);
+            d = p->next_raster;
+            p->next_raster = d->next_raster;
+            raster_delete(d);
+            canvas_reindex(canvas);
+        }
+        canvas_reindex(canvas);
+        canvas->repaint_entire_canvas = true;
+        canvas->is_dirty = true;
+        clear_ansi_flags(FLAG_ALL);
+        break;
         fprintf(stderr, "UNIMPLEMENTED {DL	Delete line	esc [ M	1B 5B 4D}\n");
+        ansi_debug_dump();
         break;
     case 'm':
         /* text attributes */

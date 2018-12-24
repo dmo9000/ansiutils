@@ -350,6 +350,7 @@ int gfx_opengl_canvas_render_xy(ANSICanvas *canvas, BitmapFont *myfont, uint16_t
 {
     ANSIRaster *r = NULL;
 
+//		fprintf(stderr, "gfx_opengl_canvas_render_xy(..., %u, %u)\r\n", x, y);
     if (y > canvas->scroll_limit) {
         //printf("y > 24 (=%u) ; canvas->scroll_limit = %u\r\n", y, canvas->scroll_limit);
         return 0;
