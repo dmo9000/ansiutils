@@ -7,6 +7,43 @@
 #include "rawfont.h"
 
 
+BitmapFont *bmf_embedded(char *data)
+{
+
+    size_t font_len_expect;
+    BitmapFont *myfont = NULL;
+
+    myfont = (BitmapFont*) malloc(sizeof(BitmapFont));
+
+		memcpy(&myfont->header, data, 8);
+
+    printf("Magic:   [%c%c%c]\r\n", myfont->header.magic[0], myfont->header.magic[1], myfont->header.magic[2]);
+    printf("Version: [%u]\r\n", myfont->header.version);
+    printf("Columns: [%u]\r\n", myfont->header.px);
+    printf("Rows:    [%u]\r\n", myfont->header.py);
+    printf("Glyphs:  [%u]\r\n", myfont->header.glyphs);
+
+    assert(myfont->header.magic[0] == 'B');
+    assert(myfont->header.magic[1] == 'M');
+    assert(myfont->header.magic[2] == 'F');
+    assert(myfont->header.version == 0);
+    assert(myfont->header.px == 8);
+    assert(myfont->header.py == 8);
+    assert(myfont->header.glyphs == 256);
+
+    font_len_expect = (myfont->header.py * myfont->header.glyphs);
+
+    myfont->fontdata = malloc(font_len_expect);
+
+    if (!myfont->fontdata) {
+        perror("malloc");
+        exit(1);
+    }
+	memcpy(&myfont->fontdata, data + 8, font_len_expect);
+	return myfont;
+
+}
+
 BitmapFont *bmf_load(char *filename)
 {
 
