@@ -530,16 +530,16 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
                 r = canvas_get_raster(canvas, current_y);
                 assert(r);
                 // printf("+++ clearing line %u from %u to %u\n", current_y, current_x, r->bytes);
-                /*
+
+                
                 for (ii = 0; ii <= 79; ii++) {
                 r->chardata[ii] = ' ';
                 r->bgcolors[ii] = 0;
                 r->fgcolors[ii] = 7;
                 r->attribs[ii] = ATTRIB_NONE;
                 }
-                */
                 //canvas->repaint_entire_canvas = true;
-                //canvas->is_dirty = true;
+                canvas->is_dirty = true;
                 clear_ansi_flags(FLAG_ALL);
                 break;
             }
