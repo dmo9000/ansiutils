@@ -65,15 +65,14 @@ void updateTexture()
         //printf("updateTexture() dirty\n");
     } else {
      //   printf("updateTexture() clean\n");
-        usleep(10000);
-				pthread_yield();
+        usleep(16666);
+				//pthread_yield();
         return;
     }
 
-	 	if (pthread_mutex_trylock(&gfx_mutex) != 0) {
-						usleep(10000);
+	 	while (pthread_mutex_trylock(&gfx_mutex) != 0) {
+						//usleep(10000);
             pthread_yield();
-						return;
     }
 
 
@@ -93,10 +92,10 @@ void updateTexture()
     if (glut_initialised) {
         glutSwapBuffers();
     }
-
+	
  		myCanvas->is_dirty=false;
 		pthread_mutex_unlock(&gfx_mutex);
-
+		usleep(16666);
 }
 
 
@@ -172,7 +171,7 @@ int gfx_opengl_expose()
 //  printf("gfx_opengl_expose()\n");
     assert(myCanvas);
 		 while (pthread_mutex_trylock(&gfx_mutex) != 0) {
-            usleep(10000);
+           usleep(10000);
    	 }
 
     myCanvas->is_dirty = true;

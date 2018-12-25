@@ -39,13 +39,13 @@
 
         [1m[4m[36mRECENT CHANGES[24m:[21m
 
+[40;37m           3fbffa6 * WIP locking code for OpenGL driver.[0m
 [40;37m           a5f931e * ansistate: clean up many spurious debug messages for now[0m
 [40;37m           00e1ca1 * Debugging changes, minor fix to cursor management.[0m
 [40;37m           0967d4d * Minor fixes allowing top to display somewhat correctly.[0m
 [40;37m           f7db711 * Some corrections to 'M' command (delete line(s))[0m
-[40;37m           3a71834 * Compatibility improvements.[0m
 
 
-    [30m[1m    (2018-12-25 git #a5f931e https://github.com/dmo9000/ansiutils.git)[0m[21m
+    [30m[1m    (2018-12-25 git #3fbffa6 https://github.com/dmo9000/ansiutils.git)[0m[21m
 
                                                                                                               

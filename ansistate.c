@@ -587,7 +587,7 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
                 ANSIRaster *d = NULL;
                 ANSIRaster *p = NULL;
                 ANSIRaster *n = NULL;
-    //            printf("delete raster\n");
+                //            printf("delete raster\n");
                 assert(!paramidx);
                 p = canvas_get_raster(canvas, current_y-1);
                 d = p->next_raster;
@@ -1036,7 +1036,7 @@ void dispatch_ansi_command(ANSICanvas *canvas, unsigned char c)
 
     /* this should be called 'dispatch_ansi_command_with_parameter' - in fact, parameterized vs non-parameterized
     	 implementations need to be merged to prevent too much duplication of code */
-
+    char response[2048];
     ANSIRaster *d = NULL;
     ANSIRaster *p = NULL;
     ANSIRaster *n = NULL;
@@ -1171,9 +1171,15 @@ void dispatch_ansi_command(ANSICanvas *canvas, unsigned char c)
         }
         assert(process_fd == -1);
         break;
+    case 'n':
+        /* apparently this is "report cursor position". At least vim uses this  */
+        snprintf(&response, 256, "%d;%dR", current_y+1, current_x+1);
+        /* FIXME: error checking */
+        write(process_fd, "\x1b\x5b", 2);
+        write(process_fd, response, strlen(response));
+        clear_ansi_flags(FLAG_ALL);
+        break;
     default:
-        ansi_seqbuf[ansi_offset] = c;
-        ansi_offset++;
         printf("+++ unknown ansi command '%c'\n", c);
         ansi_debug_dump();
         assert(NULL);

@@ -1,1 +1,16 @@
 http://www.markcrocker.com/rexxtipsntricks/rxtt28.2.0777.html
+http://www.ecma-international.org/publications/standards/Ecma-048.htm
+
+Documentation on the cursor position report code here: 
+
+	https://stackoverflow.com/questions/41708420/escape-sequences-interrupt-pyserial-client
+
+In response to [CSI|6n], we should send: 
+
+	Report(win, "\033[%d;%dR", win->w_y + 1, win->w_x + 1);
+
+In other words, we should write back to the socket: 
+
+	CSI|cursor_y+1;cursor_x+1R
+
+
