@@ -39,13 +39,13 @@
 
         [1m[4m[36mRECENT CHANGES[24m:[21m
 
+[40;37m           cf90e9e * Initial support for using an embedded BMF font (not working).[0m
 [40;37m           e2c5fc5 * Include missing header.[0m
 [40;37m           b794ca3 * Don't usleep() when unnecessary, just yield. Performance improvement.[0m
 [40;37m           dd34baf * Re-enable clear to end of line, but don't do full repaint.[0m
 [40;37m           620bd5a * Support CSI6n which is "report cursor position". vim uses this.[0m
-[40;37m           3fbffa6 * WIP locking code for OpenGL driver.[0m
 
 
-    [30m[1m    (2018-12-26 git #e2c5fc5 https://github.com/dmo9000/ansiutils.git)[0m[21m
+    [30m[1m    (2018-12-26 git #cf90e9e https://github.com/dmo9000/ansiutils.git)[0m[21m
 
                                                                                                               

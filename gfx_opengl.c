@@ -9,9 +9,11 @@
 #include "rawfont.h"
 #include "ansicanvas.h"
 #include "gfx_opengl.h"
-//#include "m68k.h"
 
-// Display size
+/* set this if you want to skip frames */
+#define FRAME_SKIP
+
+/* Display size */
 #define SCREEN_WIDTH    640
 #define SCREEN_HEIGHT   384
 
@@ -65,15 +67,20 @@ void updateTexture()
     if (canvas_is_dirty(myCanvas)) {
         //printf("updateTexture() dirty\n");
     } else {
-     //   printf("updateTexture() clean\n");
+        //   printf("updateTexture() clean\n");
         usleep(16666);
-				//pthread_yield();
+        //pthread_yield();
         return;
     }
 
-	 	while (pthread_mutex_trylock(&gfx_mutex) != 0) {
-						//usleep(10000);
-            pthread_yield();
+    while (pthread_mutex_trylock(&gfx_mutex) != 0) {
+        /* try frame skip */
+#ifdef FRAME_SKIP
+        usleep(16666);
+        return;
+#else
+        pthread_yield();
+#endif
     }
 
 
@@ -93,10 +100,10 @@ void updateTexture()
     if (glut_initialised) {
         glutSwapBuffers();
     }
-	
- 		myCanvas->is_dirty=false;
-		pthread_mutex_unlock(&gfx_mutex);
-		usleep(16666);
+
+    myCanvas->is_dirty=false;
+    pthread_mutex_unlock(&gfx_mutex);
+    usleep(16666);
 }
 
 
@@ -120,7 +127,7 @@ void reshape_window(GLsizei w, GLsizei h)
     glViewport(0, 0, w, h);
     display_width = w;
     display_height = h;
-		myCanvas->is_dirty= true;
+    myCanvas->is_dirty= true;
 }
 
 
@@ -171,14 +178,14 @@ int gfx_opengl_expose()
 {
 //  printf("gfx_opengl_expose()\n");
     assert(myCanvas);
-		 while (pthread_mutex_trylock(&gfx_mutex) != 0) {
-           //usleep(10000);
-					pthread_yield();
-   	 }
+    while (pthread_mutex_trylock(&gfx_mutex) != 0) {
+        //usleep(10000);
+        pthread_yield();
+    }
 
     myCanvas->is_dirty = true;
-		pthread_mutex_unlock(&gfx_mutex);
-		
+    pthread_mutex_unlock(&gfx_mutex);
+
     return 0;
 }
 
@@ -232,9 +239,9 @@ int gfx_opengl_drawglyph(BitmapFont *font, uint16_t px, uint16_t py, uint8_t gly
 
     //printf("gfx_opengl_drawglyph(%u, %u, %u, %u, '%c', fg=%u, bg=%u)\n", px, py, font->header.px, font->header.py, glyph, fg, bg);
 
-		while (pthread_mutex_trylock(&gfx_mutex) != 0) {
-            //usleep(10000);
-						pthread_yield();
+    while (pthread_mutex_trylock(&gfx_mutex) != 0) {
+        //usleep(10000);
+        pthread_yield();
     }
 
     if (attr & ATTRIB_REVERSE) {
@@ -251,8 +258,6 @@ int gfx_opengl_drawglyph(BitmapFont *font, uint16_t px, uint16_t py, uint8_t gly
             //printf("%u -> %u, ", r, jj);
             rx = font->fontdata[(glyph*font->header.py) + ii];
 
-
-
             if (rx & jj || ((attr & ATTRIB_UNDERLINE) && (ii == font->header.py - 1))) {
                 setTexturePixel((px*8) + h, (py*16)+(ii*2), fgc->r, fgc->g, fgc->b);
                 setTexturePixel((px*8) + h, (py*16)+(ii*2)+1, fgc->r, fgc->g, fgc->b);
@@ -267,7 +272,7 @@ int gfx_opengl_drawglyph(BitmapFont *font, uint16_t px, uint16_t py, uint8_t gly
         //  printf("\n");
     }
 
-		pthread_mutex_unlock(&gfx_mutex);
+    pthread_mutex_unlock(&gfx_mutex);
 
     return 0;
 }
@@ -405,7 +410,7 @@ int gfx_opengl_render_cursor(ANSICanvas *canvas, BitmapFont *myfont, uint16_t x,
 
     assert(canvas);
 
-		//printf("gfx_opengl_render_cursor(0x%lx, 0x%lx, %u, %u, %s)\r\n", canvas, myfont, x, y, (state ? "true" : "false"));
+    //printf("gfx_opengl_render_cursor(0x%lx, 0x%lx, %u, %u, %s)\r\n", canvas, myfont, x, y, (state ? "true" : "false"));
 
     if (y >=24) {
         return 0;
@@ -434,7 +439,7 @@ int gfx_opengl_render_cursor(ANSICanvas *canvas, BitmapFont *myfont, uint16_t x,
         break;
     }
 
-		canvas->is_dirty=true;
+    canvas->is_dirty=true;
 
     return 1;
 }
