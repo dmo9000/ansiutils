@@ -8,6 +8,7 @@
 #include <time.h>
 #include "rawfont.h"
 #include "ansicanvas.h"
+#include "gfx_opengl.h"
 //#include "m68k.h"
 
 // Display size
