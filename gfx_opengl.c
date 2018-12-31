@@ -50,7 +50,6 @@ uint16_t gfx_opengl_getheight()
     return gfx_opengl_height;
 }
 
-
 void gfx_opengl_setdimensions(uint16_t w, uint16_t h)
 {
 
@@ -252,7 +251,7 @@ int gfx_opengl_drawglyph(BitmapFont *font, uint16_t px, uint16_t py, uint8_t gly
         bgc = canvas_displaycolour(bg);
     }
 
-		assert(font->fontdata);
+    assert(font->fontdata);
     for (uint8_t ii = 0; ii < font->header.py; ii++) {
         h = 0;
         for (uint8_t jj = 128; jj >0; jj = jj >> 1) {
@@ -311,6 +310,35 @@ void process_Normal_Keys(int key, int x, int y)
         break;
     }
 
+    return;
+
+}
+
+void process_Special_Keys(int key, int x, int y)
+{
+    //fprintf(stderr, "process_Special_Keys()\r\n");
+
+    switch (key)
+    {
+    case GLUT_KEY_UP:
+        fprintf(stderr, "+++ GLUT_KEY_UP pressed\n");
+        assert(kbbuf_len < (MAX_KBBUF_LEN - strlen("\x1b""[A")));
+        kbbuf_append("\x1B""[A");
+        break;
+    case GLUT_KEY_DOWN:
+        fprintf(stderr, "+++ GLUT_KEY_DOWN pressed\n");
+        assert(kbbuf_len < (MAX_KBBUF_LEN - strlen("\x1b""[B")));
+        kbbuf_append("\x1B""[B");
+        break;
+
+    /* TODO: left/right for line editing */
+
+    default:
+        fprintf(stderr, "+++ Unhandled SPECIAL key\n");
+        break;
+    }
+
+    return;
 }
 
 
@@ -331,8 +359,8 @@ int gfx_opengl_main(ANSICanvas *c, uint16_t xsize, uint16_t ysize, int multiplie
     glutDisplayFunc(display);
     glutIdleFunc(display);
     glutReshapeFunc(reshape_window);
-    glutKeyboardFunc( process_Normal_Keys );
-
+    glutKeyboardFunc(process_Normal_Keys);
+    glutSpecialFunc(process_Special_Keys);
     assert(c);
     myCanvas = c;
 
@@ -466,4 +494,21 @@ int tty_processinput()
     return 1;
 }
 
+int kbbuf_append(char *s)
+{
 
+    int i = 0;
+    if (kbbuf_len < (MAX_KBBUF_LEN - strlen(s))) {
+        //		fprintf(stderr,  "kbbuf_append('%s')\n", s);
+    } else {
+        assert(kbbuf_len >= (MAX_KBBUF_LEN - strlen(s)));
+    }
+
+    for (i = 0; i < strlen(s); i++) {
+        kbbuf[kbbuf_len+i] = s[i];
+    }
+
+    kbbuf_len += strlen(s);
+
+    return 1;
+}
