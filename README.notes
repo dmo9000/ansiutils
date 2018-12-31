@@ -1,4 +1,3 @@
-http://www.markcrocker.com/rexxtipsntricks/rxtt28.2.0777.html
 http://www.ecma-international.org/publications/standards/Ecma-048.htm
 
 Documentation on the cursor position report code here: 
@@ -13,4 +12,22 @@ In other words, we should write back to the socket:
 
 	CSI|cursor_y+1;cursor_x+1R
 
+
+
+The '?' codes are non-standard, and in some cases, not agreed upon. 
+
+	https://github.com/bengarrett/RetroTxt/blob/master/docs/technical.md
+	http://picoe.ca/forums/topic/need-pablodraw-ansi-escape-codes-descriptionsourcelist/
+
+For example CSI]?33l/h has been described as changing blink states, hardware cursor switching
+or even enable/disable PabloDraw iCE colors for background according to the above two links. 
+
+When in doubt, I don't implement it at all (but I will try and handle it). 
+
+
+Regarding terminal handling: 
+
+	https://unix.stackexchange.com/questions/103608/is-there-any-reason-why-i-get-a-when-i-press-up-arrow-at-the-console-login-sc
+
+Has an interesting note on pressing CTRL-V and then a keystroke (it should give you the literal characters that would be sent).
 

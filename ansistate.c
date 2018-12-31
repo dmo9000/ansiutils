@@ -141,7 +141,6 @@ void dispatch_ansi_command(ANSICanvas *canvas, unsigned char c);
 
 int  ansi_setdebug(bool debugstate)
 {
-
     debug_flag = debugstate;
 
 }
@@ -776,6 +775,11 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
                     canvas->is_dirty=true;
                     clear_ansi_flags(FLAG_ALL);
                     break;
+								case 33:
+										/* a non-standard extension. See README.notes for a list of potential users of this */
+										fprintf(stderr, "{+++ non standard sequence CSI [ ? 33 l}\n");
+										clear_ansi_flags(FLAG_ALL);
+										break;
                 case 45:
                     /* no idea - vttest sends this ? */
                     fprintf(stderr, "[UNKNOWN - vttest - FIXME]\n");
@@ -863,7 +867,6 @@ void dispatch_ansi_text_attributes()
             if (debug_flag) {
                 printf("  * enable ATTRIB_UNDERLINE\n");
             }
-            printf("[ATTRIB_UNDERLINE ON]\n");
             attributes |= ATTRIB_UNDERLINE;
             goto next_parameter;
             break;
@@ -906,7 +909,6 @@ void dispatch_ansi_text_attributes()
             if (debug_flag) {
                 printf("  * disable ATTRIB_UNDERLINE\n");
             }
-            printf("[ATTRIB_UNDERLINE OFF]\n");
             attributes &= ~ATTRIB_UNDERLINE;
             goto next_parameter;
             break;

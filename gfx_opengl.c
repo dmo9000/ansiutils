@@ -252,6 +252,7 @@ int gfx_opengl_drawglyph(BitmapFont *font, uint16_t px, uint16_t py, uint8_t gly
         bgc = canvas_displaycolour(bg);
     }
 
+		assert(font->fontdata);
     for (uint8_t ii = 0; ii < font->header.py; ii++) {
         h = 0;
         for (uint8_t jj = 128; jj >0; jj = jj >> 1) {

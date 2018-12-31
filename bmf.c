@@ -15,7 +15,7 @@ BitmapFont *bmf_embedded(char *data)
 
     myfont = (BitmapFont*) malloc(sizeof(BitmapFont));
 
-		memcpy(&myfont->header, data, 8);
+		memcpy(&myfont->header, data, sizeof(BitmapFontHeader));
 
     printf("Magic:   [%c%c%c]\r\n", myfont->header.magic[0], myfont->header.magic[1], myfont->header.magic[2]);
     printf("Version: [%u]\r\n", myfont->header.version);
@@ -39,7 +39,7 @@ BitmapFont *bmf_embedded(char *data)
         perror("malloc");
         exit(1);
     }
-	memcpy(&myfont->fontdata, data + 8, font_len_expect);
+	memcpy(myfont->fontdata, data + sizeof(BitmapFontHeader), font_len_expect);
 	return myfont;
 
 }
