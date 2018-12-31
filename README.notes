@@ -31,3 +31,7 @@ Regarding terminal handling:
 
 Has an interesting note on pressing CTRL-V and then a keystroke (it should give you the literal characters that would be sent).
 
+
+The timebend.ans test file seems to be failing about byte 4188. I'm sure we fixed this in the UE4 build...
+
+

@@ -664,7 +664,7 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
                 parameters[paramidx] = paramval;
                 paramcount ++;
                 if (debug_flag) {
-                    printf("assign integer parameter [%u] = %u\n", paramidx, parameters[paramidx]);
+                    fprintf(stderr, "assign integer parameter [%u] = %u\n", paramidx, parameters[paramidx]);
                 }
                 paramidx++;
                 paramval = 0;
@@ -675,12 +675,21 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
                     ansi_offset++;
                     paramval = (paramval * 10) + (c - 0x30);
                     if (debug_flag) {
-                        printf(" cont integer parameter [%u], current_value = %u\n", paramidx, paramval);
+                        fprintf(stderr, " cont integer parameter [%u], current_value = %u\n", paramidx, paramval);
                     }
+
+										if (paramval > 255) {
+												fprintf(stderr, " +++ integer paramater out of range? (paramval = %u)\n", paramval);
+												ansi_debug_dump();
+												exit(1);
+										}
+
                 } else {
                     printf("error: expecting digit or seperator, got '%c' (0x%02x)\n", c, c);
-                    ansi_debug_dump();
-                    assert(NULL);
+										printf("paramval = %u\n", paramval);
+										clear_ansi_flags(FLAG_ALL);
+										break;			
+                    //assert(NULL);
                 }
             }
             break;

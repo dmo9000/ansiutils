@@ -39,14 +39,14 @@
 
         [1m[4m[36mRECENT CHANGES[24m:[21m
 
+[40;37m           596527c * Enter debug state on unexpected character.[0m
 [40;37m           e270b73 * Special key handling for GLUT, proof-of-concept only.[0m
 [40;37m           f52728b * Fix for embedded BMF fonts.[0m
 [40;37m                   * Other minor fixes, cleanups and WIPs[0m
 [40;37m           e040bc0 * Experimental frameskip support.[0m
 [40;37m           cf90e9e * Initial support for using an embedded BMF font (not working).[0m
-[40;37m           e2c5fc5 * Include missing header.[0m
 
 
-    [30m[1m    (2019-01-01 git #e270b73 https://github.com/dmo9000/ansiutils.git)[0m[21m
+    [30m[1m    (2019-01-01 git #596527c https://github.com/dmo9000/ansiutils.git)[0m[21m
 
                                                                                                               
