@@ -38,3 +38,9 @@ The timebend.ans test file seems to be failing about byte 4188. I'm sure we fixe
 A note on sequences handled by screen is here: 
 
 	https://www.gnu.org/software/screen/manual/html_node/Control-Sequences.html
+
+Also useful:
+
+	http://www2.gar.no/glinkj/help/cmds/ansa.htm
+
+
