@@ -318,6 +318,9 @@ void process_Special_Keys(int key, int x, int y)
 {
     //fprintf(stderr, "process_Special_Keys()\r\n");
 
+		/* TODO: bump cursor position and phase flag when doing line editing, so 
+			 			 that it's easier to see the cursor while it is moving */
+
     switch (key)
     {
     case GLUT_KEY_UP:
@@ -330,9 +333,16 @@ void process_Special_Keys(int key, int x, int y)
         assert(kbbuf_len < (MAX_KBBUF_LEN - strlen("\x1b""[B")));
         kbbuf_append("\x1B""[B");
         break;
-
-    /* TODO: left/right for line editing */
-
+    case GLUT_KEY_LEFT:
+        fprintf(stderr, "+++ GLUT_KEY_LEFT pressed\n");
+        assert(kbbuf_len < (MAX_KBBUF_LEN - strlen("\x1b""[D")));
+        kbbuf_append("\x1B""[D");
+        break;
+    case GLUT_KEY_RIGHT:
+        fprintf(stderr, "+++ GLUT_KEY_RIGHT pressed\n");
+        assert(kbbuf_len < (MAX_KBBUF_LEN - strlen("\x1b""[C")));
+        kbbuf_append("\x1B""[C");
+        break;
     default:
         fprintf(stderr, "+++ Unhandled SPECIAL key\n");
         break;
