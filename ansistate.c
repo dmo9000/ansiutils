@@ -530,12 +530,12 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
                 assert(r);
                 // printf("+++ clearing line %u from %u to %u\n", current_y, current_x, r->bytes);
 
-                
+
                 for (ii = 0; ii <= 79; ii++) {
-                r->chardata[ii] = ' ';
-                r->bgcolors[ii] = 0;
-                r->fgcolors[ii] = 7;
-                r->attribs[ii] = ATTRIB_NONE;
+                    r->chardata[ii] = ' ';
+                    r->bgcolors[ii] = 0;
+                    r->fgcolors[ii] = 7;
+                    r->attribs[ii] = ATTRIB_NONE;
                 }
                 //canvas->repaint_entire_canvas = true;
                 canvas->is_dirty = true;
@@ -679,6 +679,7 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
                     }
                 } else {
                     printf("error: expecting digit or seperator, got '%c' (0x%02x)\n", c, c);
+                    ansi_debug_dump();
                     assert(NULL);
                 }
             }
@@ -775,11 +776,11 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
                     canvas->is_dirty=true;
                     clear_ansi_flags(FLAG_ALL);
                     break;
-								case 33:
-										/* a non-standard extension. See README.notes for a list of potential users of this */
-										fprintf(stderr, "{+++ non standard sequence CSI [ ? 33 l}\n");
-										clear_ansi_flags(FLAG_ALL);
-										break;
+                case 33:
+                    /* a non-standard extension. See README.notes for a list of potential users of this */
+                    fprintf(stderr, "{+++ non standard sequence CSI [ ? 33 l}\n");
+                    clear_ansi_flags(FLAG_ALL);
+                    break;
                 case 45:
                     /* no idea - vttest sends this ? */
                     fprintf(stderr, "[UNKNOWN - vttest - FIXME]\n");
