@@ -414,29 +414,29 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
             break;
         case FLAG_1B:
 
-						if (c == 'E') {
-								// next line? current_y++, current_x = 0
-								current_x = 0;
-								current_y ++;
-								clear_ansi_flags(FLAG_ALL);
-								break;
-								}
+            if (c == 'E') {
+                // next line? current_y++, current_x = 0
+                current_x = 0;
+                current_y ++;
+                clear_ansi_flags(FLAG_ALL);
+                break;
+            }
 
-						if (c == 'M') {
+            if (c == 'M') {
                 // reverse index mode - set current_x = 0?
-                  current_x = 0;
-                  clear_ansi_flags(FLAG_ALL);
+                current_x = 0;
+                clear_ansi_flags(FLAG_ALL);
                 break;
             }
 
             if (c == 'D') {
                 // index mode - offset current_y + 1, but leave current_x untouched?
-									current_y ++;
-									clear_ansi_flags(FLAG_ALL);
+                current_y ++;
+                clear_ansi_flags(FLAG_ALL);
                 break;
             }
 
-       if (c == ANSI_HASH) {
+            if (c == ANSI_HASH) {
                 fprintf(stderr, "+++ WARNING: ANSI_HASH received %d (0x%02x) -> '%c'\n", c, c, c);
                 ansi_seqbuf[ansi_offset] = c;
                 ansi_offset++;
@@ -771,7 +771,8 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
                     }
                 }
                 canvas->repaint_entire_canvas = true;
-                canvas->is_dirty = true;
+                //canvas->is_dirty = true;
+                clear_ansi_flags(FLAG_ALL);
                 break;
             default:
                 fprintf(stderr, "+++ ANSI_HASH mode: unknown/unimplemented\n");
@@ -1148,6 +1149,7 @@ void dispatch_ansi_command(ANSICanvas *canvas, unsigned char c)
     ANSIRaster *n = NULL;
     int i = 0;
     int ii = 0;
+    int jj = 0;
     uint8_t *repeat_char = NULL;
     if (debug_flag) {
         printf("dispatch_ansi_command('%c')\n", c);
@@ -1186,18 +1188,21 @@ void dispatch_ansi_command(ANSICanvas *canvas, unsigned char c)
         /* unix mode reset? not implemented! */
         fprintf(stderr, "[1B 5B 62:UMR - UNIX MODE RESET? NOT IMPLEMENTED!]\n");
         break;
+    /*
     case 'J':
-        /* move home and clear screen - set the clear flag on the canvas if we encounter this */
-        if (allow_clear) {
-            canvas->clear_flag = true;
-        }
-        if (canvas->allow_hard_clear) {
-            /* blank and dirty the canvas */
-            printf("CLEAR SCREEN CALLED, AND HARD CLEAR ENABLED\n");
-            //canvas_clear(canvas);
-            canvas->repaint_entire_canvas = true;
-        }
-        break;
+    	// OLD and BUSTED 'J' handler
+    // move home and clear screen - set the clear flag on the canvas if we encounter this
+    if (allow_clear) {
+    canvas->clear_flag = true;
+    }
+    if (canvas->allow_hard_clear) {
+    // blank and dirty the canvas
+    printf("CLEAR SCREEN CALLED, AND HARD CLEAR ENABLED\n");
+    canvas_clear(canvas);
+    canvas->repaint_entire_canvas = true;
+    }
+    break;
+    */
     case 'C':
         /* move cursor to the right N characters */
         dispatch_ansi_cursor_right(canvas);
@@ -1314,7 +1319,58 @@ void dispatch_ansi_command(ANSICanvas *canvas, unsigned char c)
         write(process_fd, response, strlen(response));
         clear_ansi_flags(FLAG_ALL);
         break;
+    case 'J':
+        clear_ansi_flags(FLAG_ALL);
+        break;
+        /* https://www.gnu.org/software/screen/manual/html_node/Control-Sequences.html
+        		ESC [ Pn J                      Erase in Display
+         		Pn = None or 0            From Cursor to End of Screen
+              1                    From Beginning of Screen to Cursor
+              2                    Entire Screen
+           */
+        if (paramidx > 1) {
+            fprintf(stderr, "+++ 'J' command -- too many parameters!\n");
+            ansi_debug_dump();
+        }
+        if (!paramidx) {
+            fprintf(stderr, "+++ 'J' command -- erase from cursor to end of screen\n");
+            ansi_debug_dump();
+        }
+
+        switch (parameters[0]) {
+        case 0:
+            fprintf(stderr, "+++ 'J' command -- erase from cursor to end of screen\n");
+            current_x = 0;
+            break;
+        case 1:
+            fprintf(stderr, "+++ 'J' command -- erase from beginning of screen to cursor\n");
+            for (jj = 0; jj < current_y ; jj++) {
+                r = canvas_get_raster(canvas, jj);
+                assert(r);
+                for (ii = 0; ii < r->bytes; ii++) {
+                    r->chardata[ii] = ' ';
+                }
+            }
+            current_x = 0;
+            canvas->repaint_entire_canvas = true;
+            break;
+        case 2:
+            fprintf(stderr, "+++ 'J' command -- erase entire screen\n");
+            if (allow_clear) {
+                canvas->clear_flag = true;
+            }
+            if (canvas->allow_hard_clear) {
+                canvas_clear(canvas);
+                canvas->repaint_entire_canvas = true;
+            }
+            //ansi_debug_dump();
+            break;
+        }
+        clear_ansi_flags(FLAG_ALL);
+        break;
     case 'K':
+        clear_ansi_flags(FLAG_ALL);
+        break;
         /* https://www.gnu.org/software/screen/manual/html_node/Control-Sequences.html
         		ESC [ Pn K                      Erase in Line
           Pn = None or 0            From Cursor to End of Line
@@ -1336,46 +1392,37 @@ void dispatch_ansi_command(ANSICanvas *canvas, unsigned char c)
             fprintf(stderr, "+++ 'K' command -- erase from cursor to end of line\n");
             r = canvas_get_raster(canvas, current_y);
             assert(r);
-						/*
             for (ii = current_x; ii < r->bytes; ii++) {
                 r->chardata[ii] = 'X';
                 r->bgcolors[ii] = 0;
                 r->fgcolors[ii] = 7;
                 r->attribs[ii] = ATTRIB_NONE;
             }
-						*/
-						canvas->repaint_entire_canvas = true;
-						canvas->is_dirty = true;
+            canvas->repaint_entire_canvas = true;
             break;
         case 1:
             fprintf(stderr, "+++ 'K' command -- erase from beginning of line to cursor\n");
             r = canvas_get_raster(canvas, current_y);
             assert(r);
-						/*<
             for (ii = 0; ii <= current_x; ii++) {
                 r->chardata[ii] = 'Y';
                 r->bgcolors[ii] = 0;
                 r->fgcolors[ii] = 7;
                 r->attribs[ii] = ATTRIB_NONE;
             }
-						*/
-						canvas->repaint_entire_canvas = true;
-						canvas->is_dirty = true;
+            canvas->repaint_entire_canvas = true;
             break;
         case 2:
             fprintf(stderr, "+++ 'K' command -- erase entire line\n");
             r = canvas_get_raster(canvas, current_y);
             assert(r);
-						/*
             for (ii = 0; ii < r->bytes; ii++) {
                 r->chardata[ii] = 'Z';
                 r->bgcolors[ii] = 0;
                 r->fgcolors[ii] = 7;
                 r->attribs[ii] = ATTRIB_NONE;
             }
-						*/
-						canvas->repaint_entire_canvas = true;
-						canvas->is_dirty = true;
+            canvas->repaint_entire_canvas = true;
             break;
         default:
             fprintf(stderr, "+++ 'K' command -- unknown parameter value '%u'\n", parameters[0]);
