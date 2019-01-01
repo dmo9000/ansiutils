@@ -1,8 +1,8 @@
 #!/bin/sh
 
-MD5SUM=`which gmd5sum`
+MD5SUM=`which gmd5sum 2>/dev/null`
 if [ -z "${MD5SUM}" ] ; then
-	MD5SUM=`which md5sum`
+	MD5SUM=`which md5sum 2>/dev/null`
 	fi
 
 
