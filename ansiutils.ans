@@ -40,13 +40,13 @@
 
         [1m[4m[36mRECENT CHANGES[24m:[21m
 
+[40;37m           23b0941 * Deprecation of SDL module and libansisdlcanvas.a[0m
 [40;37m           4b01179 * Moved old SDL driver to the attic, will be removed in the near future.[0m
 [40;37m           ed81597 * Merge branch 'master' of https://github.com/dmo9000/ansiutils[0m
 [40;37m           d964248 * Remove some old redundant materials.[0m
 [40;37m           b46e97e * pthread_yield() fixes for MingW64[0m
-[40;37m           269f22b * Disable debug flags on build again.[0m
 
 
-    [30m[1m    (2019-01-01 git #4b01179 https://github.com/dmo9000/ansiutils.git)[0m[21m
+    [30m[1m    (2019-01-01 git #23b0941 https://github.com/dmo9000/ansiutils.git)[0m[21m
 
                                                                                                               

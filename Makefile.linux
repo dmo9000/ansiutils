@@ -1,8 +1,8 @@
 CC=gcc
 #CC=clang
 #CFLAGS = -g -ggdb -Wall -Werror
-#CFLAGS = -Wall --std=c99 -g -ggdb
-CFLAGS = -Wall --std=c99 -O2
+CFLAGS = -Wall --std=c99 -g -ggdb
+#CFLAGS = -Wall --std=c99 -O2
 LDFLAGS=-lGL -lGLU -lglut -lm -pthread
 
 TDFTOOL_OBJS=tdftool.o tdffont.o sauce.o
@@ -17,8 +17,7 @@ DATE=`date +%Y-%m-%d`
 COLUMNS=80
 PADDING=`printf '%*s' 110`
 
-all: libansicanvas.a tdftool rawfont ansiread bmf/8x8.bmf documentation test-regress
-#all: libansicanvas.a libansisdlcanvas.a tdftool rawfont ansiread bmf/8x8.bmf documentation test-regress
+all: libansicanvas.a tdftool rawfont ansiread ansitext bmf/8x8.bmf documentation test-regress
 
 test-regress:
 	./test-regress.sh
@@ -43,9 +42,6 @@ sample:
 sampledebug:
 	@./tdftool -d -c ${TESTSAMPLE} ABC | more
 
-#libansisdlcanvas.a: $(LIBANSISDLCANVAS_OBJS)
-#	ar cru libansisdlcanvas.a $(LIBANSISDLCANVAS_OBJS)
-
 libansicanvas.a: $(LIBANSICANVAS_OBJS)
 	ar cru libansicanvas.a $(LIBANSICANVAS_OBJS)
 
@@ -60,6 +56,9 @@ ansiread: $(ANSIREAD_OBJS) libansicanvas.a bmf.o gfx_opengl.o
 
 rawfont: $(OBJS) libansicanvas.a
 	$(CC) $(CFLAGS) $(LDFLAGS) -o rawfont $(OBJS) -L. -lansicanvas -lm -lpthread
+
+ansitext:	ansitext.o
+	$(CC) $(CFLAGS) $(LDFLAGS) -o ansitext ansitext.o
 
 clean:
 	rm -f tdftool rawfont ansiread *.o *.a *.core
