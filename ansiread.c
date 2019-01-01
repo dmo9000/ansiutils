@@ -98,7 +98,7 @@ int main(int argc, char *argv[])
         switch (c)
         {
         case 'c':
-            printf("UTF8 DISABLED - USING CP437 OUTPUT\n");
+            fprintf(stderr, "UTF8 DISABLED - USING CP437 OUTPUT\n");
             enable_utf8 = false;
             break;
         case 'f':
@@ -219,9 +219,10 @@ int main(int argc, char *argv[])
         printf("\n");
     }
 
+		canvas_backfill(canvas);
+
     width = canvas_get_width(canvas);
     height = canvas_get_height(canvas);
-
 
     fprintf(stderr, "* canvas dimensions: %u x %u\n", width, height);
 

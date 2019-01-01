@@ -50,4 +50,7 @@ RGBColour* canvas_displaycolour(uint8_t colour);
 
 int canvas_reindex(ANSICanvas *c);
 
+#define CONSOLE_WIDTH     80
+#define CONSOLE_HEIGHT    24
+
 #endif /* __ANSICANVAS_H__ */

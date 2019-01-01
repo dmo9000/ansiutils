@@ -20,8 +20,8 @@
 bool debug_flag = false;
 extern int errno;
 
-#define CONSOLE_WIDTH			80
-#define CONSOLE_HEIGHT		24
+//#define CONSOLE_WIDTH			80
+//#define CONSOLE_HEIGHT		24
 #define TABWIDTH 					8
 
 #define CHUNK_SIZE        4096
@@ -1136,7 +1136,7 @@ void dispatch_ansi_command(ANSICanvas *canvas, unsigned char c)
 						}
 
 				if (debug_flag) {
-					printf("1) set_cursor_home(%u,%u)\n", current_x, current_y);
+					fprintf(stderr, "1) set_cursor_home(%u,%u)\n", current_x, current_y);
 					}
 
 				if (parameters[1] > 0) {
@@ -1152,18 +1152,8 @@ void dispatch_ansi_command(ANSICanvas *canvas, unsigned char c)
 					}
 
 				if (debug_flag) {
-					printf("2) set_cursor_home(%u,%u)\n", current_x, current_y);
+					fprintf(stderr, "2) set_cursor_home(%u,%u)\n", current_x, current_y);
 					}
-
-				/*
-				if (current_x < 0) {
-						current_x = 0;
-						}
-
-				if (current_y < 0) {
-						current_y = 0;
-						}
-				*/
 
 				/* very dodgy - hardcoded is bad. we might want to find some other way to calculate these, 
 					 especially if a custom canvas size is in use */
@@ -1177,22 +1167,9 @@ void dispatch_ansi_command(ANSICanvas *canvas, unsigned char c)
 					} 
 
 				if (debug_flag) {
-					printf("3) set_cursor_home(%u,%u)\n", current_x, current_y);
+					fprintf(stderr, "3) set_cursor_home(%u,%u)\n", current_x, current_y);
 				}
 
-				/*
-        if (parameters[0] > 0) {
-            current_y = parameters[0]-1;
-        } else {
-            current_y = parameters[0];
-        }
-
-        if (parameters[1] > 0) {
-            current_x = parameters[1]-1;
-        } else {
-            current_x = parameters[1];
-        }
-				*/
         break;
     case 'M':
         /* see: http://www2.gar.no/glinkj/help/cmds/vipa.htm */

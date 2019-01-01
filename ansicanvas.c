@@ -138,7 +138,7 @@ bool canvas_output(ANSICanvas *my_canvas, bool use_unicode, char *filename)
 
             if (!r->bytes && !r->chardata) {
                 /* blank/missing raster */
-                //fprintf(stderr, "- line %u is missing/truncated\n", ii);
+                fprintf(stderr, "- line %u is missing/truncated\n", ii);
             } else {
                 raster_output(r, false, use_unicode, my_canvas->compress_output, fh);
                 fputc('\n', fh);
@@ -193,13 +193,15 @@ uint16_t canvas_get_height(ANSICanvas *canvas)
     assert(canvas);
     for (int ii = 0; ii < canvas->lines; ii++) {
         r = canvas_get_raster(canvas, ii);
-        if (r) {
+        //if (r && ( r->bytes || ii == (canvas->lines -1))) {
+        if (r && ( r->bytes )) {
+        //if (r) {
             height++;
         }
     }
 
-    return height-1;
-    //return height;
+    //return height-1;
+    return height;
 
 }
 
@@ -213,4 +215,20 @@ RGBColour* canvas_displaycolour(uint8_t colour)
     rgbcolours[colour].b = (uint8_t) (pow(tcolours[colour].b, multiplier) * 255.0);
 
     return (RGBColour*) &rgbcolours[colour];
+}
+
+int canvas_backfill(ANSICanvas *canvas)
+{
+		ANSIRaster *r = NULL;
+    int lc = 0;
+    int ii = 0;
+    for (int ii = 0; ii < canvas->lines - 1; ii++) {
+        r = canvas_get_raster(canvas, ii);
+        assert(r);
+        if (!r->bytes) {
+            raster_extend_length_to(r, ( canvas_get_width(canvas) ? canvas_get_width(canvas) : CONSOLE_WIDTH));
+        }
+    }
+
+	return 1;
 }
