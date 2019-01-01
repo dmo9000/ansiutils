@@ -8,8 +8,8 @@ LDFLAGS=-lGL -lGLU -lglut -lm -pthread
 TDFTOOL_OBJS=tdftool.o tdffont.o sauce.o
 OBJS=gfx_opengl.o rawfont.o ansiload.o
 ANSIREAD_OBJS=ansiread.o gfx_png.o 
-LIBANSICANVAS_OBJS=ansiraster.o ansicanvas.o ansistate.o utf8.o 
-LIBANSISDLCANVAS_OBJS=gfx_sdl.o bmf.o
+LIBANSICANVAS_OBJS=ansiraster.o ansicanvas.o ansistate.o utf8.o bmf.o 
+#LIBANSISDLCANVAS_OBJS=bmf.o
 TESTSAMPLE=../THEDRAWFONTS/BLACKX.TDF
 GITHASH=`git log --pretty=format:'%h' -n 1`
 GITORIGIN=`git config --get remote.origin.url`
@@ -17,7 +17,8 @@ DATE=`date +%Y-%m-%d`
 COLUMNS=80
 PADDING=`printf '%*s' 110`
 
-all: libansicanvas.a libansisdlcanvas.a tdftool rawfont ansiread bmf/8x8.bmf documentation test-regress
+all: libansicanvas.a tdftool rawfont ansiread bmf/8x8.bmf documentation test-regress
+#all: libansicanvas.a libansisdlcanvas.a tdftool rawfont ansiread bmf/8x8.bmf documentation test-regress
 
 test-regress:
 	./test-regress.sh
@@ -42,8 +43,8 @@ sample:
 sampledebug:
 	@./tdftool -d -c ${TESTSAMPLE} ABC | more
 
-libansisdlcanvas.a: $(LIBANSISDLCANVAS_OBJS)
-	ar cru libansisdlcanvas.a $(LIBANSISDLCANVAS_OBJS)
+#libansisdlcanvas.a: $(LIBANSISDLCANVAS_OBJS)
+#	ar cru libansisdlcanvas.a $(LIBANSISDLCANVAS_OBJS)
 
 libansicanvas.a: $(LIBANSICANVAS_OBJS)
 	ar cru libansicanvas.a $(LIBANSICANVAS_OBJS)

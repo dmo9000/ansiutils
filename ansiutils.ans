@@ -40,15 +40,13 @@
 
         [1m[4m[36mRECENT CHANGES[24m:[21m
 
+[40;37m           4b01179 * Moved old SDL driver to the attic, will be removed in the near future.[0m
+[40;37m           ed81597 * Merge branch 'master' of https://github.com/dmo9000/ansiutils[0m
+[40;37m           d964248 * Remove some old redundant materials.[0m
+[40;37m           b46e97e * pthread_yield() fixes for MingW64[0m
 [40;37m           269f22b * Disable debug flags on build again.[0m
-[40;37m           6974855 * Fixes for more consistent canvas size guesses.[0m
-[40;37m                   * Additional + improved regression tests.[0m
-[40;37m           abd230e * Updated README.[0m
-[40;37m           1bfd3aa * Clipping fixes to allow fruit.ans and timebend.ans to co-exist.[0m
-[40;37m                   * Debug mode added to ansiread.[0m
-[40;37m           cb14535 * Clip 'H' command to canvas, timebend.ans now appears to work.[0m
 
 
-    [30m[1m    (2019-01-01 git #269f22b https://github.com/dmo9000/ansiutils.git)[0m[21m
+    [30m[1m    (2019-01-01 git #4b01179 https://github.com/dmo9000/ansiutils.git)[0m[21m
 
                                                                                                               
