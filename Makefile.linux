@@ -9,7 +9,6 @@ TDFTOOL_OBJS=tdftool.o tdffont.o sauce.o
 OBJS=gfx_opengl.o rawfont.o ansiload.o
 ANSIREAD_OBJS=ansiread.o gfx_png.o 
 LIBANSICANVAS_OBJS=ansiraster.o ansicanvas.o ansistate.o utf8.o bmf.o 
-#LIBANSISDLCANVAS_OBJS=bmf.o
 TESTSAMPLE=../THEDRAWFONTS/BLACKX.TDF
 GITHASH=`git log --pretty=format:'%h' -n 1`
 GITORIGIN=`git config --get remote.origin.url`
@@ -25,14 +24,13 @@ test-regress:
 documentation:
 	printf "\n\n" > ansiutils.ans
 	./tdftool -f 1 -c ../THEDRAWFONTS/BOARDX.TDF ANSIUTILS | sed -e "s/^/          /" >> ansiutils.ans
-	#printf "\n\n        (git hash ${GITHASH})\n\n" >> ansiutils.ans
-	printf "\n        \x1B\x5B1m\x1B\x5B4m\x1B\x5B36mANSIREAD USAGE\x1B\x5B24m:\x1B\x5B21m\n\n" >> ansiutils.ans
+	./ansitext NEWLINE TAB FG_CYAN UNDERLINE BOLD "ANSIREAD USAGE" NOUNDERLINE ":" NOBOLD NONE NEWLINE NEWLINE >> ansiutils.ans
 	./ansiread | sed -e "s/^/          /" | ./ansiread -z - >> ansiutils.ans
-	printf "\n        \x1B\x5B1m\x1B\x5B4m\x1B\x5B36mTDFTOOL USAGE\x1B\x5B24m:\x1B\x5B21m\n\n" >> ansiutils.ans
+	./ansitext NEWLINE TAB FG_CYAN UNDERLINE BOLD "TDFTOOLS USAGE" NOUNDERLINE ":" NOBOLD NONE NEWLINE NEWLINE >> ansiutils.ans
 	./tdftool | sed -e "s/^/          /" | ./ansiread -z - >> ansiutils.ans
-	printf "\n        \x1B\x5B1m\x1B\x5B4m\x1B\x5B36mRECENT CHANGES\x1B\x5B24m:\x1B\x5B21m\n\n" >> ansiutils.ans
+	./ansitext NEWLINE TAB FG_CYAN UNDERLINE BOLD "RECENT CHANGES" NOUNDERLINE ":" NOBOLD NONE NEWLINE NEWLINE >> ansiutils.ans
 	./gitxtract.sh | sed -e "s/^/           /" | ./ansiread -z - >> ansiutils.ans
-	printf "\n\n    \x1B\x5B30m\x1B\x5B1m    (${DATE} git #${GITHASH} ${GITORIGIN})\x1B\x5B0m\x1B\x5B21m\n\n" >> ansiutils.ans
+	./ansitext NEWLINE TAB FG_BLACK BOLD "(${DATE} git #${GITHASH} ${GITORIGIN})" NOBOLD NONE NEWLINE NEWLINE >> ansiutils.ans
 	echo "${PADDING}" >> ansiutils.ans
 	./ansiread -o ansiutils.png ansiutils.ans
 

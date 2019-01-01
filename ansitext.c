@@ -8,9 +8,20 @@ typedef struct ansicommand {
 
 ANSICommand commands[] = {
 														{ "NONE", "\x1b[0m" },
+														{ "BOLD", "\x1b[1m" },
+														{ "NOBOLD", "\x1b[21m" },
+														{ "UNDERLINE", "\x1b[4m" },
+														{ "NOUNDERLINE", "\x1b[24m" },
+														{ "FG_BLACK", "\x1b[30m" },
 														{ "FG_RED", "\x1b[31m" },
 														{ "FG_GREEN", "\x1b[32m" },
+														{ "FG_YELLOW", "\x1b[33m" },
+														{ "FG_BLUE", "\x1b[34m" },
+														{ "FG_PURPLE", "\x1b[35m" },
+														{ "FG_CYAN", "\x1b[36m" },
+														{ "FG_WHITE", "\x1b[37m" },
 														{ "FG_NONE", "\x1b[37m" },
+														{ "TAB", "\t" },
 														{ "NEWLINE", "\n" },
 														{ NULL, NULL }, 
 														NULL
