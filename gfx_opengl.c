@@ -178,8 +178,11 @@ int gfx_opengl_expose()
 //  printf("gfx_opengl_expose()\n");
     assert(myCanvas);
     while (pthread_mutex_trylock(&gfx_mutex) != 0) {
-        //usleep(10000);
+#ifdef pthread_yield 
         pthread_yield();
+#else
+				sched_yield();
+#endif
     }
 
     myCanvas->is_dirty = true;
@@ -240,7 +243,11 @@ int gfx_opengl_drawglyph(BitmapFont *font, uint16_t px, uint16_t py, uint8_t gly
 
     while (pthread_mutex_trylock(&gfx_mutex) != 0) {
         //usleep(10000);
+#ifdef pthread_yield
         pthread_yield();
+#else
+        sched_yield();
+#endif        
     }
 
     if (attr & ATTRIB_REVERSE) {
