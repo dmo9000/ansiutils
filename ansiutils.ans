@@ -40,32 +40,33 @@
 
 	[36m[4m[1mRECENT CHANGES[24m:[21m[0m
 
+[40;37m           b02d555 * Use printf instead of echo.[0m
+[40;37m                   * Use /bin/sh[0m
+[40;37m           50881b5 * Detect correct md5sum program on Solaris.[0m
 [40;37m           02ff87f * Various fixes for OpenBSD compat.[0m
 [40;37m           2be1674 * Add required TDF font.[0m
 [40;37m           ad679f2 * Display platform used for generating the documentation.[0m
 [40;37m                   * Unify Linux/BSD Makefile to Makefile.unix[0m
-[40;37m           d5972c2 * Silence 'which' warnings.[0m
-[40;37m           5e417d9 * Pushed README generated on[0m
 
 	[36m[4m[1mLATEST TEST RESULTS[24m:[21m[0m
 
 [40;37m           [0m
-[40;37m           fruit.ans should always have 24 lines ...         -e [40;32m[1m[PASS][0m
-[40;37m           fruit.ans test, without compression ...           -e [40;31m[1m[FAIL][40;37m[21m ->  [0m
-[40;37m           fruit.ans test, with compression ...              -e [40;31m[1m[FAIL][40;37m[21m ->  [0m
-[40;37m           fruit.ans PNG, direct render test ...             -e [40;32m[1m[PASS][0m
-[40;37m           fruit.ans PNG, stdin/uncompressed test ...        -e [40;32m[1m[PASS][0m
-[40;37m           fruit.ans PNG, stdin/compressed test ...          -e [40;32m[1m[PASS][0m
+[40;37m           fruit.ans should always have 24 lines ...         [40;32m[1m[PASS][0m
+[40;37m           fruit.ans test, without compression ...           [40;32m[1m[PASS][0m
+[40;37m           fruit.ans test, with compression ...              [40;32m[1m[PASS][0m
+[40;37m           fruit.ans PNG, direct render test ...             [40;32m[1m[PASS][0m
+[40;37m           fruit.ans PNG, stdin/uncompressed test ...        [40;32m[1m[PASS][0m
+[40;37m           fruit.ans PNG, stdin/compressed test ...          [40;32m[1m[PASS][0m
 [40;37m           [0m
-[40;37m           timebend.ans should always have 26 lines ...      -e [40;32m[1m[PASS][0m
-[40;37m           timebend.ans test, without compression ...        -e [40;31m[1m[FAIL][40;37m[21m ->  [0m
-[40;37m           timebend.ans test, with compression ...           -e [40;31m[1m[FAIL][40;37m[21m ->  [0m
-[40;37m           timebend.ans PNG, direct render test ...          -e [40;32m[1m[PASS][0m
-[40;37m           timebend.ans PNG, stdin/uncompressed test ...     -e [40;32m[1m[PASS][0m
-[40;37m           timebend.ans PNG, stdin/compressed test ...       -e [40;32m[1m[PASS][0m
+[40;37m           timebend.ans should always have 26 lines ...      [40;32m[1m[PASS][0m
+[40;37m           timebend.ans test, without compression ...        [40;32m[1m[PASS][0m
+[40;37m           timebend.ans test, with compression ...           [40;32m[1m[PASS][0m
+[40;37m           timebend.ans PNG, direct render test ...          [40;32m[1m[PASS][0m
+[40;37m           timebend.ans PNG, stdin/uncompressed test ...     [40;32m[1m[PASS][0m
+[40;37m           timebend.ans PNG, stdin/compressed test ...       [40;32m[1m[PASS][0m
 [40;37m           [0m
 
-	[30m[1m(2019-01-02 git #02ff87f https://github.com/dmo9000/ansiutils.git)[21m[0m
+	[30m[1m(2019-01-02 git #b02d555 https://github.com/dmo9000/ansiutils.git)[21m[0m
 
 	[30m[1m(SunOS 5.11 i86pc)[21m[0m
                                                                                                               
