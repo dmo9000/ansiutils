@@ -1,6 +1,7 @@
-#!/bin/sh
+#!/usr/bin/bash
 
-MD5SUM=`which gmd5sum 2>/dev/null`
+#MD5SUM=`which gmd5sum 2>/dev/null`
+MD5SUM=`which gmd5sum | sed -e "s/^no.*$//g" | tr -d "\n"`
 if [ -z "${MD5SUM}" ] ; then
 	MD5SUM=`which md5sum 2>/dev/null`
 	fi
