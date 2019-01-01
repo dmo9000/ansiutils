@@ -38,21 +38,24 @@ extern int errno;
 #define SEQ_ANSI_1B		    	2
 #define SEQ_ANSI_5B				3
 #define SEQ_ANSI_IPARAM			4
-#define SEQ_ANSI_CMD_M			5
-#define SEQ_ANSI_CMD_J			6
-#define SEQ_ANSI_CMD_A			7
-#define SEQ_ANSI_CMD_B			8
-#define SEQ_ANSI_CMD_C			9
-#define SEQ_ANSI_CMD_D			10
-#define SEQ_ANSI_CMD_H			11
-#define SEQ_ANSI_EXECUTED		12
-#define SEQ_NOOP			 	13
+/*
+#define SEQ_ANSI_CMD_M					5
+#define SEQ_ANSI_CMD_J					6
+#define SEQ_ANSI_CMD_A					7
+#define SEQ_ANSI_CMD_B					8
+#define SEQ_ANSI_CMD_C					9
+#define SEQ_ANSI_CMD_D					10
+#define SEQ_ANSI_CMD_H					11
+#define SEQ_ANSI_EXECUTED				12
+#define SEQ_NOOP			 					13
 #define SEQ_ANSI_FLAG_CURSOR    14
+*/
 
 #define ANSI_1B                 0x1b
 #define ANSI_5B                 0x5b
 #define ANSI_INTSEP             0x3b
 #define ANSI_CURSOR             0x3f
+#define ANSI_HASH								0x23
 
 static char *states[] = {
     "SEQ_ERR",
@@ -124,6 +127,7 @@ const char *ansi_state(int s);
 #define FLAG_5B     2
 #define FLAG_INT    4
 #define FLAG_CURSOR 8
+#define FLAG_HASH		16
 #define FLAG_ALL    0xFF
 
 uint8_t ansiflags = 0;
@@ -196,7 +200,13 @@ void ansi_debug_dump()
     for (i = 0; i < ansi_offset; i++) {
         printf("%02X ", ansi_seqbuf[i]);
     }
-    printf("\n\n");
+    printf("\n  echo -ne '");
+    for (i = 0; i < ansi_offset; i++) {
+        printf("\\x%02x", ansi_seqbuf[i]);
+    }
+    printf("''FOO'\n\n");
+
+
     fflush(NULL);
     exit(1);
 
@@ -298,9 +308,9 @@ bool send_byte_to_canvas(ANSICanvas *canvas, unsigned char c)
     }
 
     if (!(r->bytes >= (current_x+1))) {
-					printf("current_x = %d\n", current_x);
-					printf("current_y = %d\n", current_y);
-					};
+        printf("current_x = %d\n", current_x);
+        printf("current_y = %d\n", current_y);
+    };
 
     assert(r->bytes >= (current_x+1));
 
@@ -324,7 +334,7 @@ bool send_byte_to_canvas(ANSICanvas *canvas, unsigned char c)
 bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_t offset)
 {
     ANSIRaster *r = NULL;
-    int ii = 0;
+    int ii = 0, jj = 0;
     unsigned char c = 0, last_c = 0;
     size_t o = 0;
 
@@ -403,12 +413,49 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
             }
             break;
         case FLAG_1B:
-            if (c != ANSI_5B) {
-                printf("error: ANSI_5B expected, received %d (0x%02x)\n", c, c);
-                /* not sure what to do here */
-                clear_ansi_flags(FLAG_ALL);
+
+						if (c == 'E') {
+								// next line? current_y++, current_x = 0
+								current_x = 0;
+								current_y ++;
+								clear_ansi_flags(FLAG_ALL);
+								break;
+								}
+
+						if (c == 'M') {
+                // reverse index mode - set current_x = 0?
+                  current_x = 0;
+                  clear_ansi_flags(FLAG_ALL);
                 break;
             }
+
+            if (c == 'D') {
+                // index mode - offset current_y + 1, but leave current_x untouched?
+									current_y ++;
+									clear_ansi_flags(FLAG_ALL);
+                break;
+            }
+
+       if (c == ANSI_HASH) {
+                fprintf(stderr, "+++ WARNING: ANSI_HASH received %d (0x%02x) -> '%c'\n", c, c, c);
+                ansi_seqbuf[ansi_offset] = c;
+                ansi_offset++;
+                set_ansi_flags(FLAG_HASH);
+                break;
+            }
+
+
+            if (c != ANSI_5B) {
+                ansi_seqbuf[ansi_offset] = c;
+                ansi_offset++;
+                fprintf(stderr, "error: ANSI_5B expected, received %d (0x%02x) -> '%c'\n", c, c, c);
+                ansi_debug_dump();
+                assert(NULL);
+                /* not sure what to do here */
+                //clear_ansi_flags(FLAG_ALL);
+                break;
+            }
+
             if (debug_flag) {
                 printf("ANSI_5B\n");
             }
@@ -447,6 +494,8 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
             }
 
             if (c == ';') {
+                ansi_seqbuf[ansi_offset] = ';';
+                ansi_offset++;
                 /* parameter with value 0 */
                 paramcount ++;
                 paramidx ++;
@@ -501,7 +550,7 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
 
             if (c == 'H') {
                 /* HOME with 0 parameters */
-								/* FIXME: unify with the parameterized version */
+                /* FIXME: unify with the parameterized version */
                 current_x = 0;
                 current_y = 0;
                 clear_ansi_flags(FLAG_ALL);
@@ -530,24 +579,30 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
             }
 
             if (c == 'K') {
-                assert(!paramidx);
-                /* means clear to end of current line - not implemented */
-                r = canvas_get_raster(canvas, current_y);
-                assert(r);
-                // printf("+++ clearing line %u from %u to %u\n", current_y, current_x, r->bytes);
-
-
-                for (ii = 0; ii <= 79; ii++) {
-                    r->chardata[ii] = ' ';
-                    r->bgcolors[ii] = 0;
-                    r->fgcolors[ii] = 7;
-                    r->attribs[ii] = ATTRIB_NONE;
-                }
-                //canvas->repaint_entire_canvas = true;
-                canvas->is_dirty = true;
-                clear_ansi_flags(FLAG_ALL);
-                break;
+                fprintf(stderr, "+++ legacy 'K' handler - please rationalize!\n");
+                ansi_debug_dump();
+                assert(NULL);
             }
+
+            /*
+            if (c == 'K') {
+            assert(!paramidx);
+            // means clear to end of current line - not implemented
+            r = canvas_get_raster(canvas, current_y);
+            assert(r);
+            // printf("+++ clearing line %u from %u to %u\n", current_y, current_x, r->bytes);
+            for (ii = 0; ii <= 79; ii++) {
+            r->chardata[ii] = ' ';
+            r->bgcolors[ii] = 0;
+            r->fgcolors[ii] = 7;
+            r->attribs[ii] = ATTRIB_NONE;
+            }
+            //canvas->repaint_entire_canvas = true;
+            canvas->is_dirty = true;
+            clear_ansi_flags(FLAG_ALL);
+            break;
+            }
+            */
 
             if (c == 'L') {
                 /* TODO: move the code below to a canvas_insert_raster() function */
@@ -684,20 +739,47 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
                         fprintf(stderr, " cont integer parameter [%u], current_value = %u\n", paramidx, paramval);
                     }
 
-										if (paramval > 255) {
-												fprintf(stderr, " +++ integer paramater out of range? (paramval = %u)\n", paramval);
-												ansi_debug_dump();
-												exit(1);
-										}
+                    if (paramval > 255) {
+                        fprintf(stderr, " +++ integer paramater out of range? (paramval = %u)\n", paramval);
+                        ansi_debug_dump();
+                        exit(1);
+                    }
 
                 } else {
                     printf("error: expecting digit or seperator, got '%c' (0x%02x)\n", c, c);
-										printf("paramval = %u\n", paramval);
-										clear_ansi_flags(FLAG_ALL);
-										break;			
+                    printf("paramval = %u\n", paramval);
+                    clear_ansi_flags(FLAG_ALL);
+                    break;
                     //assert(NULL);
                 }
             }
+            break;
+
+        case (FLAG_1B | FLAG_HASH):
+            /* hash mode - what mysteries await! */
+            ansi_seqbuf[ansi_offset] = c;
+            ansi_offset++;
+
+            switch (c) {
+            case '8':
+                fprintf(stderr, "+++ ANSI_HASH mode: fill screen with E's\n");
+                for (jj = 0; jj < canvas_get_height(canvas); jj++) {
+                    r = canvas_get_raster(canvas, jj);
+                    assert(r);
+                    for (ii = 0; ii < r->bytes; ii++) {
+                        r->chardata[ii] = 'E';
+                    }
+                }
+                canvas->repaint_entire_canvas = true;
+                canvas->is_dirty = true;
+                break;
+            default:
+                fprintf(stderr, "+++ ANSI_HASH mode: unknown/unimplemented\n");
+                ansi_debug_dump();
+                assert(NULL);
+                break;
+            }
+            clear_ansi_flags(FLAG_ALL);
             break;
 
         case (FLAG_1B | FLAG_5B | FLAG_CURSOR):
@@ -729,6 +811,11 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
                 switch(paramval) {
                 case 7:
                     fprintf(stderr, "Esc[?7h 	Set auto-wrap mode 	DECAWM \n");
+                    clear_ansi_flags(FLAG_ALL);
+                    break;
+                case 8:
+                    fprintf(stderr, "+++ enable auto-repeat mode?? vttest\n");
+                    /* not implemented, how would we turn it off? */
                     clear_ansi_flags(FLAG_ALL);
                     break;
                 case 25:
@@ -824,9 +911,9 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
     }
 fallback_exit:
     assert (last_c || !last_c);
-    //if (debug_flag) {
-    //printf("BLOCK DONE\n");
-    //}
+//if (debug_flag) {
+//printf("BLOCK DONE\n");
+//}
     return true;
 }
 
@@ -1055,10 +1142,12 @@ void dispatch_ansi_command(ANSICanvas *canvas, unsigned char c)
     /* this should be called 'dispatch_ansi_command_with_parameter' - in fact, parameterized vs non-parameterized
     	 implementations need to be merged to prevent too much duplication of code */
     char response[2048];
+    ANSIRaster *r = NULL;				/* general purpose raster */
     ANSIRaster *d = NULL;
     ANSIRaster *p = NULL;
     ANSIRaster *n = NULL;
     int i = 0;
+    int ii = 0;
     uint8_t *repeat_char = NULL;
     if (debug_flag) {
         printf("dispatch_ansi_command('%c')\n", c);
@@ -1105,7 +1194,7 @@ void dispatch_ansi_command(ANSICanvas *canvas, unsigned char c)
         if (canvas->allow_hard_clear) {
             /* blank and dirty the canvas */
             printf("CLEAR SCREEN CALLED, AND HARD CLEAR ENABLED\n");
-            canvas_clear(canvas);
+            //canvas_clear(canvas);
             canvas->repaint_entire_canvas = true;
         }
         break;
@@ -1129,46 +1218,48 @@ void dispatch_ansi_command(ANSICanvas *canvas, unsigned char c)
         /* move cursor to the left N characters */
         dispatch_ansi_cursor_left(canvas);
         break;
+    case 'f':
+    /* direct cursor addressing  - same as 'H' */
     case 'H':
         /* set cursor home - move the cursor to the specified position */
-				if (debug_flag) {
-						fprintf(stderr, "+++ SET CURSOR HOME(%u, %u)\n", parameters[1], parameters[0]);
-						}
+        if (debug_flag) {
+            fprintf(stderr, "+++ SET CURSOR HOME(%u, %u)\n", parameters[1], parameters[0]);
+        }
 
-				if (debug_flag) {
-					fprintf(stderr, "1) set_cursor_home(%u,%u)\n", current_x, current_y);
-					}
+        if (debug_flag) {
+            fprintf(stderr, "1) set_cursor_home(%u,%u)\n", current_x, current_y);
+        }
 
-				if (parameters[1] > 0) {
-					current_x = parameters[1] - 1;
-					} else {
-					current_x = 0;
-					}
+        if (parameters[1] > 0) {
+            current_x = parameters[1] - 1;
+        } else {
+            current_x = 0;
+        }
 
-				if (parameters[0] > 0) {
-					current_y = parameters[0] - 1;
-					} else {
-					current_y = 0;
-					}
+        if (parameters[0] > 0) {
+            current_y = parameters[0] - 1;
+        } else {
+            current_y = 0;
+        }
 
-				if (debug_flag) {
-					fprintf(stderr, "2) set_cursor_home(%u,%u)\n", current_x, current_y);
-					}
+        if (debug_flag) {
+            fprintf(stderr, "2) set_cursor_home(%u,%u)\n", current_x, current_y);
+        }
 
-				/* very dodgy - hardcoded is bad. we might want to find some other way to calculate these, 
-					 especially if a custom canvas size is in use */
+        /* very dodgy - hardcoded is bad. we might want to find some other way to calculate these,
+        	 especially if a custom canvas size is in use */
 
-				if (current_x > CONSOLE_WIDTH -1) {
-					current_x = CONSOLE_WIDTH -1;
-					} 
+        if (current_x > CONSOLE_WIDTH -1) {
+            current_x = CONSOLE_WIDTH -1;
+        }
 
-				if (current_y > CONSOLE_HEIGHT -1) {
-					current_y = CONSOLE_HEIGHT -1;
-					} 
+        if (current_y > CONSOLE_HEIGHT -1) {
+            current_y = CONSOLE_HEIGHT -1;
+        }
 
-				if (debug_flag) {
-					fprintf(stderr, "3) set_cursor_home(%u,%u)\n", current_x, current_y);
-				}
+        if (debug_flag) {
+            fprintf(stderr, "3) set_cursor_home(%u,%u)\n", current_x, current_y);
+        }
 
         break;
     case 'M':
@@ -1223,8 +1314,78 @@ void dispatch_ansi_command(ANSICanvas *canvas, unsigned char c)
         write(process_fd, response, strlen(response));
         clear_ansi_flags(FLAG_ALL);
         break;
+    case 'K':
+        /* https://www.gnu.org/software/screen/manual/html_node/Control-Sequences.html
+        		ESC [ Pn K                      Erase in Line
+          Pn = None or 0            From Cursor to End of Line
+        	 1                    From Beginning of Line to Cursor
+             2                    Entire Line
+        */
+        if (paramidx > 1) {
+            fprintf(stderr, "+++ 'K' command -- too many parameters!\n");
+            ansi_debug_dump();
+        }
+
+        if (!paramidx) {
+            fprintf(stderr, "+++ 'K' command -- erase from cursor to end of line\n");
+            ansi_debug_dump();
+        }
+
+        switch (parameters[0]) {
+        case 0:
+            fprintf(stderr, "+++ 'K' command -- erase from cursor to end of line\n");
+            r = canvas_get_raster(canvas, current_y);
+            assert(r);
+						/*
+            for (ii = current_x; ii < r->bytes; ii++) {
+                r->chardata[ii] = 'X';
+                r->bgcolors[ii] = 0;
+                r->fgcolors[ii] = 7;
+                r->attribs[ii] = ATTRIB_NONE;
+            }
+						*/
+						canvas->repaint_entire_canvas = true;
+						canvas->is_dirty = true;
+            break;
+        case 1:
+            fprintf(stderr, "+++ 'K' command -- erase from beginning of line to cursor\n");
+            r = canvas_get_raster(canvas, current_y);
+            assert(r);
+						/*<
+            for (ii = 0; ii <= current_x; ii++) {
+                r->chardata[ii] = 'Y';
+                r->bgcolors[ii] = 0;
+                r->fgcolors[ii] = 7;
+                r->attribs[ii] = ATTRIB_NONE;
+            }
+						*/
+						canvas->repaint_entire_canvas = true;
+						canvas->is_dirty = true;
+            break;
+        case 2:
+            fprintf(stderr, "+++ 'K' command -- erase entire line\n");
+            r = canvas_get_raster(canvas, current_y);
+            assert(r);
+						/*
+            for (ii = 0; ii < r->bytes; ii++) {
+                r->chardata[ii] = 'Z';
+                r->bgcolors[ii] = 0;
+                r->fgcolors[ii] = 7;
+                r->attribs[ii] = ATTRIB_NONE;
+            }
+						*/
+						canvas->repaint_entire_canvas = true;
+						canvas->is_dirty = true;
+            break;
+        default:
+            fprintf(stderr, "+++ 'K' command -- unknown parameter value '%u'\n", parameters[0]);
+            ansi_debug_dump();
+            break;
+        }
+        clear_ansi_flags(FLAG_ALL);
+        break;
     default:
-        printf("+++ unknown ansi command '%c'\n", c);
+        printf("+++ unknown parameterized ansi command '%c'\n", c);
         ansi_debug_dump();
         assert(NULL);
         exit(1);

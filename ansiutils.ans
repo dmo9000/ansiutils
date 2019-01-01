@@ -40,12 +40,12 @@
 
 	[36m[4m[1mRECENT CHANGES[24m:[21m[0m
 
+[40;37m           2437c59 * Test results go at bottom, and use BOLD colours.[0m
 [40;37m           d44dbc6 * Include test results in documentation.[0m
 [40;37m           c78daa9 * New documentation rendered with help of ansitext.[0m
 [40;37m           52c9455 * Use ansitext for generating docs instead of hardcoded ANSI sequences.[0m
 [40;37m           d6c869f * New ansitext utility WIP.[0m
 [40;37m                   * Use ansitext for test-regress.sh[0m
-[40;37m           23b0941 * Deprecation of SDL module and libansisdlcanvas.a[0m
 
 	[36m[4m[1mLATEST TEST RESULTS[24m:[21m[0m
 
@@ -65,6 +65,6 @@
 [40;37m           timebend.ans PNG, stdin/compressed test ...       [40;32m[1m[PASS][0m
 [40;37m           [0m
 
-	[30m[1m(2019-01-01 git #d44dbc6 https://github.com/dmo9000/ansiutils.git)[21m[0m
+	[30m[1m(2019-01-01 git #2437c59 https://github.com/dmo9000/ansiutils.git)[21m[0m
 
                                                                                                               
