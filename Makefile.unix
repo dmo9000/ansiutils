@@ -24,7 +24,7 @@ test-regress:
 
 documentation:
 	printf "\n\n" > ansiutils.ans
-	./tdftool -f 1 -c ../THEDRAWFONTS/BOARDX.TDF ANSIUTILS | sed -e "s/^/          /" >> ansiutils.ans
+	./tdftool -f 1 -c THEDRAWFONTS/BOARDX.TDF ANSIUTILS | sed -e "s/^/          /" >> ansiutils.ans
 	./ansitext NEWLINE TAB FG_CYAN UNDERLINE BOLD "ANSIREAD USAGE" NOUNDERLINE ":" NOBOLD NONE NEWLINE NEWLINE >> ansiutils.ans
 	./ansiread | sed -e "s/^/          /" | ./ansiread -z - >> ansiutils.ans
 	./ansitext NEWLINE TAB FG_CYAN UNDERLINE BOLD "TDFTOOLS USAGE" NOUNDERLINE ":" NOBOLD NONE NEWLINE NEWLINE >> ansiutils.ans
