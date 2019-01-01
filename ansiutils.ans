@@ -38,15 +38,33 @@
 [40;37m              -s              append SAUCE record[0m
 [40;37m          [0m
 
+	[36m[4m[1mLATEST TEST RESULTS[24m:[21m[0m
+
+[40;37m           [0m
+[40;37m           fruit.ans should always have 24 lines ...         [40;32m[PASS][0m
+[40;37m           fruit.ans test, without compression ...           [40;32m[PASS][0m
+[40;37m           fruit.ans test, with compression ...              [40;32m[PASS][0m
+[40;37m           fruit.ans PNG, direct render test ...             [40;32m[PASS][0m
+[40;37m           fruit.ans PNG, stdin/uncompressed test ...        [40;32m[PASS][0m
+[40;37m           fruit.ans PNG, stdin/compressed test ...          [40;32m[PASS][0m
+[40;37m           [0m
+[40;37m           timebend.ans should always have 26 lines ...      [40;32m[PASS][0m
+[40;37m           timebend.ans test, without compression ...        [40;32m[PASS][0m
+[40;37m           timebend.ans test, with compression ...           [40;32m[PASS][0m
+[40;37m           timebend.ans PNG, direct render test ...          [40;32m[PASS][0m
+[40;37m           timebend.ans PNG, stdin/uncompressed test ...     [40;32m[PASS][0m
+[40;37m           timebend.ans PNG, stdin/compressed test ...       [40;32m[PASS][0m
+[40;37m           [0m
+
 	[36m[4m[1mRECENT CHANGES[24m:[21m[0m
 
+[40;37m           c78daa9 * New documentation rendered with help of ansitext.[0m
 [40;37m           52c9455 * Use ansitext for generating docs instead of hardcoded ANSI sequences.[0m
 [40;37m           d6c869f * New ansitext utility WIP.[0m
 [40;37m                   * Use ansitext for test-regress.sh[0m
 [40;37m           23b0941 * Deprecation of SDL module and libansisdlcanvas.a[0m
 [40;37m           4b01179 * Moved old SDL driver to the attic, will be removed in the near future.[0m
-[40;37m           ed81597 * Merge branch 'master' of https://github.com/dmo9000/ansiutils[0m
 
-	[30m[1m(2019-01-01 git #52c9455 https://github.com/dmo9000/ansiutils.git)[21m[0m
+	[30m[1m(2019-01-01 git #c78daa9 https://github.com/dmo9000/ansiutils.git)[21m[0m
 
                                                                                                               

@@ -28,6 +28,8 @@ documentation:
 	./ansiread | sed -e "s/^/          /" | ./ansiread -z - >> ansiutils.ans
 	./ansitext NEWLINE TAB FG_CYAN UNDERLINE BOLD "TDFTOOLS USAGE" NOUNDERLINE ":" NOBOLD NONE NEWLINE NEWLINE >> ansiutils.ans
 	./tdftool | sed -e "s/^/          /" | ./ansiread -z - >> ansiutils.ans
+	./ansitext NEWLINE TAB FG_CYAN UNDERLINE BOLD "LATEST TEST RESULTS" NOUNDERLINE ":" NOBOLD NONE NEWLINE NEWLINE >> ansiutils.ans
+	./test-regress.sh | sed -e "s/^/           /" | ./ansiread -z - >> ansiutils.ans
 	./ansitext NEWLINE TAB FG_CYAN UNDERLINE BOLD "RECENT CHANGES" NOUNDERLINE ":" NOBOLD NONE NEWLINE NEWLINE >> ansiutils.ans
 	./gitxtract.sh | sed -e "s/^/           /" | ./ansiread -z - >> ansiutils.ans
 	./ansitext NEWLINE TAB FG_BLACK BOLD "(${DATE} git #${GITHASH} ${GITORIGIN})" NOBOLD NONE NEWLINE NEWLINE >> ansiutils.ans
