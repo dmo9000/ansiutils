@@ -39,14 +39,13 @@
 
         [1m[4m[36mRECENT CHANGES[24m:[21m
 
+[40;37m           e3818f1 * More notes.[0m
+[40;37m           eed11de * Added some notes.[0m
+[40;37m           baf0932 * Add left/right cursor handling proof of concept.[0m
 [40;37m           64aa1f0 * Some debugging tweaks.[0m
 [40;37m           596527c * Enter debug state on unexpected character.[0m
-[40;37m           e270b73 * Special key handling for GLUT, proof-of-concept only.[0m
-[40;37m           f52728b * Fix for embedded BMF fonts.[0m
-[40;37m                   * Other minor fixes, cleanups and WIPs[0m
-[40;37m           e040bc0 * Experimental frameskip support.[0m
 
 
-    [30m[1m    (2019-01-01 git #64aa1f0 https://github.com/dmo9000/ansiutils.git)[0m[21m
+    [30m[1m    (2019-01-01 git #e3818f1 https://github.com/dmo9000/ansiutils.git)[0m[21m
 
                                                                                                               

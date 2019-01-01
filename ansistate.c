@@ -496,6 +496,7 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
 
             if (c == 'H') {
                 /* HOME with 0 parameters */
+								/* FIXME: unify with the parameterized version */
                 current_x = 0;
                 current_y = 0;
                 clear_ansi_flags(FLAG_ALL);
@@ -1108,8 +1109,6 @@ void dispatch_ansi_command(ANSICanvas *canvas, unsigned char c)
         dispatch_ansi_cursor_right(canvas);
         break;
     case 'd':
-        /* this seems to be SSR, but with a parameter - let's complain if the parameter is not "1" for now,
-        		since that's all we've seen */
         ansi_seqbuf[ansi_offset] = 'd';
         ansi_offset++;
         /* testing - space supress reset? */
@@ -1127,6 +1126,30 @@ void dispatch_ansi_command(ANSICanvas *canvas, unsigned char c)
         break;
     case 'H':
         /* set cursor home - move the cursor to the specified position */
+				if (debug_flag) {
+						fprintf(stderr, "+++ SET CURSOR HOME(%u, %u)\n", parameters[1], parameters[0]);
+						}
+
+				current_x = parameters[1] - 1;
+				current_y = parameters[0] - 1;
+
+				if (current_x < 0) {
+						current_x = 0;
+						}
+
+				if (current_y < 0) {
+						current_y = 0;
+						}
+
+				if (current_x > canvas_get_width(canvas) -1) {
+					current_x = canvas_get_width(canvas) -1;
+					} 
+
+				if (current_y > canvas_get_height(canvas) -1) {
+					current_y = canvas_get_height(canvas) -1;
+					} 
+
+				/*
         if (parameters[0] > 0) {
             current_y = parameters[0]-1;
         } else {
@@ -1138,6 +1161,7 @@ void dispatch_ansi_command(ANSICanvas *canvas, unsigned char c)
         } else {
             current_x = parameters[1];
         }
+				*/
         break;
     case 'M':
         /* see: http://www2.gar.no/glinkj/help/cmds/vipa.htm */
