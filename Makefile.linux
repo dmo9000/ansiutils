@@ -1,8 +1,8 @@
 CC=gcc
 #CC=clang
 #CFLAGS = -g -ggdb -Wall -Werror
-CFLAGS = -Wall --std=c99 -g -ggdb
-#CFLAGS = -Wall --std=c99 -O2
+#CFLAGS = -Wall --std=c99 -g -ggdb
+CFLAGS = -Wall --std=c99 -O2
 LDFLAGS=-lGL -lGLU -lglut -lm -pthread
 
 TDFTOOL_OBJS=tdftool.o tdffont.o sauce.o
