@@ -2,8 +2,8 @@
 
 echo ""
 
-MSG_PASS=`./ansitext FG_GREEN "[PASS]" FG_NONE`
-MSG_FAIL=`./ansitext FG_RED "[FAIL]" FG_NONE`
+MSG_PASS=`./ansitext FG_GREEN BOLD "[PASS]" NOBOLD FG_NONE`
+MSG_FAIL=`./ansitext FG_RED BOLD "[FAIL]" NOBOLD FG_NONE`
 
 printf "%-50s" "fruit.ans should always have 24 lines ...  "
 TEST=`./ansiread -c ansifiles/fruit.ans 2>/dev/null | ./ansiread -c - 2>/dev/null | ./ansiread -c - 2>/dev/null | ./ansiread -c - 2>/dev/null | wc -l`
