@@ -297,6 +297,11 @@ bool send_byte_to_canvas(ANSICanvas *canvas, unsigned char c)
         raster_extend_length_to(r, (current_x+1));
     }
 
+    if (!(r->bytes >= (current_x+1))) {
+					printf("current_x = %d\n", current_x);
+					printf("current_y = %d\n", current_y);
+					};
+
     assert(r->bytes >= (current_x+1));
 
     /* ADJUSTMENT FOR LINEFEED */
@@ -1130,9 +1135,27 @@ void dispatch_ansi_command(ANSICanvas *canvas, unsigned char c)
 						fprintf(stderr, "+++ SET CURSOR HOME(%u, %u)\n", parameters[1], parameters[0]);
 						}
 
-				current_x = parameters[1] - 1;
-				current_y = parameters[0] - 1;
+				if (debug_flag) {
+					printf("1) set_cursor_home(%u,%u)\n", current_x, current_y);
+					}
 
+				if (parameters[1] > 0) {
+					current_x = parameters[1] - 1;
+					} else {
+					current_x = 0;
+					}
+
+				if (parameters[0] > 0) {
+					current_y = parameters[0] - 1;
+					} else {
+					current_y = 0;
+					}
+
+				if (debug_flag) {
+					printf("2) set_cursor_home(%u,%u)\n", current_x, current_y);
+					}
+
+				/*
 				if (current_x < 0) {
 						current_x = 0;
 						}
@@ -1140,14 +1163,22 @@ void dispatch_ansi_command(ANSICanvas *canvas, unsigned char c)
 				if (current_y < 0) {
 						current_y = 0;
 						}
+				*/
 
-				if (current_x > canvas_get_width(canvas) -1) {
-					current_x = canvas_get_width(canvas) -1;
+				/* very dodgy - hardcoded is bad. we might want to find some other way to calculate these, 
+					 especially if a custom canvas size is in use */
+
+				if (current_x > CONSOLE_WIDTH -1) {
+					current_x = CONSOLE_WIDTH -1;
 					} 
 
-				if (current_y > canvas_get_height(canvas) -1) {
-					current_y = canvas_get_height(canvas) -1;
+				if (current_y > CONSOLE_HEIGHT -1) {
+					current_y = CONSOLE_HEIGHT -1;
 					} 
+
+				if (debug_flag) {
+					printf("3) set_cursor_home(%u,%u)\n", current_x, current_y);
+				}
 
 				/*
         if (parameters[0] > 0) {

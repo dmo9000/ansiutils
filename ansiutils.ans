@@ -22,6 +22,7 @@
 [40;37m              -r              set enable-clear-mode (allow ANSI control codes that clear the canvas)[0m
 [40;37m              -w              set enable-auto-line-wrap (for input that assumes tty is 80 columns)[0m
 [40;37m              -z              enable compressed color codes for stdout or file output[0m
+[40;37m              -d              enable debug mode[0m
 [40;37m          [0m
 
         [1m[4m[36mTDFTOOL USAGE[24m:[21m
@@ -39,13 +40,13 @@
 
         [1m[4m[36mRECENT CHANGES[24m:[21m
 
+[40;37m           cb14535 * Clip 'H' command to canvas, timebend.ans now appears to work.[0m
 [40;37m           e3818f1 * More notes.[0m
 [40;37m           eed11de * Added some notes.[0m
 [40;37m           baf0932 * Add left/right cursor handling proof of concept.[0m
 [40;37m           64aa1f0 * Some debugging tweaks.[0m
-[40;37m           596527c * Enter debug state on unexpected character.[0m
 
 
-    [30m[1m    (2019-01-01 git #e3818f1 https://github.com/dmo9000/ansiutils.git)[0m[21m
+    [30m[1m    (2019-01-01 git #cb14535 https://github.com/dmo9000/ansiutils.git)[0m[21m
 
                                                                                                               

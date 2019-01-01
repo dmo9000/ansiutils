@@ -68,6 +68,7 @@ void usage()
     printf("    -r              set enable-clear-mode (allow ANSI control codes that clear the canvas)\n");
     printf("    -w              set enable-auto-line-wrap (for input that assumes tty is 80 columns)\n");
     printf("    -z              enable compressed color codes for stdout or file output\n");
+		printf("    -d              enable debug mode\n");
     printf("\n");
     return;
 }
@@ -93,7 +94,7 @@ int main(int argc, char *argv[])
     bool enable_compression = false;
     bool read_from_stdin = false;
 
-    while ((c = getopt (argc, argv, "wf:o:rgczp")) != -1) {
+    while ((c = getopt (argc, argv, "wf:o:rgczpd")) != -1) {
         switch (c)
         {
         case 'c':
@@ -132,6 +133,9 @@ int main(int argc, char *argv[])
         case 'z':
             enable_compression = true;
             break;
+				case 'd':
+						debug_flag = true;
+						break;
         case -1:
             /* END OF ARGUMENTS? */
             break;
