@@ -40,13 +40,13 @@
 
 	[36m[4m[1mRECENT CHANGES[24m:[21m[0m
 
+[40;37m           d5972c2 * Silence 'which' warnings.[0m
+[40;37m           5e417d9 * Pushed README generated on[0m
 [40;37m           5570cbf * Don't generate 8x8.bmf anymore, cause it breaks with BSD echo. Use[0m
 [40;37m                   * version already checked into source control.[0m
 [40;37m                   * Various other fixes for FreeBSD.[0m
 [40;37m           ecdead2 * WIP, trying to improve vttest compatibility.[0m
 [40;37m           a6c4f2c * Many WIP fixes for vttest compatibility.[0m
-[40;37m           2437c59 * Test results go at bottom, and use BOLD colours.[0m
-[40;37m           d44dbc6 * Include test results in documentation.[0m
 
 	[36m[4m[1mLATEST TEST RESULTS[24m:[21m[0m
 
@@ -66,6 +66,7 @@
 [40;37m           timebend.ans PNG, stdin/compressed test ...       [40;32m[1m[PASS][0m
 [40;37m           [0m
 
-	[30m[1m(2019-01-02 git #5570cbf https://github.com/dmo9000/ansiutils.git)[21m[0m
+	[30m[1m(2019-01-02 git #d5972c2 https://github.com/dmo9000/ansiutils.git)[21m[0m
 
+	[30m[1m(FreeBSD 11.1-RELEASE amd64)[21m[0m
                                                                                                               
