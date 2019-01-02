@@ -580,32 +580,6 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
                 break;
             }
 
-            if (c == 'K') {
-                fprintf(stderr, "+++ legacy 'K' handler - please rationalize!\n");
-                ansi_debug_dump();
-                assert(NULL);
-            }
-
-            /*
-            if (c == 'K') {
-            assert(!paramidx);
-            // means clear to end of current line - not implemented
-            r = canvas_get_raster(canvas, current_y);
-            assert(r);
-            // printf("+++ clearing line %u from %u to %u\n", current_y, current_x, r->bytes);
-            for (ii = 0; ii <= 79; ii++) {
-            r->chardata[ii] = ' ';
-            r->bgcolors[ii] = 0;
-            r->fgcolors[ii] = 7;
-            r->attribs[ii] = ATTRIB_NONE;
-            }
-            //canvas->repaint_entire_canvas = true;
-            canvas->is_dirty = true;
-            clear_ansi_flags(FLAG_ALL);
-            break;
-            }
-            */
-
             if (c == 'L') {
                 /* TODO: move the code below to a canvas_insert_raster() function */
                 /* insert a line */
@@ -703,8 +677,9 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
                 ansi_seqbuf[ansi_offset] = c;
                 ansi_offset++;
                 printf("error: expecting digit, got '%c' (0x%02x), %u parameter, paramval = %u\n", c, c, paramidx, paramval);
-                ansi_debug_dump();
-                assert(NULL);
+								dispatch_ansi_command(canvas, c);
+                //ansi_debug_dump();
+                //assert(NULL);
             }
             break;
         case (FLAG_1B | FLAG_5B | FLAG_INT):
@@ -1223,9 +1198,9 @@ void dispatch_ansi_command(ANSICanvas *canvas, unsigned char c)
     /* direct cursor addressing  - same as 'H' */
     case 'H':
         /* set cursor home - move the cursor to the specified position */
-        //    if (debug_flag) {
+            if (debug_flag) {
         fprintf(stderr, "+++ SET CURSOR HOME(%u, %u)\n", parameters[1], parameters[0]);
-        //   }
+           }
 
         if (debug_flag) {
             fprintf(stderr, "1) set_cursor_home(%u,%u)\n", current_x, current_y);
@@ -1391,7 +1366,7 @@ void dispatch_ansi_command(ANSICanvas *canvas, unsigned char c)
 
         if (!paramidx) {
             fprintf(stderr, "+++ 'K' command -- erase from cursor to end of line\n");
-            ansi_debug_dump();
+         //   ansi_debug_dump();
         }
 
         switch (parameters[0]) {
@@ -1426,10 +1401,11 @@ void dispatch_ansi_command(ANSICanvas *canvas, unsigned char c)
             r = canvas_get_raster(canvas, current_y);
             assert(r);
             for (ii = 0; ii < r->bytes; ii++) {
-                r->chardata[ii] = 'Z';
-                r->bgcolors[ii] = 0;
-                r->fgcolors[ii] = 7;
-                r->attribs[ii] = ATTRIB_NONE;
+                r->chardata[ii] = ' ';
+                /* not clear whether attributes/colors should be affected */
+//                r->bgcolors[ii] = 0;
+//                r->fgcolors[ii] = 7;
+//                r->attribs[ii] = ATTRIB_NONE;
             }
             canvas->repaint_entire_canvas = true;
             break;
