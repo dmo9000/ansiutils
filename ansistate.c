@@ -394,10 +394,12 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
                     }
 
                 } else {
+	/*
                     if (debug_flag) {
                         printf("output character '%c' [%c]\n", c,  (attributes & ATTRIB_REVERSE ? 'R' : ' '));
-                        last_character = c;
                     }
+*/
+                    last_character = c;
 
                     if (canvas->scroll_on_output) {
                         assert(current_y < canvas->scroll_limit);
@@ -771,8 +773,7 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
                     }
                 }
                 canvas->repaint_entire_canvas = true;
-                //canvas->is_dirty = true;
-                clear_ansi_flags(FLAG_ALL);
+                canvas->is_dirty = true;
                 break;
             default:
                 fprintf(stderr, "+++ ANSI_HASH mode: unknown/unimplemented\n");
@@ -1188,21 +1189,6 @@ void dispatch_ansi_command(ANSICanvas *canvas, unsigned char c)
         /* unix mode reset? not implemented! */
         fprintf(stderr, "[1B 5B 62:UMR - UNIX MODE RESET? NOT IMPLEMENTED!]\n");
         break;
-    /*
-    case 'J':
-    	// OLD and BUSTED 'J' handler
-    // move home and clear screen - set the clear flag on the canvas if we encounter this
-    if (allow_clear) {
-    canvas->clear_flag = true;
-    }
-    if (canvas->allow_hard_clear) {
-    // blank and dirty the canvas
-    printf("CLEAR SCREEN CALLED, AND HARD CLEAR ENABLED\n");
-    canvas_clear(canvas);
-    canvas->repaint_entire_canvas = true;
-    }
-    break;
-    */
     case 'C':
         /* move cursor to the right N characters */
         dispatch_ansi_cursor_right(canvas);
@@ -1303,10 +1289,12 @@ void dispatch_ansi_command(ANSICanvas *canvas, unsigned char c)
         break;
     case 'c':
         /* device attributes */
-        fprintf(stderr, "UNIMPLEMENTED { DA	Device attributes	esc [ c	1B 5B 63 }\n");
+				if (debug_flag) {
+        fprintf(stderr, "+++ { DA	Device attributes	esc [ c	1B 5B 63 }\n");
+				}
         if (process_fd != -1) {
             printf("(responding to DA on fd %d)\n", process_fd);
-            write(process_fd, "\x1b\x5b"">c", 4);
+            write(process_fd, "\x1b\x5b""?62;c", 7);
             return;
         }
         assert(process_fd == -1);
@@ -1320,8 +1308,6 @@ void dispatch_ansi_command(ANSICanvas *canvas, unsigned char c)
         clear_ansi_flags(FLAG_ALL);
         break;
     case 'J':
-        clear_ansi_flags(FLAG_ALL);
-        break;
         /* https://www.gnu.org/software/screen/manual/html_node/Control-Sequences.html
         		ESC [ Pn J                      Erase in Display
          		Pn = None or 0            From Cursor to End of Screen
