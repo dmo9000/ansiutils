@@ -2,7 +2,8 @@ tdftool
 rawfont
 ansiread
 output.ans
-tests/
+tests/pass
+tests/fail
 *.o
 *.a
 core

@@ -53,6 +53,8 @@ BitmapFont *bmf_load(char *filename)
     int r = 0;
     int rd = 0;
 
+    printf("bmf_load(%s)\n", filename); 
+
     rawfont = fopen(filename, "rb");
     if (!rawfont) {
         perror("fopen");

@@ -1,5 +1,11 @@
 #!/bin/sh
 
+MD5SUM=`which gmd5sum`
+if [ -z "${MD5SUM}" ] ; then
+	MD5SUM=`which md5sum`
+	fi
+
+
 echo ""
 
 MSG_PASS=`./ansitext FG_GREEN BOLD "[PASS]" NOBOLD FG_NONE`
@@ -16,7 +22,7 @@ if [ $TEST == "24" ]; then
 
 # fruit test, without compression 
 printf "%-50s" "fruit.ans test, without compression ... "
-TEST=`./ansiread -c ansifiles/fruit.ans 2>/dev/null | md5sum - | awk '{ print $1; }'`
+TEST=`./ansiread -c ansifiles/fruit.ans 2>/dev/null | ${MD5SUM} - | awk '{ print $1; }'`
 if [ $TEST == "e5b885845167d58db0fd747a363ad1ac" ]; then 
     echo -e $MSG_PASS
   else
@@ -25,7 +31,7 @@ if [ $TEST == "e5b885845167d58db0fd747a363ad1ac" ]; then
 
 # fruit test, with compression
 printf "%-50s" "fruit.ans test, with compression ... "
-TEST=`./ansiread -z -c ansifiles/fruit.ans 2>/dev/null | md5sum - | awk '{ print $1; }'`
+TEST=`./ansiread -z -c ansifiles/fruit.ans 2>/dev/null | ${MD5SUM} - | awk '{ print $1; }'`
 if [ $TEST == "cf7c91b714fde086a748911c34598f94" ]; then 
     echo -e $MSG_PASS
   else
@@ -81,7 +87,7 @@ if [ $TEST == "26" ]; then
 
 # timebend test, without compression 
 printf "%-50s" "timebend.ans test, without compression ... "
-TEST=`./ansiread -c ansifiles/timebend.ans 2>/dev/null | md5sum - | awk '{ print $1; }'`
+TEST=`./ansiread -c ansifiles/timebend.ans 2>/dev/null | ${MD5SUM} - | awk '{ print $1; }'`
 if [ $TEST == "58dae962396588abc901c37591bf84a6" ]; then
     echo -e $MSG_PASS
   else
@@ -90,7 +96,7 @@ if [ $TEST == "58dae962396588abc901c37591bf84a6" ]; then
 
 # timebend test, with compression
 printf "%-50s" "timebend.ans test, with compression ... "
-TEST=`./ansiread -z -c ansifiles/timebend.ans 2>/dev/null | md5sum - | awk '{ print $1; }'`
+TEST=`./ansiread -z -c ansifiles/timebend.ans 2>/dev/null | ${MD5SUM} - | awk '{ print $1; }'`
 if [ $TEST == "18a5c85c274aabd497701f3e370a2da1" ]; then
     echo -e $MSG_PASS
   else
