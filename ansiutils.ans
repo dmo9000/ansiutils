@@ -40,6 +40,7 @@
 
 	[36m[4m[1mRECENT CHANGES[24m:[21m[0m
 
+[40;37m           2be1674 * Add required TDF font.[0m
 [40;37m           ad679f2 * Display platform used for generating the documentation.[0m
 [40;37m                   * Unify Linux/BSD Makefile to Makefile.unix[0m
 [40;37m           d5972c2 * Silence 'which' warnings.[0m
@@ -47,7 +48,6 @@
 [40;37m           5570cbf * Don't generate 8x8.bmf anymore, cause it breaks with BSD echo. Use[0m
 [40;37m                   * version already checked into source control.[0m
 [40;37m                   * Various other fixes for FreeBSD.[0m
-[40;37m           ecdead2 * WIP, trying to improve vttest compatibility.[0m
 
 	[36m[4m[1mLATEST TEST RESULTS[24m:[21m[0m
 
@@ -67,7 +67,7 @@
 [40;37m           timebend.ans PNG, stdin/compressed test ...       [40;32m[1m[PASS][0m
 [40;37m           [0m
 
-	[30m[1m(2019-01-02 git #ad679f2 https://github.com/dmo9000/ansiutils.git)[21m[0m
+	[30m[1m(2019-01-02 git #2be1674 https://github.com/dmo9000/ansiutils.git)[21m[0m
 
-	[30m[1m(4.14.14-300.fc27.x86_64 x86_64 GNU/Linux)[21m[0m
+	[30m[1m(OpenBSD 6.4 amd64)[21m[0m
                                                                                                               

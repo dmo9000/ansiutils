@@ -1,9 +1,9 @@
 CC=gcc
 #CC=clang
 #CFLAGS = -g -ggdb -Wall -Werror
-CFLAGS = -Wall --std=c99 -g -ggdb
+CFLAGS = -Wall --std=c99 -g -ggdb -I/usr/X11R6/include/ -I/usr/local/include
 #CFLAGS = -Wall --std=c99 -O2
-LDFLAGS=-lGL -lGLU -lglut -lm -pthread
+LDFLAGS=-L/usr/X11R6/lib -L/usr/local/lib -lGL -lGLU -lglut -lm -pthread
 
 TDFTOOL_OBJS=tdftool.o tdffont.o sauce.o
 OBJS=gfx_opengl.o rawfont.o ansiload.o
@@ -12,7 +12,7 @@ LIBANSICANVAS_OBJS=ansiraster.o ansicanvas.o ansistate.o utf8.o bmf.o
 TESTSAMPLE=../THEDRAWFONTS/BLACKX.TDF
 GITHASH=`git log --pretty=format:'%h' -n 1`
 GITORIGIN=`git config --get remote.origin.url`
-OSVERSION=`uname -mor`
+OSVERSION=`uname -srm`
 DATE=`date +%Y-%m-%d`
 COLUMNS=80
 PADDING=`printf '%*s' 110`
