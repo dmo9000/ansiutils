@@ -1329,14 +1329,23 @@ void dispatch_ansi_command(ANSICanvas *canvas, unsigned char c)
             ansi_debug_dump();
         }
         if (!paramidx) {
-            fprintf(stderr, "+++ 'J' command -- erase from cursor to end of screen\n");
+            fprintf(stderr, "+++ '0J' command -- erase from cursor to end of screen\n");
             ansi_debug_dump();
         }
 
         switch (parameters[0]) {
         case 0:
-            fprintf(stderr, "+++ 'J' command -- erase from cursor to end of screen\n");
-            current_x = 0;
+            fprintf(stderr, "+++ '0J' command -- erase from cursor to end of screen (last row=%d)\n", canvas_get_height(canvas));
+						/* strictly speaking, this deletes from the line containing
+							 the current cursor */
+            for (jj = current_y; jj < canvas_get_height(canvas) ; jj++) {
+                r = canvas_get_raster(canvas, jj);
+                assert(r);
+                for (ii = 0; ii < r->bytes; ii++) {
+                    r->chardata[ii] = ' ';
+                	}
+								}	
+            canvas->repaint_entire_canvas = true;
             break;
         case 1:
             fprintf(stderr, "+++ '1J' command -- erase from beginning of screen to cursor(%d,%d)\n", current_x, current_y);
