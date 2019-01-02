@@ -40,12 +40,14 @@
 
 	[36m[4m[1mRECENT CHANGES[24m:[21m[0m
 
+[40;37m           29a12a3 * Reponse to "device attributes" request same way as gnome-terminal,[0m
+[40;37m                     giving us a "level[0m
+[40;37m           2" rating in vttest.[0m
 [40;37m           b51f98a * Further 'which' fix.[0m
 [40;37m           f0cde6c * Updates for Solaris compat.[0m
 [40;37m           b02d555 * Use printf instead of echo.[0m
 [40;37m                   * Use /bin/sh[0m
 [40;37m           50881b5 * Detect correct md5sum program on Solaris.[0m
-[40;37m           02ff87f * Various fixes for OpenBSD compat.[0m
 
 	[36m[4m[1mLATEST TEST RESULTS[24m:[21m[0m
 
@@ -65,7 +67,7 @@
 [40;37m           timebend.ans PNG, stdin/compressed test ...       [40;32m[1m[PASS][0m
 [40;37m           [0m
 
-	[30m[1m(2019-01-02 git #b51f98a https://github.com/dmo9000/ansiutils.git)[21m[0m
+	[30m[1m(2019-01-02 git #29a12a3 https://github.com/dmo9000/ansiutils.git)[21m[0m
 
 	[30m[1m(Linux 4.14.14-300.fc27.x86_64 x86_64)[21m[0m
                                                                                                               

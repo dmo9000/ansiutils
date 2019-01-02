@@ -764,7 +764,12 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
 
             switch (c) {
             case '8':
-                fprintf(stderr, "+++ ANSI_HASH mode: fill screen with E's\n");
+								/* vttest describes this as decaln() - 
+															"Screen Alignment Display" */
+
+								if (debug_flag) {
+                	fprintf(stderr, "+++ ANSI_HASH mode: fill screen with E's\n");
+								}
                 for (jj = 0; jj < canvas_get_height(canvas); jj++) {
                     r = canvas_get_raster(canvas, jj);
                     assert(r);
@@ -772,6 +777,11 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
                         r->chardata[ii] = 'E';
                     }
                 }
+								/* gnome-terminal and xterm both put cursor in top 
+									 left hand corner, so will we */
+
+								current_x = 0;
+								current_y = 0;
                 canvas->repaint_entire_canvas = true;
                 canvas->is_dirty = true;
                 break;
@@ -1213,9 +1223,9 @@ void dispatch_ansi_command(ANSICanvas *canvas, unsigned char c)
     /* direct cursor addressing  - same as 'H' */
     case 'H':
         /* set cursor home - move the cursor to the specified position */
-        if (debug_flag) {
+    //    if (debug_flag) {
             fprintf(stderr, "+++ SET CURSOR HOME(%u, %u)\n", parameters[1], parameters[0]);
-        }
+     //   }
 
         if (debug_flag) {
             fprintf(stderr, "1) set_cursor_home(%u,%u)\n", current_x, current_y);
@@ -1329,7 +1339,7 @@ void dispatch_ansi_command(ANSICanvas *canvas, unsigned char c)
             current_x = 0;
             break;
         case 1:
-            fprintf(stderr, "+++ 'J' command -- erase from beginning of screen to cursor\n");
+            fprintf(stderr, "+++ '1J' command -- erase from beginning of screen to cursor(%d,%d)\n", current_x, current_y);
             for (jj = 0; jj < current_y ; jj++) {
                 r = canvas_get_raster(canvas, jj);
                 assert(r);
@@ -1337,7 +1347,11 @@ void dispatch_ansi_command(ANSICanvas *canvas, unsigned char c)
                     r->chardata[ii] = ' ';
                 }
             }
-            current_x = 0;
+						r = canvas_get_raster(canvas, current_y);
+						assert(r);
+						for (ii = 0; ii < current_x; ii++) {
+								r->chardata[ii] = ' ';
+						}
             canvas->repaint_entire_canvas = true;
             break;
         case 2:
