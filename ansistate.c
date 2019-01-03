@@ -515,6 +515,7 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
 						switch (c) {
 							case 0x07:
 									fprintf(stderr, "+++ GSTRING TERMINATED -> {%s}\n", xterm_title_string);
+									/* TODO: dispatch to a title bar handler that can set the title */
 									clear_ansi_flags(FLAG_ALL);
 									break;
 							default:
@@ -546,6 +547,11 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
 												fprintf(stderr, "+++ Switch to ^G terminated string mode... id [;]\n");
 												assert(last_character == '0');
 												set_ansi_flags(FLAG_GSTRING);
+												if (xterm_title_string != NULL) {
+																	free(xterm_title_string);
+																	xterm_title_string = NULL;
+																	xterm_title_string_length = 0;
+																	}
 												break;
 											default:
 												fprintf(stderr, "+++ Unrecognized Operating System Command Sequence ('%c'). Aborting.\n", c);
@@ -789,6 +795,8 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
             }
             if (c == ANSI_INTSEP) {
                 /* integer seperator */
+                ansi_seqbuf[ansi_offset] = c;
+                ansi_offset++;
                 parameters[paramidx] = paramval;
                 paramcount ++;
                 if (debug_flag) {
@@ -1113,6 +1121,11 @@ void dispatch_ansi_text_attributes()
             attributes &= ~ATTRIB_REVERSE;
             goto next_parameter;
             break;
+				case 38:
+						/* seems to do nothing, but coreutils color ls send it to an xterm? */
+						fprintf(stderr, "+++ unknown ^[38m sequence!\n");	
+            goto next_parameter;
+						break;
         case 39:
             /* default foreground color - currently not implemented*/
             //printf("[39m:DEFAULT FOREGROUND COLOR::NOT IMPLEMENTED YET]\n");
@@ -1126,12 +1139,14 @@ void dispatch_ansi_text_attributes()
             goto next_parameter;
             break;
         default:
-            printf("unknown 'm' parameter value: %u (paramidx=%u, ansiflags=%u)\n", parameters[i], paramidx, ansiflags);
+            printf("+++ unknown 'm' parameter value: %u (paramidx=%u, ansiflags=%u)\n", parameters[i], paramidx, ansiflags);
+						ansi_debug_dump();
             assert(NULL);
             break;
         }
 
-        printf("unknown 'm' parameter value: %u (paramidx=%u, ansiflags=%u)\n", parameters[i], paramidx, ansiflags);
+        printf("+++unknown 'm' parameter value: %u (paramidx=%u, ansiflags=%u)\n", parameters[i], paramidx, ansiflags);
+				ansi_debug_dump();
         assert(NULL);
 
 next_parameter:
