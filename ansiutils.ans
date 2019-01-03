@@ -40,12 +40,12 @@
 
 	[36m[4m[1mRECENT CHANGES[24m:[21m[0m
 
+[40;37m           ca52709 * API updates and improvements to ^[PnC/D left/right cursor handling.[0m
 [40;37m           f2fe7ac * Fixes for better vttest compat.[0m
 [40;37m           dbbe015 * Rationalization of ^[ Pn K sequences.[0m
 [40;37m                   * Debugging cleanup for ^ [ Pn ; Pn H sequences[0m
 [40;37m           dab7cc8 * Bugfixes to ^[ Pn K sequences.[0m
 [40;37m           5a3c98a * ^[0J implementation.[0m
-[40;37m           b0fb21d * Improvements to ^[1J - erase from beginning of screen to cursor.[0m
 
 	[36m[4m[1mLATEST TEST RESULTS[24m:[21m[0m
 
@@ -65,7 +65,7 @@
 [40;37m           timebend.ans PNG, stdin/compressed test ...       [40;32m[1m[PASS][0m
 [40;37m           [0m
 
-	[30m[1m(2019-01-03 git #f2fe7ac https://github.com/dmo9000/ansiutils.git)[21m[0m
+	[30m[1m(2019-01-03 git #ca52709 https://github.com/dmo9000/ansiutils.git)[21m[0m
 
 	[30m[1m(Linux 4.14.14-300.fc27.x86_64 x86_64)[21m[0m
                                                                                                               
