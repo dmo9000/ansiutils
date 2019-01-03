@@ -358,6 +358,12 @@ void process_Special_Keys(int key, int x, int y)
     return;
 }
 
+int gfx_opengl_setwindowtitle(char *newtitle) 
+{
+	glutSetWindowTitle(newtitle);
+	return 0;
+}
+
 
 int gfx_opengl_main(ANSICanvas *c, uint16_t xsize, uint16_t ysize, int multiplier, char *WindowTitle)
 {

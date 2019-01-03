@@ -129,7 +129,7 @@ const char *ansi_state(int s);
 #define FLAG_CURSOR	 	8
 #define FLAG_HASH			16
 #define FLAG_5D				32
-#define FLAG_GSTRING	64	
+#define FLAG_GSTRING	64
 #define FLAG_ALL    	0xFF
 
 uint8_t ansiflags = 0;
@@ -144,12 +144,17 @@ int process_fd = -1;
 unsigned char ansi_seqbuf[MAX_ANSI];
 uint8_t ansi_offset = 0;
 void dispatch_ansi_command(ANSICanvas *canvas, unsigned char c);
+int (*ansi_setwindowtitle)(char *s) = NULL;
 
 
+int ansi_setwindowtitlecallback(int (*setwindowtitle_callback)(char *s))
+{
+    fprintf(stderr, "ansi_setwindowtitlecallback()\n");
+    ansi_setwindowtitle = setwindowtitle_callback;
+    return 0;
+}
 
-
-
-int  ansi_setdebug(bool debugstate)
+int ansi_setdebug(bool debugstate)
 {
     debug_flag = debugstate;
 
@@ -438,22 +443,22 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
             ansi_seqbuf[ansi_offset] = c;
             ansi_offset++;
 
-						if (c == '=') {
-							fprintf(stderr, "+++ ESC =                   (V)     Application Keypad Mode\n");
-							/* not sure what to do with this */
-							clear_ansi_flags(FLAG_ALL);
-							break;
-							}
+            if (c == '=') {
+                fprintf(stderr, "+++ ESC =                   (V)     Application Keypad Mode\n");
+                /* not sure what to do with this */
+                clear_ansi_flags(FLAG_ALL);
+                break;
+            }
 
-						if (c == ']') {
-						/*
-							ESC ] 0 ; string ^G     (A)     
-							Operating System Command (Hardstatus, xterm title hack) */
-							fprintf(stderr, "+++ Operating System Command - ^]\n");
-							set_ansi_flags(FLAG_5D);
-							last_character = c;
-							break;
-							}
+            if (c == ']') {
+                /*
+                	ESC ] 0 ; string ^G     (A)
+                	Operating System Command (Hardstatus, xterm title hack) */
+                fprintf(stderr, "+++ Operating System Command - ^]\n");
+                set_ansi_flags(FLAG_5D);
+                last_character = c;
+                break;
+            }
 
             if (c == 'E') {
                 // next line? current_y++, current_x = 0
@@ -508,57 +513,65 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
             init_parameters();
             break;
 
-				case (FLAG_1B | FLAG_5D | FLAG_GSTRING):
+        case (FLAG_1B | FLAG_5D | FLAG_GSTRING):
             ansi_seqbuf[ansi_offset] = c;
             ansi_offset++;
 
-						switch (c) {
-							case 0x07:
-									fprintf(stderr, "+++ GSTRING TERMINATED -> {%s}\n", xterm_title_string);
-									/* TODO: dispatch to a title bar handler that can set the title */
-									clear_ansi_flags(FLAG_ALL);
-									break;
-							default:
-									if (c < 32 || c > 128) {
-										fprintf(stderr, "+++ GSTRING range error\n");
-										ansi_debug_dump();
-										}
-									assert(xterm_title_string_length < 64);
-									xterm_title_string_length++;
-									xterm_title_string = realloc(xterm_title_string, xterm_title_string_length+1);
-									xterm_title_string[xterm_title_string_length-1] = c;
-									xterm_title_string[xterm_title_string_length] = '\0';
-							break;
-							}
+            switch (c) {
+            case 0x07:
+                fprintf(stderr, "+++ GSTRING TERMINATED -> {%s}\n", xterm_title_string);
+                /* TODO: dispatch to a title bar handler that can set the title */
+                if (ansi_setwindowtitle == NULL) {
+                    fprintf(stderr, "+++ No callback configured for ansi_setwindowtitle(). Ignoring.\n");
+                } else {
+                    fprintf(stderr, "+++ -> ansi_setwindowtitle(%s)\n", xterm_title_string);
+                    ansi_setwindowtitle(xterm_title_string);
+                }
 
-					break;
 
-				case (FLAG_1B | FLAG_5D):
+                clear_ansi_flags(FLAG_ALL);
+                break;
+            default:
+                if (c < 32 || c > 128) {
+                    fprintf(stderr, "+++ GSTRING range error\n");
+                    ansi_debug_dump();
+                }
+                assert(xterm_title_string_length < 64);
+                xterm_title_string_length++;
+                xterm_title_string = realloc(xterm_title_string, xterm_title_string_length+1);
+                xterm_title_string[xterm_title_string_length-1] = c;
+                xterm_title_string[xterm_title_string_length] = '\0';
+                break;
+            }
+
+            break;
+
+        case (FLAG_1B | FLAG_5D):
             ansi_seqbuf[ansi_offset] = c;
             ansi_offset++;
 
-						switch(c) {
-											case '0':
-												fprintf(stderr, "+++ Switch to ^G terminated string mode... id [0]\n");
-												assert(last_character == ']');
-												last_character = c;
-												break;
-											case ';':
-												fprintf(stderr, "+++ Switch to ^G terminated string mode... id [;]\n");
-												assert(last_character == '0');
-												set_ansi_flags(FLAG_GSTRING);
-												if (xterm_title_string != NULL) {
-																	free(xterm_title_string);
-																	xterm_title_string = NULL;
-																	xterm_title_string_length = 0;
-																	}
-												break;
-											default:
-												fprintf(stderr, "+++ Unrecognized Operating System Command Sequence ('%c'). Aborting.\n", c);
-												ansi_debug_dump();
-												break;
-											}
-						break;
+            switch(c) {
+            case '0':
+                fprintf(stderr, "+++ Switch to ^G terminated string mode... id [0]\n");
+                assert(last_character == ']');
+                last_character = c;
+                break;
+            case ';':
+                fprintf(stderr, "+++ Switch to ^G terminated string mode... id [;]\n");
+                assert(last_character == '0');
+                set_ansi_flags(FLAG_GSTRING);
+                if (xterm_title_string != NULL) {
+                    free(xterm_title_string);
+                    xterm_title_string = NULL;
+                    xterm_title_string_length = 0;
+                }
+                break;
+            default:
+                fprintf(stderr, "+++ Unrecognized Operating System Command Sequence ('%c'). Aborting.\n", c);
+                ansi_debug_dump();
+                break;
+            }
+            break;
         case (FLAG_1B | FLAG_5B):
 
             /* FIXME: starting to see a lot of duplication here, of commands with no parameters vs
@@ -621,9 +634,9 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
             }
 
             if (c == 'A') {
-								fprintf(stderr, "+++ please rationalize! %s,%u\n", 
-									__FILE__, __LINE__);
-								//ansi_debug_dump();
+                fprintf(stderr, "+++ please rationalize! %s,%u\n",
+                        __FILE__, __LINE__);
+                //ansi_debug_dump();
                 /* if this appears raw, it is probably a mistake, or just padding */
                 current_y -= (parameters[0] ? parameters[0] : 1);
                 clear_ansi_flags(FLAG_ALL);
@@ -632,9 +645,9 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
 
 
             if (c == 'B') {
-								fprintf(stderr, "+++ please rationalize! %s,%u\n", 
-									__FILE__, __LINE__);
-								//ansi_debug_dump();
+                fprintf(stderr, "+++ please rationalize! %s,%u\n",
+                        __FILE__, __LINE__);
+                //ansi_debug_dump();
                 current_y += (parameters[0] ? parameters[0] : 1);
                 clear_ansi_flags(FLAG_ALL);
                 break;
@@ -894,16 +907,16 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
                 ansi_offset++;
 
                 switch(paramval) {
-								case 1:
-										/* not sure what to do with this */
-										fprintf(stderr, "+++ ESC[?1h 'Application Cursor Keys'");
-										clear_ansi_flags(FLAG_ALL);
-										break;
-								case 3:
-										/* set to 132 column mode */
-										fprintf(stderr, "+++ ^[?3h - 132 column mode!\n");
-										clear_ansi_flags(FLAG_ALL);
-										break;
+                case 1:
+                    /* not sure what to do with this */
+                    fprintf(stderr, "+++ ESC[?1h 'Application Cursor Keys'");
+                    clear_ansi_flags(FLAG_ALL);
+                    break;
+                case 3:
+                    /* set to 132 column mode */
+                    fprintf(stderr, "+++ ^[?3h - 132 column mode!\n");
+                    clear_ansi_flags(FLAG_ALL);
+                    break;
                 case 7:
                     fprintf(stderr, "Esc[?7h 	Set auto-wrap mode 	DECAWM \n");
                     clear_ansi_flags(FLAG_ALL);
@@ -1126,11 +1139,11 @@ void dispatch_ansi_text_attributes()
             attributes &= ~ATTRIB_REVERSE;
             goto next_parameter;
             break;
-				case 38:
-						/* seems to do nothing, but coreutils color ls send it to an xterm? */
-						fprintf(stderr, "+++ unknown ^[38m sequence!\n");	
+        case 38:
+            /* seems to do nothing, but coreutils color ls send it to an xterm? */
+            fprintf(stderr, "+++ unknown ^[38m sequence!\n");
             goto next_parameter;
-						break;
+            break;
         case 39:
             /* default foreground color - currently not implemented*/
             //printf("[39m:DEFAULT FOREGROUND COLOR::NOT IMPLEMENTED YET]\n");
@@ -1145,13 +1158,13 @@ void dispatch_ansi_text_attributes()
             break;
         default:
             printf("+++ unknown 'm' parameter value: %u (paramidx=%u, ansiflags=%u)\n", parameters[i], paramidx, ansiflags);
-						ansi_debug_dump();
+            ansi_debug_dump();
             assert(NULL);
             break;
         }
 
         printf("+++unknown 'm' parameter value: %u (paramidx=%u, ansiflags=%u)\n", parameters[i], paramidx, ansiflags);
-				ansi_debug_dump();
+        ansi_debug_dump();
         assert(NULL);
 
 next_parameter:
@@ -1300,15 +1313,15 @@ void dispatch_ansi_command(ANSICanvas *canvas, unsigned char c)
 
     switch (c) {
     case 'A':
-				fprintf(stderr, "+++ ^[ %dA - move cursor up %d rows\n",
-            parameters[0], (parameters[0] ? parameters[0] : 1));
+        fprintf(stderr, "+++ ^[ %dA - move cursor up %d rows\n",
+                parameters[0], (parameters[0] ? parameters[0] : 1));
         /* move cursor up parameter[0] rows without changing column */
-				if (current_y >= (parameters[0] ? parameters[0] : 1)) {
-	        current_y-=(parameters[0] ? parameters[0] : 1);
-					} else { 
-					/* clamp to top of screen */
-					current_y = 0;
-					}
+        if (current_y >= (parameters[0] ? parameters[0] : 1)) {
+            current_y-=(parameters[0] ? parameters[0] : 1);
+        } else {
+            /* clamp to top of screen */
+            current_y = 0;
+        }
         break;
     case 'b':
         /* testing - probably wrong since it's supposed to be able to repeat the last control sequence as well */
@@ -1328,14 +1341,14 @@ void dispatch_ansi_command(ANSICanvas *canvas, unsigned char c)
         free(repeat_char);
         break;
     case 'B':
-				fprintf(stderr, "+++ ^[ %dB - move cursor down %d rows\n", 
-						parameters[0], (parameters[0] ? parameters[0] : 1));
+        fprintf(stderr, "+++ ^[ %dB - move cursor down %d rows\n",
+                parameters[0], (parameters[0] ? parameters[0] : 1));
         /* move cursor down parameter[0] rows without changing column */
         current_y+=(parameters[0] ? parameters[0] : 1);
-				/* clamp to bottom of screen/canvas etc... */
-				if (current_y > ( CONSOLE_HEIGHT -1) ) {
-						current_y = CONSOLE_HEIGHT -1 ;
-						}
+        /* clamp to bottom of screen/canvas etc... */
+        if (current_y > ( CONSOLE_HEIGHT -1) ) {
+            current_y = CONSOLE_HEIGHT -1 ;
+        }
         break;
     case 'G':
         /* unix mode reset? not implemented! */
@@ -1409,7 +1422,6 @@ void dispatch_ansi_command(ANSICanvas *canvas, unsigned char c)
         /* delete line - UE4 prototype has implementation of this*/
         //fprintf(stderr, "[DELETE LINES %u:%d]\n", current_y, parameters[0]);
         //fprintf(stderr, "default raster length = %u\n", canvas->default_raster_length);
-        ansi_debug_dump();
         assert(paramidx == 1);
         for (i = 0; i < parameters[0]; i++) {
             /* add raster to end */
@@ -1429,7 +1441,6 @@ void dispatch_ansi_command(ANSICanvas *canvas, unsigned char c)
         canvas->repaint_entire_canvas = true;
         canvas->is_dirty = true;
         clear_ansi_flags(FLAG_ALL);
-        break;
         break;
     case 'm':
         /* text attributes */
