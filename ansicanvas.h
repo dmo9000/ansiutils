@@ -20,6 +20,9 @@ struct ansi_canvas {
     bool is_dirty;
     bool cursor_enabled;
     uint16_t default_raster_length;
+    /* reserved for future API update; put a hard limit on the canvas size  */
+    uint16_t limit_cols;
+    uint16_t limit_rows;
 };
 
 typedef struct ansi_canvas   ANSICanvas;

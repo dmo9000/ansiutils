@@ -1087,9 +1087,17 @@ void dispatch_ansi_cursor_right(ANSICanvas *canvas)
         n = 1;
     }
 
-    fprintf(stderr, "+++ ^[%dC (dispatch_ansi_cursor_right)\n", parameters[0]);
+    fprintf(stderr, "+++ ^[%uC (dispatch_ansi_cursor_right)\n", parameters[0]);
     fprintf(stderr, "parameters[0]=%u\n", parameters[0]);
     fprintf(stderr, "current_x=%u\n", current_x);
+
+    /* clamp to right hand side of canvas */
+    /* FIXME: this needs to be able to work with a resizable terminal ... */
+    /* FIXME: this triggers a wrapping bug ... */
+
+    if (current_x + n > (CONSOLE_WIDTH - 1)) {
+        n = (CONSOLE_WIDTH - 1) - current_x;
+    }
 
     if (debug_flag) {
         printf("  > move cursor right %u characters [%u,%u]->[%u,%u]\n", n, current_x, current_y, current_x+n, current_y);
@@ -1116,6 +1124,9 @@ void dispatch_ansi_cursor_right(ANSICanvas *canvas)
             printf("  > raster is now length (%u)\n", r->bytes);
         }
     }
+
+    /* this needs to be clamped to the screen edge */
+
     current_x += n;
 
     fprintf(stderr, "+++ position = %d,%d\n", current_x, current_y);
@@ -1128,11 +1139,14 @@ void dispatch_ansi_cursor_left(ANSICanvas *canvas)
     fprintf(stderr, "+++ ^[%dD (dispatch_ansi_cursor_left)\n", parameters[0]);
     fprintf(stderr, "parameters[0]=%u\n", parameters[0]);
     fprintf(stderr, "current_x=%u\n", current_x);
-    if (parameters[0] > current_x) {
+    if ((parameters[0] ? parameters[0] : 1) > current_x) {
+        /* clamp to left hand edge */
         /* careful here - comparison between signed/unsigned? */
         current_x = 0;
     } else {
-        current_x -= parameters[0];
+        //current_x -= parameters[0];
+        /* must always move at least one position */
+        current_x -= (parameters[0] ? parameters[0] : 1);
     }
     fprintf(stderr, "+++ position = %d,%d\n", current_x, current_y);
     return;
