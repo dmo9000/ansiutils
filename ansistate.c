@@ -899,6 +899,11 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
 										fprintf(stderr, "+++ ESC[?1h 'Application Cursor Keys'");
 										clear_ansi_flags(FLAG_ALL);
 										break;
+								case 3:
+										/* set to 132 column mode */
+										fprintf(stderr, "+++ ^[?3h - 132 column mode!\n");
+										clear_ansi_flags(FLAG_ALL);
+										break;
                 case 7:
                     fprintf(stderr, "Esc[?7h 	Set auto-wrap mode 	DECAWM \n");
                     clear_ansi_flags(FLAG_ALL);
