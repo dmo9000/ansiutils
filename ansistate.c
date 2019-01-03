@@ -157,6 +157,8 @@ void ansi_debug_dump()
     printf("ansi_offset = %u\n", ansi_offset);
     printf("paramidx = %u\n", paramidx);
     printf("\n");
+
+    printf("Cursor Position: %d,%d\n\n", current_x, current_y);
     printf("Flags:\n");
 
     if (!ansiflags) {
@@ -418,6 +420,10 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
 
             if (c == 'E') {
                 // next line? current_y++, current_x = 0
+                fprintf(stderr, "+++ ^E - ???\n");
+                ansi_seqbuf[ansi_offset] = c;
+                ansi_offset++;
+                //ansi_debug_dump();
                 current_x = 0;
                 current_y ++;
                 clear_ansi_flags(FLAG_ALL);
@@ -426,7 +432,12 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
 
             if (c == 'M') {
                 // reverse index mode - set current_x = 0?
-                current_x = 0;
+                fprintf(stderr, "+++ 1B->M (Reverse Index) command\n");
+                ansi_seqbuf[ansi_offset] = c;
+                ansi_offset++;
+                //ansi_debug_dump();
+                //current_x = 0;
+                current_y --;
                 clear_ansi_flags(FLAG_ALL);
                 break;
             }
@@ -677,7 +688,7 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
                 ansi_seqbuf[ansi_offset] = c;
                 ansi_offset++;
                 printf("error: expecting digit, got '%c' (0x%02x), %u parameter, paramval = %u\n", c, c, paramidx, paramval);
-								dispatch_ansi_command(canvas, c);
+                dispatch_ansi_command(canvas, c);
                 //ansi_debug_dump();
                 //assert(NULL);
             }
@@ -1066,6 +1077,20 @@ void dispatch_ansi_cursor_right(ANSICanvas *canvas)
     ANSIRaster *r = NULL;
     uint16_t n = parameters[0];
     uint16_t extend_len = 0;
+
+    /* there is a trick to this one - the parameter can only have a minimum
+    		value of 1, even if a parameter is passed which is zero, or
+    		no parameter is passed. The minimum number of spaces the cursor
+    		can move to the right is 1 */
+
+    if (!n) {
+        n = 1;
+    }
+
+    fprintf(stderr, "+++ ^[%dC (dispatch_ansi_cursor_right)\n", parameters[0]);
+    fprintf(stderr, "parameters[0]=%u\n", parameters[0]);
+    fprintf(stderr, "current_x=%u\n", current_x);
+
     if (debug_flag) {
         printf("  > move cursor right %u characters [%u,%u]->[%u,%u]\n", n, current_x, current_y, current_x+n, current_y);
     }
@@ -1092,13 +1117,24 @@ void dispatch_ansi_cursor_right(ANSICanvas *canvas)
         }
     }
     current_x += n;
+
+    fprintf(stderr, "+++ position = %d,%d\n", current_x, current_y);
     return;
 
 }
 
 void dispatch_ansi_cursor_left(ANSICanvas *canvas)
 {
-    current_x -= parameters[0];
+    fprintf(stderr, "+++ ^[%dD (dispatch_ansi_cursor_left)\n", parameters[0]);
+    fprintf(stderr, "parameters[0]=%u\n", parameters[0]);
+    fprintf(stderr, "current_x=%u\n", current_x);
+    if (parameters[0] > current_x) {
+        /* careful here - comparison between signed/unsigned? */
+        current_x = 0;
+    } else {
+        current_x -= parameters[0];
+    }
+    fprintf(stderr, "+++ position = %d,%d\n", current_x, current_y);
     return;
 }
 
@@ -1191,19 +1227,18 @@ void dispatch_ansi_command(ANSICanvas *canvas, unsigned char c)
         canvas->is_dirty= true;
         break;
     case 'D':
-        /* move cursor to the left N characters */
         dispatch_ansi_cursor_left(canvas);
         break;
     case 'f':
     /* direct cursor addressing  - same as 'H' */
     case 'H':
         /* set cursor home - move the cursor to the specified position */
-            if (debug_flag) {
+        //    if (debug_flag) {
         fprintf(stderr, "+++ SET CURSOR HOME(%u, %u)\n", parameters[1], parameters[0]);
-           }
+        // }
 
         if (debug_flag) {
-            fprintf(stderr, "1) set_cursor_home(%u,%u)\n", current_x, current_y);
+            fprintf(stderr, " 1) set_cursor_home(%u,%u)\n", current_x, current_y);
         }
 
         if (parameters[1] > 0) {
@@ -1219,7 +1254,7 @@ void dispatch_ansi_command(ANSICanvas *canvas, unsigned char c)
         }
 
         if (debug_flag) {
-            fprintf(stderr, "2) set_cursor_home(%u,%u)\n", current_x, current_y);
+            fprintf(stderr, " 2) set_cursor_home(%u,%u)\n", current_x, current_y);
         }
 
         /* very dodgy - hardcoded is bad. we might want to find some other way to calculate these,
@@ -1233,9 +1268,9 @@ void dispatch_ansi_command(ANSICanvas *canvas, unsigned char c)
             current_y = CONSOLE_HEIGHT -1;
         }
 
-        if (debug_flag) {
-            fprintf(stderr, "3) set_cursor_home(%u,%u)\n", current_x, current_y);
-        }
+//        if (debug_flag) {
+        fprintf(stderr, " 3) set_cursor_home(%u,%u)\n", current_x, current_y);
+//        }
 
         break;
     case 'M':
@@ -1243,6 +1278,7 @@ void dispatch_ansi_command(ANSICanvas *canvas, unsigned char c)
         /* delete line - UE4 prototype has implementation of this*/
         //fprintf(stderr, "[DELETE LINES %u:%d]\n", current_y, parameters[0]);
         //fprintf(stderr, "default raster length = %u\n", canvas->default_raster_length);
+        ansi_debug_dump();
         assert(paramidx == 1);
         for (i = 0; i < parameters[0]; i++) {
             /* add raster to end */
@@ -1366,7 +1402,7 @@ void dispatch_ansi_command(ANSICanvas *canvas, unsigned char c)
 
         if (!paramidx) {
             fprintf(stderr, "+++ 'K' command -- erase from cursor to end of line\n");
-         //   ansi_debug_dump();
+            //   ansi_debug_dump();
         }
 
         switch (parameters[0]) {
