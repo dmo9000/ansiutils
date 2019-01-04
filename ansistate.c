@@ -462,7 +462,10 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
 
             if (c == 'E') {
                 // next line? current_y++, current_x = 0
-                fprintf(stderr, "+++ ^E - ???\n");
+                if (canvas->debug_flags & CANVAS_DEBUG_CURSOR) {
+                    fprintf(stderr, "+++ ^E - NEXT LINE ??? (double check)\n");
+                }
+
                 //ansi_debug_dump();
                 current_x = 0;
                 current_y ++;
@@ -472,7 +475,9 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
 
             if (c == 'M') {
                 // reverse index mode - set current_x = 0?
-                fprintf(stderr, "+++ 1B->M (Reverse Index) command\n");
+                if (canvas->debug_flags & CANVAS_DEBUG_CURSOR) {
+                    fprintf(stderr, "+++ 1B->M (Reverse Index) command\n");
+                }
                 //ansi_debug_dump();
                 //current_x = 0;
                 current_y --;
@@ -1204,9 +1209,11 @@ void dispatch_ansi_cursor_right(ANSICanvas *canvas)
         n = 1;
     }
 
-    fprintf(stderr, "+++ ^[%uC (dispatch_ansi_cursor_right)\n", parameters[0]);
-    fprintf(stderr, "parameters[0]=%u\n", parameters[0]);
-    fprintf(stderr, "current_x=%u\n", current_x);
+    if (canvas->debug_flags & CANVAS_DEBUG_CURSOR) {
+        fprintf(stderr, "+++ ^[%uC (dispatch_ansi_cursor_right)\n", parameters[0]);
+        fprintf(stderr, "parameters[0]=%u\n", parameters[0]);
+        fprintf(stderr, "current_x=%u\n", current_x);
+    }
 
     /* clamp to right hand side of canvas */
     /* FIXME: this needs to be able to work with a resizable terminal ... */
@@ -1246,16 +1253,20 @@ void dispatch_ansi_cursor_right(ANSICanvas *canvas)
 
     current_x += n;
 
-    fprintf(stderr, "+++ position = %d,%d\n", current_x, current_y);
+    if (canvas->debug_flags & CANVAS_DEBUG_CURSOR) {
+        fprintf(stderr, "   +++ position = %d,%d\n", current_x, current_y);
+    }
     return;
 
 }
 
 void dispatch_ansi_cursor_left(ANSICanvas *canvas)
 {
-    fprintf(stderr, "+++ ^[%dD (dispatch_ansi_cursor_left)\n", parameters[0]);
-    fprintf(stderr, "parameters[0]=%u\n", parameters[0]);
-    fprintf(stderr, "current_x=%u\n", current_x);
+    if (canvas->debug_flags & CANVAS_DEBUG_CURSOR) {
+        fprintf(stderr, "+++ ^[%dD (dispatch_ansi_cursor_left)\n", parameters[0]);
+        fprintf(stderr, "parameters[0]=%u\n", parameters[0]);
+        fprintf(stderr, "current_x=%u\n", current_x);
+    }
     if ((parameters[0] ? parameters[0] : 1) > current_x) {
         /* clamp to left hand edge */
         /* careful here - comparison between signed/unsigned? */
@@ -1265,7 +1276,10 @@ void dispatch_ansi_cursor_left(ANSICanvas *canvas)
         /* must always move at least one position */
         current_x -= (parameters[0] ? parameters[0] : 1);
     }
-    fprintf(stderr, "+++ position = %d,%d\n", current_x, current_y);
+
+    if (canvas->debug_flags & CANVAS_DEBUG_CURSOR) {
+        fprintf(stderr, "   +++ position = %d,%d\n", current_x, current_y);
+    }
     return;
 }
 
@@ -1341,8 +1355,10 @@ void dispatch_ansi_command(ANSICanvas *canvas, unsigned char c)
         free(repeat_char);
         break;
     case 'B':
-        fprintf(stderr, "+++ ^[ %dB - move cursor down %d rows\n",
-                parameters[0], (parameters[0] ? parameters[0] : 1));
+        if (canvas->debug_flags & CANVAS_DEBUG_CURSOR) {
+            fprintf(stderr, "+++ ^[ %dB - move cursor down %d rows\n",
+                    parameters[0], (parameters[0] ? parameters[0] : 1));
+        }
         /* move cursor down parameter[0] rows without changing column */
         current_y+=(parameters[0] ? parameters[0] : 1);
         /* clamp to bottom of screen/canvas etc... */
@@ -1377,9 +1393,9 @@ void dispatch_ansi_command(ANSICanvas *canvas, unsigned char c)
     /* direct cursor addressing  - same as 'H' */
     case 'H':
         /* set cursor home - move the cursor to the specified position */
-        //    if (debug_flag) {
-        fprintf(stderr, "+++ SET CURSOR HOME(%u, %u)\n", parameters[1], parameters[0]);
-        // }
+        if (canvas->debug_flags & CANVAS_DEBUG_CURSOR) {
+            fprintf(stderr, "+++ SET CURSOR HOME(%u, %u)\n", parameters[1], parameters[0]);
+        }
 
         if (debug_flag) {
             fprintf(stderr, " 1) set_cursor_home(%u,%u)\n", current_x, current_y);
@@ -1413,7 +1429,7 @@ void dispatch_ansi_command(ANSICanvas *canvas, unsigned char c)
         }
 
 //        if (debug_flag) {
-        fprintf(stderr, " 3) set_cursor_home(%u,%u)\n", current_x, current_y);
+//        fprintf(stderr, " 3) set_cursor_home(%u,%u)\n", current_x, current_y);
 //        }
 
         break;
@@ -1452,9 +1468,7 @@ void dispatch_ansi_command(ANSICanvas *canvas, unsigned char c)
         break;
     case 'c':
         /* device attributes */
-        if (debug_flag) {
-            fprintf(stderr, "+++ { DA	Device attributes	esc [ c	1B 5B 63 }\n");
-        }
+        fprintf(stderr, "+++ { DA	Device attributes	esc [ c	1B 5B 63 }\n");
         if (process_fd != -1) {
             printf("(responding to DA on fd %d)\n", process_fd);
             write(process_fd, "\x1b\x5b""?62;c", 7);
@@ -1478,17 +1492,23 @@ void dispatch_ansi_command(ANSICanvas *canvas, unsigned char c)
               2                    Entire Screen
            */
         if (paramidx > 1) {
-            fprintf(stderr, "+++ 'J' command -- too many parameters!\n");
+            if (canvas->debug_flags & CANVAS_DEBUG_CURSOR) {
+                fprintf(stderr, "+++ 'J' command -- too many parameters!\n");
+            }
             ansi_debug_dump();
         }
         if (!paramidx) {
-            fprintf(stderr, "+++ '0J' command -- erase from cursor to end of screen\n");
+            if (canvas->debug_flags & CANVAS_DEBUG_CURSOR) {
+                fprintf(stderr, "+++ '0J' command -- erase from cursor to end of screen\n");
+            }
             ansi_debug_dump();
         }
 
         switch (parameters[0]) {
         case 0:
-            fprintf(stderr, "+++ '0J' command -- erase from cursor to end of screen (last row=%d)\n", canvas_get_height(canvas));
+            if (canvas->debug_flags & CANVAS_DEBUG_CURSOR) {
+                fprintf(stderr, "+++ '0J' command -- erase from cursor to end of screen (last row=%d)\n", canvas_get_height(canvas));
+            }
             /* strictly speaking, this deletes from the line containing
             	 the current cursor */
             for (jj = current_y; jj < canvas_get_height(canvas) ; jj++) {
@@ -1501,7 +1521,9 @@ void dispatch_ansi_command(ANSICanvas *canvas, unsigned char c)
             canvas->repaint_entire_canvas = true;
             break;
         case 1:
-            fprintf(stderr, "+++ '1J' command -- erase from beginning of screen to cursor(%d,%d)\n", current_x, current_y);
+            if (canvas->debug_flags & CANVAS_DEBUG_CURSOR) {
+                fprintf(stderr, "+++ '1J' command -- erase from beginning of screen to cursor(%d,%d)\n", current_x, current_y);
+            }
             for (jj = 0; jj < current_y ; jj++) {
                 r = canvas_get_raster(canvas, jj);
                 assert(r);
@@ -1517,7 +1539,10 @@ void dispatch_ansi_command(ANSICanvas *canvas, unsigned char c)
             canvas->repaint_entire_canvas = true;
             break;
         case 2:
-            fprintf(stderr, "+++ 'J' command -- erase entire screen\n");
+
+            if (canvas->debug_flags & CANVAS_DEBUG_CURSOR) {
+                fprintf(stderr, "+++ 'J' command -- erase entire screen\n");
+            }
             if (allow_clear) {
                 canvas->clear_flag = true;
             }
@@ -1543,13 +1568,17 @@ void dispatch_ansi_command(ANSICanvas *canvas, unsigned char c)
         }
 
         if (!paramidx) {
-            fprintf(stderr, "+++ 'K' command -- erase from cursor to end of line\n");
+            if (canvas->debug_flags & CANVAS_DEBUG_CURSOR) {
+                fprintf(stderr, "+++ 'K' command -- erase from cursor to end of line\n");
+            }
             //   ansi_debug_dump();
         }
 
         switch (parameters[0]) {
         case 0:
-            fprintf(stderr, "+++ '0K' command -- erase from cursor to end of line\n");
+            if (canvas->debug_flags & CANVAS_DEBUG_CURSOR) {
+                fprintf(stderr, "+++ '0K' command -- erase from cursor to end of line\n");
+            }
             r = canvas_get_raster(canvas, current_y);
             assert(r);
             /* not clear whether attributes/colors should be affected */
@@ -1562,7 +1591,9 @@ void dispatch_ansi_command(ANSICanvas *canvas, unsigned char c)
             canvas->repaint_entire_canvas = true;
             break;
         case 1:
-            fprintf(stderr, "+++ '1K' command -- erase from beginning of line to cursor\n");
+            if (canvas->debug_flags & CANVAS_DEBUG_CURSOR) {
+                fprintf(stderr, "+++ '1K' command -- erase from beginning of line to cursor\n");
+            }
             r = canvas_get_raster(canvas, current_y);
             assert(r);
             for (ii = 0; ii < current_x; ii++) {
@@ -1575,7 +1606,9 @@ void dispatch_ansi_command(ANSICanvas *canvas, unsigned char c)
             canvas->repaint_entire_canvas = true;
             break;
         case 2:
-            fprintf(stderr, "+++ '2K' command -- erase entire line\n");
+            if (canvas->debug_flags & CANVAS_DEBUG_CURSOR) {
+                fprintf(stderr, "+++ '2K' command -- erase entire line\n");
+            }
             r = canvas_get_raster(canvas, current_y);
             assert(r);
             for (ii = 0; ii < r->bytes; ii++) {

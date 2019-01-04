@@ -40,12 +40,12 @@
 
 	[36m[4m[1mRECENT CHANGES[24m:[21m[0m
 
+[40;37m           2fde0db * WIP support for setting the Window title via a callback.[0m
 [40;37m           6e44e09 * WIP 132 column mode.[0m
 [40;37m           4ceece3 * WIP, still a long way to go .[0m
 [40;37m           f0f0c97 * Addition of much TTY state management that doesnt really belong here.[0m
 [40;37m                   * Will need to be moved in the future.[0m
 [40;37m           ca52709 * API updates and improvements to ^[PnC/D left/right cursor handling.[0m
-[40;37m           f2fe7ac * Fixes for better vttest compat.[0m
 
 	[36m[4m[1mLATEST TEST RESULTS[24m:[21m[0m
 
@@ -65,7 +65,7 @@
 [40;37m           timebend.ans PNG, stdin/compressed test ...       [40;32m[1m[PASS][0m
 [40;37m           [0m
 
-	[30m[1m(2019-01-04 git #6e44e09 https://github.com/dmo9000/ansiutils.git)[21m[0m
+	[30m[1m(2019-01-04 git #2fde0db https://github.com/dmo9000/ansiutils.git)[21m[0m
 
 	[30m[1m(Linux 4.14.14-300.fc27.x86_64 x86_64)[21m[0m
                                                                                                               

@@ -42,11 +42,13 @@ pthread_mutex_t gfx_mutex;
 
 uint16_t gfx_opengl_getwidth()
 {
+		fprintf(stderr, "gfx_opengl_getwidth() = %u\n", gfx_opengl_width);
     return gfx_opengl_width;
 }
 
 uint16_t gfx_opengl_getheight()
 {
+		fprintf(stderr, "gfx_opengl_getheight() = %u\n", gfx_opengl_height);
     return gfx_opengl_height;
 }
 

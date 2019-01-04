@@ -4,8 +4,11 @@
 
 #include <stdint.h>
 #include <stdbool.h>
-
 #include "ansiraster.h"
+
+#define CANVAS_DEBUG_NONE				0
+#define CANVAS_DEBUG_CURSOR			1
+#define CANVAS_DEBUG_OUTPUT			2
 
 struct ansi_canvas {
     uint16_t lines;
@@ -21,6 +24,7 @@ struct ansi_canvas {
     bool cursor_enabled;
     uint16_t default_raster_length;
     /* reserved for future API update; put a hard limit on the canvas size  */
+		uint64_t debug_flags;
     uint16_t limit_cols;
     uint16_t limit_rows;
 };
@@ -33,6 +37,7 @@ ANSIRaster *canvas_add_raster(ANSICanvas *canvas);
 bool canvas_output(ANSICanvas *canvas, bool use_unicode, char *filename);
 uint16_t canvas_get_width(ANSICanvas *canvas);
 uint16_t canvas_get_height(ANSICanvas *canvas);
+int canvas_setdebugflags(uint64_t flags);
 
 
 struct display_colour {
