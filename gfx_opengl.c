@@ -55,7 +55,7 @@ uint16_t gfx_opengl_getheight()
 void gfx_opengl_setdimensions(uint16_t w, uint16_t h)
 {
 
-    printf("gfx_opengl_setdimenions(%u, %u)\n", w, h);
+    printf("gfx_opengl_setdimensions(%u, %u)\n", w, h);
     gfx_opengl_width = w;
     gfx_opengl_height = h;
 
@@ -133,11 +133,33 @@ void reshape_window(GLsizei w, GLsizei h)
 
 
 // Setup Texture
-void setupTexture()
+void setupTexture(ANSICanvas *canvas)
 {
 
+		uint64_t datasize = 0;
     //printf("setupTexture(%ux%u)\r\n", gfx_opengl_width, gfx_opengl_height);
-    screenData = malloc(gfx_opengl_width * gfx_opengl_height * 3);
+		printf("setupTexture() - canvas is %ux%u\n", canvas_get_width(canvas), canvas_get_height(canvas));
+
+//	    width = canvas_get_width(canvas);
+//    height = canvas_get_height(canvas);
+
+    //screenData = malloc(gfx_opengl_width * gfx_opengl_height * 3);
+
+//		datasize = gfx_opengl_width * gfx_opengl_height * 3;
+		datasize = (canvas_get_width(canvas)*8) * (canvas_get_height(canvas)*16) * 3;
+
+
+
+		fprintf(stderr, "datasize = %lu\n", datasize);
+
+		if (!datasize) {
+				fprintf(stderr, "+++ Sorry, the canvas (and therefore window size) could not be inferred\n");
+				fprintf(stderr, "+++ as the canvas has no data in it. Bailing out\n");
+				exit(1);	
+				}
+
+//    screenData = malloc((canvas_get_width(canvas)*8), * (canvas_get_height(canvas)*16) * 3);
+		screenData = malloc(datasize);
 
     // Create a texture
     glTexImage2D(GL_TEXTURE_2D, 0, 3, gfx_opengl_width, gfx_opengl_height, 0, GL_RGB, GL_UNSIGNED_BYTE, (GLvoid*)screenData);
@@ -389,7 +411,7 @@ int gfx_opengl_main(ANSICanvas *c, uint16_t xsize, uint16_t ysize, int multiplie
     assert(c);
     myCanvas = c;
 
-    setupTexture();
+    setupTexture(c);
 
     glut_initialised = true;
 

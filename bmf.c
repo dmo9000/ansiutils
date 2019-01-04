@@ -17,11 +17,13 @@ BitmapFont *bmf_embedded(char *data)
 
 		memcpy(&myfont->header, data, sizeof(BitmapFontHeader));
 
+		/*
     printf("Magic:   [%c%c%c]\r\n", myfont->header.magic[0], myfont->header.magic[1], myfont->header.magic[2]);
     printf("Version: [%u]\r\n", myfont->header.version);
     printf("Columns: [%u]\r\n", myfont->header.px);
     printf("Rows:    [%u]\r\n", myfont->header.py);
     printf("Glyphs:  [%u]\r\n", myfont->header.glyphs);
+		*/
 
     assert(myfont->header.magic[0] == 'B');
     assert(myfont->header.magic[1] == 'M');
@@ -75,11 +77,13 @@ BitmapFont *bmf_load(char *filename)
         exit(1);
     }
 
+		/*
     printf("Magic:   [%c%c%c]\r\n", myfont->header.magic[0], myfont->header.magic[1], myfont->header.magic[2]);
     printf("Version: [%u]\r\n", myfont->header.version);
     printf("Columns: [%u]\r\n", myfont->header.px);
     printf("Rows:    [%u]\r\n", myfont->header.py);
     printf("Glyphs:  [%u]\r\n", myfont->header.glyphs);
+		*/
 
     assert(myfont->header.magic[0] == 'B');
     assert(myfont->header.magic[1] == 'M');

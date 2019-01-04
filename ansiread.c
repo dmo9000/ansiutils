@@ -17,6 +17,7 @@
 #include "ansicanvas.h"
 #include "rawfont.h"
 #include "gfx.h"
+#include "8x8.h"
 
 
 /* Prototype missing from c99 */
@@ -81,7 +82,7 @@ int main(int argc, char *argv[])
     size_t total_length = 0;
     off_t offset = 0;
 //    ANSICanvas *canvas = NULL;
-    uint16_t width = 0, height = 0;
+//    uint16_t width = 0, height = 0;
     BitmapFont *myfont = NULL;
     char *font_filename = NULL;
     int8_t c = 0;
@@ -164,7 +165,7 @@ int main(int argc, char *argv[])
         read_from_stdin = true;
         ansfile = stdin;
     } else {
-        fprintf(stderr, "filesize = %lu\n", sbuf.st_size);
+        //fprintf(stderr, "filesize = %lu\n", sbuf.st_size);
         assert(sbuf.st_size);
         total_length = sbuf.st_size;
         ansfile = fopen(input_filename, "rb");
@@ -221,10 +222,10 @@ int main(int argc, char *argv[])
 
 		canvas_backfill(canvas);
 
-    width = canvas_get_width(canvas);
-    height = canvas_get_height(canvas);
+//    width = canvas_get_width(canvas);
+//    height = canvas_get_height(canvas);
 
-    fprintf(stderr, "* canvas dimensions: %u x %u\n", width, height);
+    fprintf(stderr, "* canvas dimensions: %u x %u\n", canvas_get_width(canvas), canvas_get_height(canvas));
 
     if (text_output) {
         if (output_filename) {
@@ -237,7 +238,8 @@ int main(int argc, char *argv[])
 
     if (graphic_preview || png_filename) {
         font_filename = "bmf/8x8.bmf";
-        myfont = bmf_load(font_filename);
+//        myfont = bmf_load(font_filename);
+				myfont = bmf_embedded(bmf_8x8_bmf);
         if (!myfont) {
             perror("bmf_load");
             exit(1);
@@ -249,11 +251,9 @@ int main(int argc, char *argv[])
         printf("Rendering OpenGL preview ...\n");
         //gfx_sdl_main((width*8), (height*16), input_filename);
 
-
 //				gfx_opengl_width = (width*8);
 //				gfx_opengl_height = (height*16);
-        gfx_opengl_setdimensions(width*8, height*16);
-
+        gfx_opengl_setdimensions(canvas_get_width(canvas)*8, canvas_get_height(canvas)*16);
         pthread_create( &graphics_thread, NULL, rungraphics, NULL);
 
         sleep(1);
@@ -271,7 +271,8 @@ int main(int argc, char *argv[])
 #ifndef __MINGW__
     if (png_filename) {
         printf("Rendering PNG output to %s ...\n", png_filename);
-        gfx_png_main((width*8), (height*16));
+//        gfx_png_main((width*8), (height*16));
+				gfx_png_main(canvas_get_width(canvas)*8, canvas_get_height(canvas)*16);
         gfx_png_canvas_render(canvas, myfont);
         gfx_png_export(png_filename);
     }

@@ -1327,8 +1327,10 @@ void dispatch_ansi_command(ANSICanvas *canvas, unsigned char c)
 
     switch (c) {
     case 'A':
-        fprintf(stderr, "+++ ^[ %dA - move cursor up %d rows\n",
-                parameters[0], (parameters[0] ? parameters[0] : 1));
+				if (canvas->debug_flags & CANVAS_DEBUG_CURSOR) {
+        	fprintf(stderr, "+++ ^[ %dA - move cursor up %d rows\n",
+         	       parameters[0], (parameters[0] ? parameters[0] : 1));
+				}
         /* move cursor up parameter[0] rows without changing column */
         if (current_y >= (parameters[0] ? parameters[0] : 1)) {
             current_y-=(parameters[0] ? parameters[0] : 1);

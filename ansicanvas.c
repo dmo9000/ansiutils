@@ -171,6 +171,14 @@ uint16_t canvas_get_width(ANSICanvas *canvas)
     ANSIRaster *r = NULL;
     uint16_t width = 0;
     assert(canvas);
+
+		if (canvas->columns) {
+				return canvas->columns;
+				}
+
+		/* TODO: this is transitional - check if canvas->columns is defined, if not, calculate the maximum width as per the 
+			old method see below */
+
     for (int ii = 0; ii < canvas->lines; ii++) {
         r = canvas_get_raster(canvas, ii);
         if (!r) {
@@ -191,6 +199,14 @@ uint16_t canvas_get_height(ANSICanvas *canvas)
     ANSIRaster *r = NULL;
     uint16_t height = 0;
     assert(canvas);
+
+    if (canvas->rows) {
+        return canvas->rows;
+        }
+
+    /* TODO: this is transitional - check if canvas->rows is defined, if not, calculate the maximum height as per the 
+      old method see below */
+
     for (int ii = 0; ii < canvas->lines; ii++) {
         r = canvas_get_raster(canvas, ii);
         //if (r && ( r->bytes || ii == (canvas->lines -1))) {
@@ -222,6 +238,9 @@ int canvas_backfill(ANSICanvas *canvas)
 		ANSIRaster *r = NULL;
     int lc = 0;
     int ii = 0;
+
+		fprintf(stderr, "+++ WARNING: canvas_backfill() is deprecated, use canvas_setdimensions() instead\n");
+
     for (int ii = 0; ii < canvas->lines - 1; ii++) {
         r = canvas_get_raster(canvas, ii);
         assert(r);
@@ -231,4 +250,19 @@ int canvas_backfill(ANSICanvas *canvas)
     }
 
 	return 1;
+}
+
+int canvas_setdimensions(ANSICanvas *canvas, uint16_t columns, uint16_t rows)
+{
+
+	fprintf(stderr, "canvas_setdimensions(..., %u, %u)\n", columns, rows);
+	/* TODO: make this work like canvas_backfill(), only allowing resizing and honoring canvas->columns/rows 
+		instead */
+
+	/* for now ... just set the values */
+
+	canvas->columns = columns; 
+	canvas->rows = rows; 
+
+	return 0;
 }

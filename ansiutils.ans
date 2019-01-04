@@ -40,32 +40,38 @@
 
 	[36m[4m[1mRECENT CHANGES[24m:[21m[0m
 
+[40;37m           a346e9e * Debugging API updates.[0m
+[40;37m                   * More test coverage.[0m
 [40;37m           2fde0db * WIP support for setting the Window title via a callback.[0m
 [40;37m           6e44e09 * WIP 132 column mode.[0m
 [40;37m           4ceece3 * WIP, still a long way to go .[0m
 [40;37m           f0f0c97 * Addition of much TTY state management that doesnt really belong here.[0m
 [40;37m                   * Will need to be moved in the future.[0m
-[40;37m           ca52709 * API updates and improvements to ^[PnC/D left/right cursor handling.[0m
 
 	[36m[4m[1mLATEST TEST RESULTS[24m:[21m[0m
 
 [40;37m           [0m
-[40;37m           fruit.ans should always have 24 lines ...         [40;32m[1m[PASS][0m
-[40;37m           fruit.ans test, without compression ...           [40;32m[1m[PASS][0m
-[40;37m           fruit.ans test, with compression ...              [40;32m[1m[PASS][0m
-[40;37m           fruit.ans PNG, direct render test ...             [40;32m[1m[PASS][0m
-[40;37m           fruit.ans PNG, stdin/uncompressed test ...        [40;32m[1m[PASS][0m
-[40;37m           fruit.ans PNG, stdin/compressed test ...          [40;32m[1m[PASS][0m
+[40;37m           TDFTool UTF8 rendering test (BOARDX) ...          [40;32m[1m[PASS][40;37m[21m -> b177d3fb3f2547e12320c0769f3eda4f[0m
+[40;37m           TDFTool CP437 rendering test (BOARDX) ...         [40;32m[1m[PASS][40;37m[21m -> 7ef3d6622544fd0246a1a22181181376[0m
 [40;37m           [0m
-[40;37m           timebend.ans should always have 26 lines ...      [40;32m[1m[PASS][0m
-[40;37m           timebend.ans test, without compression ...        [40;32m[1m[PASS][0m
-[40;37m           timebend.ans test, with compression ...           [40;32m[1m[PASS][0m
-[40;37m           timebend.ans PNG, direct render test ...          [40;32m[1m[PASS][0m
-[40;37m           timebend.ans PNG, stdin/uncompressed test ...     [40;32m[1m[PASS][0m
-[40;37m           timebend.ans PNG, stdin/compressed test ...       [40;32m[1m[PASS][0m
+[40;37m           fruit.ans should have MD5 signature  ...          [40;32m[1m[PASS][40;37m[21m -> 29d0681a96d72e364222958b36b36ca5[0m
+[40;37m           fruit.ans should always have 24 lines ...         [40;32m[1m[PASS][40;37m[21m -> 24[0m
+[40;37m           fruit.ans test, without compression ...           [40;32m[1m[PASS][40;37m[21m -> e5b885845167d58db0fd747a363ad1ac[0m
+[40;37m           fruit.ans test, with compression ...              [40;32m[1m[PASS][40;37m[21m -> cf7c91b714fde086a748911c34598f94[0m
+[40;37m           fruit.ans PNG, direct render test ...             [40;32m[1m[PASS][40;37m[21m -> 7a056e3280526815af436cd16294d5c7b915def074635752a7cf68416bf16a31[0m
+[40;37m           fruit.ans PNG, stdin/uncompressed test ...        [40;32m[1m[PASS][40;37m[21m -> 7a056e3280526815af436cd16294d5c7b915def074635752a7cf68416bf16a31[0m
+[40;37m           fruit.ans PNG, stdin/compressed test ...          [40;32m[1m[PASS][40;37m[21m -> 7a056e3280526815af436cd16294d5c7b915def074635752a7cf68416bf16a31[0m
+[40;37m           [0m
+[40;37m           timebend.ans should have MD5 signature  ...       [40;32m[1m[PASS][40;37m[21m -> b098be5f4529d33d835f126d704f7eb5[0m
+[40;37m           timebend.ans should always have 26 lines ...      [40;32m[1m[PASS][40;37m[21m -> 26 [0m
+[40;37m           timebend.ans test, without compression ...        [40;32m[1m[PASS][40;37m[21m -> 58dae962396588abc901c37591bf84a6 [0m
+[40;37m           timebend.ans test, with compression ...           [40;32m[1m[PASS][40;37m[21m -> 18a5c85c274aabd497701f3e370a2da1 [0m
+[40;37m           timebend.ans PNG, direct render test ...          [40;32m[1m[PASS][40;37m[21m -> 8f23c862c4b21a2fc7196e32e60c93d6a811ed51b8dc7cab00108155bf1ab372 [0m
+[40;37m           timebend.ans PNG, stdin/uncompressed test ...     [40;32m[1m[PASS][40;37m[21m -> 8f23c862c4b21a2fc7196e32e60c93d6a811ed51b8dc7cab00108155bf1ab372 [0m
+[40;37m           timebend.ans PNG, stdin/compressed test ...       [40;32m[1m[PASS][40;37m[21m -> 8f23c862c4b21a2fc7196e32e60c93d6a811ed51b8dc7cab00108155bf1ab372 [0m
 [40;37m           [0m
 
-	[30m[1m(2019-01-04 git #2fde0db https://github.com/dmo9000/ansiutils.git)[21m[0m
+	[30m[1m(2019-01-04 git #a346e9e https://github.com/dmo9000/ansiutils.git)[21m[0m
 
 	[30m[1m(Linux 4.14.14-300.fc27.x86_64 x86_64)[21m[0m
                                                                                                               

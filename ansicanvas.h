@@ -25,8 +25,8 @@ struct ansi_canvas {
     uint16_t default_raster_length;
     /* reserved for future API update; put a hard limit on the canvas size  */
 		uint64_t debug_flags;
-    uint16_t limit_cols;
-    uint16_t limit_rows;
+    uint16_t columns;
+    uint16_t rows;
 };
 
 typedef struct ansi_canvas   ANSICanvas;
