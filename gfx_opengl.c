@@ -65,17 +65,29 @@ void updateTexture()
 {
     if (!myCanvas) return;
 
+    while (pthread_mutex_trylock(&gfx_mutex) != 0) {
+			// try frame skip 
+#ifdef FRAME_SKIP
+        usleep(16666);
+        return;
+#else
+        pthread_yield();
+#endif
+			}
+
     if (canvas_is_dirty(myCanvas)) {
         //printf("updateTexture() dirty\n");
     } else {
         //   printf("updateTexture() clean\n");
+    pthread_mutex_unlock(&gfx_mutex);
         usleep(16666);
         //pthread_yield();
         return;
     }
 
+/*
     while (pthread_mutex_trylock(&gfx_mutex) != 0) {
-        /* try frame skip */
+			// try frame skip 
 #ifdef FRAME_SKIP
         usleep(16666);
         return;
@@ -83,7 +95,7 @@ void updateTexture()
         pthread_yield();
 #endif
     }
-
+*/
 
     glTexSubImage2D(GL_TEXTURE_2D, 0,0, 0, gfx_opengl_width, gfx_opengl_height, GL_RGB, GL_UNSIGNED_BYTE, (GLvoid*)screenData);
 
@@ -192,6 +204,15 @@ void setTexturePixel(int x, int y, u8 r, u8 g, u8 b)
     /* FIXME: busy wait until surface becomes available */
 
     if (!screenData) return;
+/*
+		while (!screenData) {
+#ifdef pthread_yield
+      pthread_yield();
+#else
+      sched_yield();
+#endif
+				}
+*/
 
     scrP = screenData;
 
@@ -208,11 +229,12 @@ void gfx_opengl_lock()
 {
       assert(myCanvas);
       while (pthread_mutex_trylock(&gfx_mutex) != 0) {
-#ifdef pthread_yield
-      pthread_yield();
-#else
-      sched_yield();
-#endif
+				usleep(16666);
+//#ifdef pthread_yield
+//      pthread_yield();
+//#else
+//      sched_yield();
+//#endif
       }
 }
 
