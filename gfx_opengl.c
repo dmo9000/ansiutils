@@ -235,7 +235,7 @@ void gfx_opengl_lock()
 {
       assert(myCanvas);
       while (pthread_mutex_trylock(&gfx_mutex) != 0) {
-				usleep(16666);
+//				usleep(16666);
 //#ifdef pthread_yield
 //      pthread_yield();
 //#else
