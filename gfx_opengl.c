@@ -11,7 +11,7 @@
 #include "gfx_opengl.h"
 
 /* set this if you want to skip frames */
-#define FRAME_SKIP
+//#define FRAME_SKIP
 
 /* Display size */
 #define SCREEN_WIDTH    640
@@ -71,7 +71,11 @@ void updateTexture()
         usleep(16666);
         return;
 #else
+#ifdef pthread_yield
         pthread_yield();
+#else
+				sched_yield();
+#endif
 #endif
 			}
 
@@ -191,8 +195,10 @@ void setupTexture(ANSICanvas *canvas)
 void clearTexture(ANSICanvas *canvas)
 {
   uint64_t datasize = 0;
-	datasize = (canvas_get_width(canvas)*8) * (canvas_get_height(canvas)*16) * 3;
-	memset(screenData, 0, datasize);
+	if (screenData) {
+		datasize = (canvas_get_width(canvas)*8) * (canvas_get_height(canvas)*16) * 3;
+		memset(screenData, 0, datasize);
+		}
 	return; 
 }
 
@@ -236,18 +242,28 @@ void gfx_opengl_lock()
 //      sched_yield();
 //#endif
       }
+//		fprintf(stderr, "gfx_opengl_lock() OK\n");
 }
 
 void gfx_opengl_unlock()
 {
      pthread_mutex_unlock(&gfx_mutex);
+//#ifdef pthread_yield
+//      pthread_yield();
+//#else
+//      sched_yield();
+//#endif	
+		//fprintf(stderr, "gfx_opengl_unlock() OK\n");
 }
 
 
 int gfx_opengl_expose()
 {
 //  printf("gfx_opengl_expose()\n");
-    assert(myCanvas);
+    //assert(myCanvas);
+		if (!myCanvas) {
+				return 0;
+				}
     while (pthread_mutex_trylock(&gfx_mutex) != 0) {
 #ifdef pthread_yield 
         pthread_yield();
