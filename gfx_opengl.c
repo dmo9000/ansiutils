@@ -204,6 +204,23 @@ void setTexturePixel(int x, int y, u8 r, u8 g, u8 b)
 
 }
 
+void gfx_opengl_lock()
+{
+      assert(myCanvas);
+      while (pthread_mutex_trylock(&gfx_mutex) != 0) {
+#ifdef pthread_yield
+      pthread_yield();
+#else
+      sched_yield();
+#endif
+      }
+}
+
+void gfx_opengl_unlock()
+{
+     pthread_mutex_unlock(&gfx_mutex);
+}
+
 
 int gfx_opengl_expose()
 {
