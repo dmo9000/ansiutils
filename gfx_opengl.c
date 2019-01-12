@@ -236,11 +236,11 @@ void gfx_opengl_lock()
       assert(myCanvas);
       while (pthread_mutex_trylock(&gfx_mutex) != 0) {
 //				usleep(16666);
-//#ifdef pthread_yield
-//      pthread_yield();
-//#else
-//      sched_yield();
-//#endif
+#ifdef pthread_yield
+      pthread_yield();
+#else
+      sched_yield();
+#endif
       }
 //		fprintf(stderr, "gfx_opengl_lock() OK\n");
 }
@@ -622,3 +622,20 @@ int kbbuf_append(char *s)
 
     return 1;
 }
+
+int grx_line(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, uint8_t r, uint8_t g, uint8_t b)
+{
+  int dx =  abs (x1 - x0), sx = x0 < x1 ? 1 : -1;
+  int dy = -abs (y1 - y0), sy = y0 < y1 ? 1 : -1;
+  int err = dx + dy, e2; /* error value e_xy */
+
+  for (;;){  /* loop */
+    setTexturePixel (x0,y0,r,g,b);
+    if (x0 == x1 && y0 == y1) break;
+    e2 = 2 * err;
+    if (e2 >= dy) { err += dy; x0 += sx; } /* e_xy+e_x > 0 */
+    if (e2 <= dx) { err += dx; y0 += sy; } /* e_xy+e_y < 0 */
+		}
+  return 0;
+}
+
