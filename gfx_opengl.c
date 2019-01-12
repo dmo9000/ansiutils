@@ -176,6 +176,14 @@ void setupTexture(ANSICanvas *canvas)
     glEnable(GL_TEXTURE_2D);
 }
 
+void clearTexture(ANSICanvas *canvas)
+{
+  uint64_t datasize = 0;
+	datasize = (canvas_get_width(canvas)*8) * (canvas_get_height(canvas)*16) * 3;
+	memset(screenData, 0, datasize);
+	return; 
+}
+
 
 void setTexturePixel(int x, int y, u8 r, u8 g, u8 b)
 {
