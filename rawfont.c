@@ -28,7 +28,7 @@ extern int gfx_opengl_expose();
 pthread_t graphics_thread;
 
 
-void rungraphics()
+void *rungraphics(void * v)
 {
 
     printf("rungraphics()\r\n");
@@ -42,9 +42,9 @@ void rungraphics()
 
 int main(int argc, char *argv[])
 {
-    char *filename = (char *) argv[1];
+//   DEPRECATED/REMOVE: char *filename = (char *) argv[1];
     BitmapFont *myfont;
-    filename = "bmf/8x8.bmf";
+//    filename = "bmf/8x8.bmf";
 
     myfont = bmf_embedded(bmf_8x8_bmf);
 

@@ -39,7 +39,8 @@ uint16_t canvas_get_width(ANSICanvas *canvas);
 uint16_t canvas_get_height(ANSICanvas *canvas);
 int canvas_setdebugflags(uint64_t flags);
 bool canvas_is_dirty(ANSICanvas *c);
-
+int canvas_setdimensions(ANSICanvas *canvas, uint16_t columns, uint16_t rows);
+int canvas_backfill(ANSICanvas *canvas);
 
 struct display_colour {
     double r;

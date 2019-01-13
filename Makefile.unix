@@ -1,7 +1,8 @@
 CC=gcc
 HARDEN_CFLAGS=-O2 -D_FORTIFY_SOURCE=2 -fPIE -fstack-protector-strong -Wl,-z,noexecstack -Wl,-z,relro -Wl,-z,now  #-fstack-clash-protection #-pie
 
-CFLAGS = -Wall --std=c99 -g -ggdb -I/usr/X11R6/include/ -I/usr/local/include $(HARDEN_CFLAGS)
+CFLAGS = -Wall --std=gnu99 -g -ggdb -I/usr/X11R6/include/ -I/usr/local/include -D_POSIX_C_SOURCE=199309L $(HARDEN_CFLAGS)
+
 LDFLAGS=-L/usr/X11R6/lib -L/usr/local/lib -lGL -lGLU -lglut -lm -pthread
 
 TDFTOOL_OBJS=tdftool.o tdffont.o sauce.o
@@ -25,13 +26,13 @@ documentation:
 	printf "\n\n" > ansiutils.ans
 	./tdftool -f 1 -c THEDRAWFONTS/BOARDX.TDF ANSIUTILS | sed -e "s/^/          /" >> ansiutils.ans
 	./ansitext NEWLINE TAB FG_CYAN UNDERLINE BOLD "ANSIREAD USAGE" NOUNDERLINE ":" NOBOLD NONE NEWLINE NEWLINE >> ansiutils.ans
-	./ansiread | sed -e "s/^/          /" | ./ansiread -z - >> ansiutils.ans
+	./ansiread | sed -e "s/^/          /" | ./ansiread -z - >> ansiutils.ans 2>/dev/null
 	./ansitext NEWLINE TAB FG_CYAN UNDERLINE BOLD "TDFTOOLS USAGE" NOUNDERLINE ":" NOBOLD NONE NEWLINE NEWLINE >> ansiutils.ans
-	./tdftool | sed -e "s/^/          /" | ./ansiread -z - >> ansiutils.ans
+	./tdftool | sed -e "s/^/          /" | ./ansiread -z - >> ansiutils.ans 2>/dev/null
 	./ansitext NEWLINE TAB FG_CYAN UNDERLINE BOLD "RECENT CHANGES" NOUNDERLINE ":" NOBOLD NONE NEWLINE NEWLINE >> ansiutils.ans
-	./gitxtract.sh | sed -e "s/^/           /" | ./ansiread -z - >> ansiutils.ans
+	./gitxtract.sh | sed -e "s/^/           /" | ./ansiread -z - >> ansiutils.ans 2>/dev/null
 	./ansitext NEWLINE TAB FG_CYAN UNDERLINE BOLD "LATEST TEST RESULTS" NOUNDERLINE ":" NOBOLD NONE NEWLINE NEWLINE >> ansiutils.ans
-	./test-regress.sh | sed -e "s/^/           /" | ./ansiread -z - >> ansiutils.ans
+	./test-regress.sh | sed -e "s/^/           /" | ./ansiread -z - >> ansiutils.ans 2>/dev/null
 	./ansitext NEWLINE TAB FG_BLACK BOLD "(${DATE} git #${GITHASH} ${GITORIGIN})" NOBOLD NONE NEWLINE >> ansiutils.ans
 	./ansitext NEWLINE TAB FG_BLACK BOLD "(${OSVERSION})" NOBOLD NONE NEWLINE >> ansiutils.ans
 	echo "${PADDING}" >> ansiutils.ans

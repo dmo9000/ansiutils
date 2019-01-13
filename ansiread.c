@@ -1,4 +1,5 @@
-#define _POSIX_C_SOURCE	200112L
+//#define _POSIX_C_SOURCE	200112L
+#define _XOPEN_SOURCE 501
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -18,6 +19,7 @@
 #include "rawfont.h"
 #include "gfx.h"
 #include "8x8.h"
+#include "bmf.h"
 
 
 /* Prototype missing from c99 */
@@ -41,7 +43,7 @@ BitmapFont *bmf_load(char *filename);
 
 pthread_t graphics_thread;
 
-void rungraphics()
+void *rungraphics(void * v)
 {
 
     //printf("rungraphics()\r\n");

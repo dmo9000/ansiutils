@@ -1,0 +1,15 @@
+Suggested to use: 
+
+    -D_FORTIFY_SOURCE=2         glibc hardening
+    -Wp,-D_GLIBCXX_ASSERTIONS   glibc++ hardening
+    -fstack-protector-strong    stack smash protection
+    -fstack-clash-protection    stack clash protection
+    -fPIE -pie                  better ASLR protection
+    -Wl,-z,noexecstack          don't allow code on stack
+    -Wl,-z,relro                ELF hardening
+    -Wl,-z,now                  ELF hardening
+
+Somewhere, there were instructions for using clang as a kind of linter, but I've lost them. 
+
+We should run lint as well. 
+

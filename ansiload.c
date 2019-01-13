@@ -12,12 +12,14 @@ extern int errno;
 #define CONSOLE_WIDTH		80
 #define CONSOLE_HEIGHT	25
 
-#define CHUNK_SIZE      19558
+//#define CHUNK_SIZE      19558
+#define CHUNK_SIZE     	4096
 #define BUF_SIZE 		32767
 #define MAX_ANSI		64				/* maximum length allowed for an ANSI sequence */
 #define MAX_PARAMS	16
 
-static char filebuf[4096];
+//static char filebuf[4096];
+static char filebuf[CHUNK_SIZE];
 static char ansibuf[MAX_ANSI];
 int parameters[MAX_PARAMS];
 
