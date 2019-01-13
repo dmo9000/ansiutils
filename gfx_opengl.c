@@ -42,13 +42,13 @@ pthread_mutex_t gfx_mutex;
 
 uint16_t gfx_opengl_getwidth()
 {
-		fprintf(stderr, "gfx_opengl_getwidth() = %u\n", gfx_opengl_width);
+    fprintf(stderr, "gfx_opengl_getwidth() = %u\n", gfx_opengl_width);
     return gfx_opengl_width;
 }
 
 uint16_t gfx_opengl_getheight()
 {
-		fprintf(stderr, "gfx_opengl_getheight() = %u\n", gfx_opengl_height);
+    fprintf(stderr, "gfx_opengl_getheight() = %u\n", gfx_opengl_height);
     return gfx_opengl_height;
 }
 
@@ -66,7 +66,7 @@ void updateTexture()
     if (!myCanvas) return;
 
     while (pthread_mutex_trylock(&gfx_mutex) != 0) {
-			// try frame skip 
+        // try frame skip
 #ifdef FRAME_SKIP
         usleep(16666);
         return;
@@ -74,32 +74,32 @@ void updateTexture()
 #ifdef pthread_yield
         pthread_yield();
 #else
-				sched_yield();
+        sched_yield();
 #endif
 #endif
-			}
+    }
 
     if (canvas_is_dirty(myCanvas)) {
         //printf("updateTexture() dirty\n");
     } else {
         //   printf("updateTexture() clean\n");
-    pthread_mutex_unlock(&gfx_mutex);
+        pthread_mutex_unlock(&gfx_mutex);
         usleep(16666);
         //pthread_yield();
         return;
     }
 
-/*
-    while (pthread_mutex_trylock(&gfx_mutex) != 0) {
-			// try frame skip 
-#ifdef FRAME_SKIP
-        usleep(16666);
-        return;
-#else
-        pthread_yield();
-#endif
-    }
-*/
+    /*
+        while (pthread_mutex_trylock(&gfx_mutex) != 0) {
+    			// try frame skip
+    #ifdef FRAME_SKIP
+            usleep(16666);
+            return;
+    #else
+            pthread_yield();
+    #endif
+        }
+    */
 
     glTexSubImage2D(GL_TEXTURE_2D, 0,0, 0, gfx_opengl_width, gfx_opengl_height, GL_RGB, GL_UNSIGNED_BYTE, (GLvoid*)screenData);
 
@@ -152,9 +152,9 @@ void reshape_window(GLsizei w, GLsizei h)
 void setupTexture(ANSICanvas *canvas)
 {
 
-		uint64_t datasize = 0;
+    uint64_t datasize = 0;
     //printf("setupTexture(%ux%u)\r\n", gfx_opengl_width, gfx_opengl_height);
-		printf("setupTexture() - canvas is %ux%u\n", canvas_get_width(canvas), canvas_get_height(canvas));
+    printf("setupTexture() - canvas is %ux%u\n", canvas_get_width(canvas), canvas_get_height(canvas));
 
 //	    width = canvas_get_width(canvas);
 //    height = canvas_get_height(canvas);
@@ -162,20 +162,20 @@ void setupTexture(ANSICanvas *canvas)
     //screenData = malloc(gfx_opengl_width * gfx_opengl_height * 3);
 
 //		datasize = gfx_opengl_width * gfx_opengl_height * 3;
-		datasize = (canvas_get_width(canvas)*8) * (canvas_get_height(canvas)*16) * 3;
+    datasize = (canvas_get_width(canvas)*8) * (canvas_get_height(canvas)*16) * 3;
 
 
 
-		fprintf(stderr, "datasize = %lu\n", datasize);
+    fprintf(stderr, "datasize = %lu\n", datasize);
 
-		if (!datasize) {
-				fprintf(stderr, "+++ Sorry, the canvas (and therefore window size) could not be inferred\n");
-				fprintf(stderr, "+++ as the canvas has no data in it. Bailing out\n");
-				exit(1);	
-				}
+    if (!datasize) {
+        fprintf(stderr, "+++ Sorry, the canvas (and therefore window size) could not be inferred\n");
+        fprintf(stderr, "+++ as the canvas has no data in it. Bailing out\n");
+        exit(1);
+    }
 
 //    screenData = malloc((canvas_get_width(canvas)*8), * (canvas_get_height(canvas)*16) * 3);
-		screenData = malloc(datasize);
+    screenData = malloc(datasize);
 
     // Create a texture
     glTexImage2D(GL_TEXTURE_2D, 0, 3, gfx_opengl_width, gfx_opengl_height, 0, GL_RGB, GL_UNSIGNED_BYTE, (GLvoid*)screenData);
@@ -194,12 +194,12 @@ void setupTexture(ANSICanvas *canvas)
 
 void clearTexture(ANSICanvas *canvas)
 {
-  uint64_t datasize = 0;
-	if (screenData) {
-		datasize = (canvas_get_width(canvas)*8) * (canvas_get_height(canvas)*16) * 3;
-		memset(screenData, 0, datasize);
-		}
-	return; 
+    uint64_t datasize = 0;
+    if (screenData) {
+        datasize = (canvas_get_width(canvas)*8) * (canvas_get_height(canvas)*16) * 3;
+        memset(screenData, 0, datasize);
+    }
+    return;
 }
 
 
@@ -210,15 +210,15 @@ void setTexturePixel(int x, int y, u8 r, u8 g, u8 b)
     /* FIXME: busy wait until surface becomes available */
 
     if (!screenData) return;
-/*
-		while (!screenData) {
-#ifdef pthread_yield
-      pthread_yield();
-#else
-      sched_yield();
-#endif
-				}
-*/
+    /*
+    		while (!screenData) {
+    #ifdef pthread_yield
+          pthread_yield();
+    #else
+          sched_yield();
+    #endif
+    				}
+    */
 
     scrP = screenData;
 
@@ -233,27 +233,27 @@ void setTexturePixel(int x, int y, u8 r, u8 g, u8 b)
 
 void gfx_opengl_lock()
 {
-      assert(myCanvas);
-      while (pthread_mutex_trylock(&gfx_mutex) != 0) {
+    assert(myCanvas);
+    while (pthread_mutex_trylock(&gfx_mutex) != 0) {
 //				usleep(16666);
 #ifdef pthread_yield
-      pthread_yield();
+        pthread_yield();
 #else
-      sched_yield();
+        sched_yield();
 #endif
-      }
+    }
 //		fprintf(stderr, "gfx_opengl_lock() OK\n");
 }
 
 void gfx_opengl_unlock()
 {
-     pthread_mutex_unlock(&gfx_mutex);
+    pthread_mutex_unlock(&gfx_mutex);
 //#ifdef pthread_yield
 //      pthread_yield();
 //#else
 //      sched_yield();
-//#endif	
-		//fprintf(stderr, "gfx_opengl_unlock() OK\n");
+//#endif
+    //fprintf(stderr, "gfx_opengl_unlock() OK\n");
 }
 
 
@@ -261,14 +261,14 @@ int gfx_opengl_expose()
 {
 //  printf("gfx_opengl_expose()\n");
     //assert(myCanvas);
-		if (!myCanvas) {
-				return 0;
-				}
+    if (!myCanvas) {
+        return 0;
+    }
     while (pthread_mutex_trylock(&gfx_mutex) != 0) {
-#ifdef pthread_yield 
+#ifdef pthread_yield
         pthread_yield();
 #else
-				sched_yield();
+        sched_yield();
 #endif
     }
 
@@ -334,7 +334,7 @@ int gfx_opengl_drawglyph(BitmapFont *font, uint16_t px, uint16_t py, uint8_t gly
         pthread_yield();
 #else
         sched_yield();
-#endif        
+#endif
     }
 
     if (attr & ATTRIB_REVERSE) {
@@ -412,8 +412,8 @@ void process_Special_Keys(int key, int x, int y)
 {
     //fprintf(stderr, "process_Special_Keys()\r\n");
 
-		/* TODO: bump cursor position and phase flag when doing line editing, so 
-			 			 that it's easier to see the cursor while it is moving */
+    /* TODO: bump cursor position and phase flag when doing line editing, so
+    	 			 that it's easier to see the cursor while it is moving */
 
     switch (key)
     {
@@ -445,10 +445,10 @@ void process_Special_Keys(int key, int x, int y)
     return;
 }
 
-int gfx_opengl_setwindowtitle(char *newtitle) 
+int gfx_opengl_setwindowtitle(char *newtitle)
 {
-	glutSetWindowTitle(newtitle);
-	return 0;
+    glutSetWindowTitle(newtitle);
+    return 0;
 }
 
 
@@ -625,17 +625,34 @@ int kbbuf_append(char *s)
 
 int grx_line(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, uint8_t r, uint8_t g, uint8_t b)
 {
-  int dx =  abs (x1 - x0), sx = x0 < x1 ? 1 : -1;
-  int dy = -abs (y1 - y0), sy = y0 < y1 ? 1 : -1;
-  int err = dx + dy, e2; /* error value e_xy */
+    int dx =  abs (x1 - x0), sx = x0 < x1 ? 1 : -1;
+    int dy = -abs (y1 - y0), sy = y0 < y1 ? 1 : -1;
+    int err = dx + dy, e2; /* error value e_xy */
 
-  for (;;){  /* loop */
-    setTexturePixel (x0,y0,r,g,b);
-    if (x0 == x1 && y0 == y1) break;
-    e2 = 2 * err;
-    if (e2 >= dy) { err += dy; x0 += sx; } /* e_xy+e_x > 0 */
-    if (e2 <= dx) { err += dx; y0 += sy; } /* e_xy+e_y < 0 */
-		}
-  return 0;
+    for (;;) { /* loop */
+        setTexturePixel (x0,y0,r,g,b);
+        if (x0 == x1 && y0 == y1) break;
+        e2 = 2 * err;
+        if (e2 >= dy) {
+            err += dy;    /* e_xy+e_x > 0 */
+            x0 += sx;
+        }
+        if (e2 <= dx) {
+            err += dx;    /* e_xy+e_y < 0 */
+            y0 += sy;
+        }
+    }
+    return 0;
+}
+
+
+int grx_fillbox(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, uint8_t r, uint8_t g, uint8_t b)
+{
+    for (int jj = y0; jj <= y1; jj++) {
+        for (int ii = x0; ii <= x1; ii++) {
+            setTexturePixel(ii, jj, r, g, b);
+        }
+    }
+    return 0;
 }
 
