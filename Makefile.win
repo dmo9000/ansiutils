@@ -3,7 +3,7 @@ CC=/usr/bin/x86_64-w64-mingw32-gcc.exe
 #CC=clang
 #CFLAGS = -g -ggdb -Wall -Werror
 #HARDEN_CFLAGS=-D_FORTIFY_SOURCE=2 -fstack-protector
-HARDEN_CFLAGS=-D_FORTIFY_SOURCE=2 
+HARDEN_CFLAGS=-D_FORTIFY_SOURCE=2 -fPIE -pie 
 
 CFLAGS = -I/usr/x86_64-w64-mingw32/sys-root/mingw/include/ -Wall --std=c99 -g -ggdb -D__MINGW__=1 $(HARDEN_CFLAGS) 
 #LDFLAGS=-L/usr/x86_64-w64-mingw32/sys-root/mingw/lib/ -lSDL2 -lglu32 -lopengl32 -lglut -lm  -lwsock32 -pthread
