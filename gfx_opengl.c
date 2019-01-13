@@ -1,6 +1,8 @@
 #include <GL/glut.h>
+#include <unistd.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <stdio.h>
 #include <stdbool.h>
 #include <string.h>
 #include <assert.h>
@@ -9,6 +11,7 @@
 #include "rawfont.h"
 #include "ansicanvas.h"
 #include "gfx_opengl.h"
+
 
 /* set this if you want to skip frames */
 //#define FRAME_SKIP
@@ -39,6 +42,9 @@ static bool glut_initialised = false;
 ANSICanvas *myCanvas = NULL;
 
 pthread_mutex_t gfx_mutex;
+
+//void (* callback)( unsigned char, int, int ) ;
+void process_Normal_Keys(unsigned char key, int x, int y);
 
 uint16_t gfx_opengl_getwidth()
 {
@@ -282,7 +288,7 @@ int gfx_opengl_hwscroll()
 {
 
     int x =0, y = 0;
-    char *src_addr, *dest_addr = NULL;
+    unsigned char *src_addr, *dest_addr = NULL;
 //    printf("gfx_opengl_hwscroll()\r\n");
 
     src_addr = screenData;
@@ -388,7 +394,7 @@ int input_character()
 }
 
 
-void process_Normal_Keys(int key, int x, int y)
+void process_Normal_Keys(unsigned char key, int x, int y)
 {
     //printf("process_Normal_Keys()\r\n");
 

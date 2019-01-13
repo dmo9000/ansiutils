@@ -69,7 +69,7 @@ void usage()
     printf("    -r              set enable-clear-mode (allow ANSI control codes that clear the canvas)\n");
     printf("    -w              set enable-auto-line-wrap (for input that assumes tty is 80 columns)\n");
     printf("    -z              enable compressed color codes for stdout or file output\n");
-		printf("    -d              enable debug mode\n");
+    printf("    -d              enable debug mode\n");
     printf("\n");
     return;
 }
@@ -84,7 +84,7 @@ int main(int argc, char *argv[])
 //    ANSICanvas *canvas = NULL;
 //    uint16_t width = 0, height = 0;
     BitmapFont *myfont = NULL;
-    char *font_filename = NULL;
+//  DEPRECATED/REMOVE:  char *font_filename = NULL;
     int8_t c = 0;
     char *input_filename = NULL;
     char *output_filename = NULL;
@@ -134,9 +134,9 @@ int main(int argc, char *argv[])
         case 'z':
             enable_compression = true;
             break;
-				case 'd':
-						debug_flag = true;
-						break;
+        case 'd':
+            debug_flag = true;
+            break;
         case -1:
             /* END OF ARGUMENTS? */
             break;
@@ -220,7 +220,7 @@ int main(int argc, char *argv[])
         printf("\n");
     }
 
-		canvas_backfill(canvas);
+    canvas_backfill(canvas);
 
 //    width = canvas_get_width(canvas);
 //    height = canvas_get_height(canvas);
@@ -237,9 +237,9 @@ int main(int argc, char *argv[])
     }
 
     if (graphic_preview || png_filename) {
-        font_filename = "bmf/8x8.bmf";
+//      DEPRECATED/REMOVE: font_filename = "bmf/8x8.bmf";
 //        myfont = bmf_load(font_filename);
-				myfont = bmf_embedded(bmf_8x8_bmf);
+        myfont = bmf_embedded(bmf_8x8_bmf);
         if (!myfont) {
             perror("bmf_load");
             exit(1);
@@ -272,7 +272,7 @@ int main(int argc, char *argv[])
     if (png_filename) {
         printf("Rendering PNG output to %s ...\n", png_filename);
 //        gfx_png_main((width*8), (height*16));
-				gfx_png_main(canvas_get_width(canvas)*8, canvas_get_height(canvas)*16);
+        gfx_png_main(canvas_get_width(canvas)*8, canvas_get_height(canvas)*16);
         gfx_png_canvas_render(canvas, myfont);
         gfx_png_export(png_filename);
     }

@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <string.h>
 #include <stdbool.h>
 #include <assert.h>
 #include <errno.h>
@@ -15,15 +16,15 @@ BitmapFont *bmf_embedded(char *data)
 
     myfont = (BitmapFont*) malloc(sizeof(BitmapFont));
 
-		memcpy(&myfont->header, data, sizeof(BitmapFontHeader));
+    memcpy(&myfont->header, data, sizeof(BitmapFontHeader));
 
-		/*
+    /*
     printf("Magic:   [%c%c%c]\r\n", myfont->header.magic[0], myfont->header.magic[1], myfont->header.magic[2]);
     printf("Version: [%u]\r\n", myfont->header.version);
     printf("Columns: [%u]\r\n", myfont->header.px);
     printf("Rows:    [%u]\r\n", myfont->header.py);
     printf("Glyphs:  [%u]\r\n", myfont->header.glyphs);
-		*/
+    */
 
     assert(myfont->header.magic[0] == 'B');
     assert(myfont->header.magic[1] == 'M');
@@ -41,8 +42,8 @@ BitmapFont *bmf_embedded(char *data)
         perror("malloc");
         exit(1);
     }
-	memcpy(myfont->fontdata, data + sizeof(BitmapFontHeader), font_len_expect);
-	return myfont;
+    memcpy(myfont->fontdata, data + sizeof(BitmapFontHeader), font_len_expect);
+    return myfont;
 
 }
 
@@ -55,7 +56,7 @@ BitmapFont *bmf_load(char *filename)
     int r = 0;
     int rd = 0;
 
-    printf("bmf_load(%s)\n", filename); 
+    printf("bmf_load(%s)\n", filename);
 
     rawfont = fopen(filename, "rb");
     if (!rawfont) {
@@ -77,13 +78,13 @@ BitmapFont *bmf_load(char *filename)
         exit(1);
     }
 
-		/*
+    /*
     printf("Magic:   [%c%c%c]\r\n", myfont->header.magic[0], myfont->header.magic[1], myfont->header.magic[2]);
     printf("Version: [%u]\r\n", myfont->header.version);
     printf("Columns: [%u]\r\n", myfont->header.px);
     printf("Rows:    [%u]\r\n", myfont->header.py);
     printf("Glyphs:  [%u]\r\n", myfont->header.glyphs);
-		*/
+    */
 
     assert(myfont->header.magic[0] == 'B');
     assert(myfont->header.magic[1] == 'M');

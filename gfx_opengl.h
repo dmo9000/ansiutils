@@ -15,3 +15,5 @@ int gfx_opengl_canvas_render_xy(ANSICanvas *canvas, BitmapFont *myfont, uint16_t
 int gfx_opengl_render_cursor(ANSICanvas *canvas, BitmapFont *myfont, uint16_t x,  uint16_t y, bool state);
 void gfx_opengl_clear();
 int gfx_opengl_hwscroll();
+int kbbuf_append(char *s);
+int tty_getbuflen();

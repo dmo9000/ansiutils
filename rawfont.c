@@ -9,6 +9,7 @@
 #include "rawfont.h"
 #include "gfx_opengl.h"
 #include "tdf.h"
+#include "bmf.h"
 #include "tdffont.h"
 #include "ansiraster.h"
 #include "ansicanvas.h"
@@ -45,7 +46,7 @@ int main(int argc, char *argv[])
     BitmapFont *myfont;
     filename = "bmf/8x8.bmf";
 
-		myfont = bmf_embedded(bmf_8x8_bmf);
+    myfont = bmf_embedded(bmf_8x8_bmf);
 
     if (!myfont) {
         perror("bmf_load");
@@ -54,7 +55,7 @@ int main(int argc, char *argv[])
 
     my_canvas = new_canvas();
 
-		canvas_setdimensions(my_canvas, 80, 24);
+    canvas_setdimensions(my_canvas, 80, 24);
 
     gfx_opengl_setdimensions(640, 384);
     pthread_create( &graphics_thread, NULL, rungraphics, NULL);

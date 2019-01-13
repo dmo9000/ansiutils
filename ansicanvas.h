@@ -24,7 +24,7 @@ struct ansi_canvas {
     bool cursor_enabled;
     uint16_t default_raster_length;
     /* reserved for future API update; put a hard limit on the canvas size  */
-		uint64_t debug_flags;
+    uint64_t debug_flags;
     uint16_t columns;
     uint16_t rows;
 };
@@ -38,6 +38,7 @@ bool canvas_output(ANSICanvas *canvas, bool use_unicode, char *filename);
 uint16_t canvas_get_width(ANSICanvas *canvas);
 uint16_t canvas_get_height(ANSICanvas *canvas);
 int canvas_setdebugflags(uint64_t flags);
+bool canvas_is_dirty(ANSICanvas *c);
 
 
 struct display_colour {

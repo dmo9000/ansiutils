@@ -157,7 +157,7 @@ int ansi_setwindowtitlecallback(int (*setwindowtitle_callback)(char *s))
 int ansi_setdebug(bool debugstate)
 {
     debug_flag = debugstate;
-
+    return 1;
 }
 
 
@@ -1022,7 +1022,7 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
         }
         o++;
     }
-fallback_exit:
+//fallback_exit:
     assert (last_c || !last_c);
 //if (debug_flag) {
 //printf("BLOCK DONE\n");
@@ -1327,10 +1327,10 @@ void dispatch_ansi_command(ANSICanvas *canvas, unsigned char c)
 
     switch (c) {
     case 'A':
-				if (canvas->debug_flags & CANVAS_DEBUG_CURSOR) {
-        	fprintf(stderr, "+++ ^[ %dA - move cursor up %d rows\n",
-         	       parameters[0], (parameters[0] ? parameters[0] : 1));
-				}
+        if (canvas->debug_flags & CANVAS_DEBUG_CURSOR) {
+            fprintf(stderr, "+++ ^[ %dA - move cursor up %d rows\n",
+                    parameters[0], (parameters[0] ? parameters[0] : 1));
+        }
         /* move cursor up parameter[0] rows without changing column */
         if (current_y >= (parameters[0] ? parameters[0] : 1)) {
             current_y-=(parameters[0] ? parameters[0] : 1);
@@ -1473,17 +1473,18 @@ void dispatch_ansi_command(ANSICanvas *canvas, unsigned char c)
         fprintf(stderr, "+++ { DA	Device attributes	esc [ c	1B 5B 63 }\n");
         if (process_fd != -1) {
             printf("(responding to DA on fd %d)\n", process_fd);
-            write(process_fd, "\x1b\x5b""?62;c", 7);
+            /* FIXME: this is a real mess, and should be moved up to ansitty.c */
+            assert(write(process_fd, "\x1b\x5b""?62;c", 7) == 7);
             return;
         }
         assert(process_fd == -1);
         break;
     case 'n':
         /* apparently this is "report cursor position". At least vim uses this  */
-        snprintf(&response, 256, "%d;%dR", current_y+1, current_x+1);
-        /* FIXME: error checking */
-        write(process_fd, "\x1b\x5b", 2);
-        write(process_fd, response, strlen(response));
+        snprintf((char *) &response, 256, "%d;%dR", current_y+1, current_x+1);
+        /* FIXME: error checking  - also this belongs in ansitty.c */
+        assert(write(process_fd, "\x1b\x5b", 2) == 2);
+        assert(write(process_fd, response, strlen(response)) == strlen(response));
         clear_ansi_flags(FLAG_ALL);
         break;
     case 'J':
