@@ -1,8 +1,7 @@
 CC=gcc
-#CC=clang
-#CFLAGS = -g -ggdb -Wall -Werror
-CFLAGS = -Wall --std=c99 -g -ggdb -I/usr/X11R6/include/ -I/usr/local/include
-#CFLAGS = -Wall --std=c99 -O2
+HARDEN_CFLAGS=-O2 -D_FORTIFY_SOURCE=2 -fPIE -fstack-protector-strong -Wl,-z,noexecstack -Wl,-z,relro -Wl,-z,now  #-fstack-clash-protection #-pie
+
+CFLAGS = -Wall --std=c99 -g -ggdb -I/usr/X11R6/include/ -I/usr/local/include $(HARDEN_CFLAGS)
 LDFLAGS=-L/usr/X11R6/lib -L/usr/local/lib -lGL -lGLU -lglut -lm -pthread
 
 TDFTOOL_OBJS=tdftool.o tdffont.o sauce.o
