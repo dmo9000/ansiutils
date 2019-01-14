@@ -17,4 +17,4 @@ void gfx_opengl_clear();
 int gfx_opengl_hwscroll();
 int kbbuf_append(char *s);
 int tty_getbuflen();
-int gfx_opengl_setwindowtitle(char *newtitle);
+int gfx_opengl_setwindowtitle(const char *newtitle);

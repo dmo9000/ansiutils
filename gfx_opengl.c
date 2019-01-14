@@ -424,22 +424,22 @@ void process_Special_Keys(int key, int x, int y)
     switch (key)
     {
     case GLUT_KEY_UP:
-        fprintf(stderr, "+++ GLUT_KEY_UP pressed\n");
+//        fprintf(stderr, "+++ GLUT_KEY_UP pressed\n");
         assert(kbbuf_len < (MAX_KBBUF_LEN - strlen("\x1b""[A")));
         kbbuf_append("\x1B""[A");
         break;
     case GLUT_KEY_DOWN:
-        fprintf(stderr, "+++ GLUT_KEY_DOWN pressed\n");
+//        fprintf(stderr, "+++ GLUT_KEY_DOWN pressed\n");
         assert(kbbuf_len < (MAX_KBBUF_LEN - strlen("\x1b""[B")));
         kbbuf_append("\x1B""[B");
         break;
     case GLUT_KEY_LEFT:
-        fprintf(stderr, "+++ GLUT_KEY_LEFT pressed\n");
+//        fprintf(stderr, "+++ GLUT_KEY_LEFT pressed\n");
         assert(kbbuf_len < (MAX_KBBUF_LEN - strlen("\x1b""[D")));
         kbbuf_append("\x1B""[D");
         break;
     case GLUT_KEY_RIGHT:
-        fprintf(stderr, "+++ GLUT_KEY_RIGHT pressed\n");
+//        fprintf(stderr, "+++ GLUT_KEY_RIGHT pressed\n");
         assert(kbbuf_len < (MAX_KBBUF_LEN - strlen("\x1b""[C")));
         kbbuf_append("\x1B""[C");
         break;
@@ -451,7 +451,7 @@ void process_Special_Keys(int key, int x, int y)
     return;
 }
 
-int gfx_opengl_setwindowtitle(char *newtitle)
+int gfx_opengl_setwindowtitle(const char *newtitle)
 {
     glutSetWindowTitle(newtitle);
     return 0;
@@ -660,5 +660,13 @@ int grx_fillbox(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, uint8_t r, u
         }
     }
     return 0;
+}
+
+
+int gfx_opengl_disablerepeat()
+{
+	glutSetKeyRepeat  ( GLUT_KEY_REPEAT_OFF);
+
+	return 1;
 }
 
