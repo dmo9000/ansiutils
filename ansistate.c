@@ -563,7 +563,7 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
                 break;
             case ';':
                 fprintf(stderr, "+++ Switch to ^G terminated string mode... id [;]\n");
-                assert(last_character == '0');
+                //assert(last_character == '0');
                 set_ansi_flags(FLAG_GSTRING);
                 if (xterm_title_string != NULL) {
                     free(xterm_title_string);
@@ -571,9 +571,28 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
                     xterm_title_string_length = 0;
                 }
                 break;
+						case 0x0A:
+							fprintf(stderr, " 0x0A");
+               clear_ansi_flags(FLAG_ALL);
+							break;
+						case 0x0D:
+							fprintf(stderr, " 0x0D");
+               clear_ansi_flags(FLAG_ALL);
+							break;
+						case 0x1B:
+							fprintf(stderr, " 0x1B");
+							break;
+						case 0x5B:
+							fprintf(stderr, " 0x5B");
+							break;
+						case 0x32:
+							fprintf(stderr, " 0x32 ");
+							break;
+							/* humor me */
             default:
-                fprintf(stderr, "+++ Unrecognized Operating System Command Sequence ('%c'). Aborting.\n", c);
-                ansi_debug_dump();
+                fprintf(stderr, "+++ Unrecognized Operating System Command Sequence ('%02x'). Aborting.\r\n", c);
+                clear_ansi_flags(FLAG_ALL);
+                //ansi_debug_dump();
                 break;
             }
             break;

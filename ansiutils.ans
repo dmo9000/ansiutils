@@ -40,13 +40,11 @@
 
 	[36m[4m[1mRECENT CHANGES[24m:[21m[0m
 
+[40;37m           e214e35 * Minor API update.[0m
+[40;37m           fda7d0b * Add missing protypes to headers.[0m
+[40;37m           75bed89 * Major compile warnings cleanup, part 2.[0m
 [40;37m           d327123 * Reformatting, and many compile warning fixes.[0m
 [40;37m           128bfc4 * Don't use -pie with Mingw64.[0m
-[40;37m           6d94781 * GCC 7.2.x hardening flags for UNIX. May need to comment out some[0m
-[40;37m                     of these[0m
-[40;37m                   * on platforms without GCC7.[0m
-[40;37m           00f8dd8 * More mitigations for Mingw64.[0m
-[40;37m           fa375b0 * New gfx_ primitives, and binary hardening.[0m
 
 	[36m[4m[1mLATEST TEST RESULTS[24m:[21m[0m
 
@@ -71,7 +69,7 @@
 [40;37m           timebend.ans PNG, stdin/compressed test ...       [40;32m[1m[PASS][40;37m[21m -> 8f23c862c4b21a2fc7196e32e60c93d6a811ed51b8dc7cab00108155bf1ab372 [0m
 [40;37m           [0m
 
-	[30m[1m(2019-01-13 git #d327123 https://github.com/dmo9000/ansiutils.git)[21m[0m
+	[30m[1m(2019-10-27 git #e214e35 https://github.com/dmo9000/ansiutils.git)[21m[0m
 
 	[30m[1m(Linux 4.14.14-300.fc27.x86_64 x86_64)[21m[0m
                                                                                                               
