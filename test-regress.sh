@@ -1,6 +1,9 @@
 #!/bin/sh
 
 
+IDENTIFY=`which identify`
+
+[ -z "${IDENTIFY}" ] && echo "Install ImageMagick. Now." ; exit 1 
 
 MD5SUM=`which gmd5sum 2>/dev/null | sed -e "s/^no.*$//g" | tr -d "\n"`
 if [ -z "${MD5SUM}" ] ; then
