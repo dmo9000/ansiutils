@@ -22,7 +22,8 @@
 
 int display_width = 0;
 int display_height = 0;
-int modifier = 2;
+//int modifier = 2;
+int main_multiplier = 0;
 
 extern int g_trace;
 
@@ -42,6 +43,10 @@ static bool glut_initialised = false;
 ANSICanvas *myCanvas = NULL;
 
 pthread_mutex_t gfx_mutex;
+
+
+uint16_t mouse_x = 0;
+uint16_t mouse_y = 0;
 
 //void (* callback)( unsigned char, int, int ) ;
 void process_Normal_Keys(unsigned char key, int x, int y);
@@ -417,16 +422,22 @@ void process_Normal_Keys(unsigned char key, int x, int y)
 void process_Mouse_Move(int x, int y)
 {
 
-	fprintf(stderr, "process_Mouse_Move(%d,%d)\n", x, y);
-	return;
+    /*
+    fprintf(stderr, "process_Mouse_Move(%d,%d)\n",
+    				x/main_multiplier,
+    				y/main_multiplier);
+    */
+    mouse_x = (uint16_t) (x/2);
+    mouse_y = (uint16_t) (y/2);
+    return;
 }
 
 void process_Mouse_Input(int button, int state, int x, int y)
 {
 
-	fprintf(stderr, "process_Mouse_Input(%d,%d,%d,%d)\n", 
-				button, state, x, y);
-	return;
+    fprintf(stderr, "process_Mouse_Input(%d,%d,%d,%d)\n",
+            button, state, x, y);
+    return;
 }
 
 void process_Special_Keys(int key, int x, int y)
@@ -483,6 +494,8 @@ int gfx_opengl_main(ANSICanvas *c, uint16_t xsize, uint16_t ysize, int multiplie
     display_width = xsize;
     display_height = ysize;
 
+    main_multiplier = multiplier;
+
     glutInitWindowSize(display_width*multiplier, display_height*multiplier);
 //    glutInitWindowPosition(320, 320);
     glutCreateWindow(WindowTitle);
@@ -492,8 +505,9 @@ int gfx_opengl_main(ANSICanvas *c, uint16_t xsize, uint16_t ysize, int multiplie
     glutReshapeFunc(reshape_window);
     glutKeyboardFunc(process_Normal_Keys);
     glutSpecialFunc(process_Special_Keys);
-		glutMouseFunc(process_Mouse_Input);
-		glutMotionFunc(process_Mouse_Move);
+    glutMouseFunc(process_Mouse_Input);
+    glutMotionFunc(process_Mouse_Move);
+    glutPassiveMotionFunc(process_Mouse_Move);
     assert(c);
     myCanvas = c;
 
@@ -682,8 +696,8 @@ int grx_fillbox(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, uint8_t r, u
 
 int gfx_opengl_disablerepeat()
 {
-	glutSetKeyRepeat  ( GLUT_KEY_REPEAT_OFF);
+    glutSetKeyRepeat  ( GLUT_KEY_REPEAT_OFF);
 
-	return 1;
+    return 1;
 }
 
