@@ -72,6 +72,20 @@ void gfx_opengl_setdimensions(uint16_t w, uint16_t h)
 
 }
 
+void set_mouse_cursor_visible(bool state) {
+
+    switch (state) {
+    case false:
+        glutSetCursor(GLUT_CURSOR_NONE);
+        break;
+    case true:
+        glutSetCursor(GLUT_CURSOR_INHERIT);
+        break;
+    }
+
+    return;
+}
+
 void updateTexture()
 {
     if (!myCanvas) return;
@@ -508,7 +522,7 @@ int gfx_opengl_main(ANSICanvas *c, uint16_t xsize, uint16_t ysize, int multiplie
     glutMouseFunc(process_Mouse_Input);
     glutMotionFunc(process_Mouse_Move);
     glutPassiveMotionFunc(process_Mouse_Move);
-		glutSetCursor(GLUT_CURSOR_NONE);
+    glutSetCursor(GLUT_CURSOR_NONE);
     assert(c);
     myCanvas = c;
 
