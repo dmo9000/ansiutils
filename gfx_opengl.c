@@ -508,6 +508,7 @@ int gfx_opengl_main(ANSICanvas *c, uint16_t xsize, uint16_t ysize, int multiplie
     glutMouseFunc(process_Mouse_Input);
     glutMotionFunc(process_Mouse_Move);
     glutPassiveMotionFunc(process_Mouse_Move);
+		glutSetCursor(GLUT_CURSOR_NONE);
     assert(c);
     myCanvas = c;
 
