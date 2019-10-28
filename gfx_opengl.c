@@ -414,6 +414,21 @@ void process_Normal_Keys(unsigned char key, int x, int y)
 
 }
 
+void process_Mouse_Move(int x, int y)
+{
+
+	fprintf(stderr, "process_Mouse_Move(%d,%d)\n", x, y);
+	return;
+}
+
+void process_Mouse_Input(int button, int state, int x, int y)
+{
+
+	fprintf(stderr, "process_Mouse_Input(%d,%d,%d,%d)\n", 
+				button, state, x, y);
+	return;
+}
+
 void process_Special_Keys(int key, int x, int y)
 {
     //fprintf(stderr, "process_Special_Keys()\r\n");
@@ -477,6 +492,8 @@ int gfx_opengl_main(ANSICanvas *c, uint16_t xsize, uint16_t ysize, int multiplie
     glutReshapeFunc(reshape_window);
     glutKeyboardFunc(process_Normal_Keys);
     glutSpecialFunc(process_Special_Keys);
+		glutMouseFunc(process_Mouse_Input);
+		glutMotionFunc(process_Mouse_Move);
     assert(c);
     myCanvas = c;
 
