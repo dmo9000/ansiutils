@@ -40,14 +40,15 @@
 
 	[36m[4m[1mRECENT CHANGES[24m:[21m[0m
 
+[40;37m           3e092ff * Initial mouse callbacks.[0m
+[40;37m           c435ada * Merge branch 'master' of https://github.com/dmo9000/ansiutils[0m
+[40;37m           5ca4c45 * Minor debugging changes.[0m
+[40;37m           5c3905b * Check for identify.[0m
 [40;37m           e214e35 * Minor API update.[0m
-[40;37m           fda7d0b * Add missing protypes to headers.[0m
-[40;37m           75bed89 * Major compile warnings cleanup, part 2.[0m
-[40;37m           d327123 * Reformatting, and many compile warning fixes.[0m
-[40;37m           128bfc4 * Don't use -pie with Mingw64.[0m
 
 	[36m[4m[1mLATEST TEST RESULTS[24m:[21m[0m
 
+[40;37m           IDENTIFY=/usr/bin/identify[0m
 [40;37m           [0m
 [40;37m           TDFTool UTF8 rendering test (BOARDX) ...          [40;32m[1m[PASS][40;37m[21m -> b177d3fb3f2547e12320c0769f3eda4f[0m
 [40;37m           TDFTool CP437 rendering test (BOARDX) ...         [40;32m[1m[PASS][40;37m[21m -> 7ef3d6622544fd0246a1a22181181376[0m
@@ -69,7 +70,7 @@
 [40;37m           timebend.ans PNG, stdin/compressed test ...       [40;32m[1m[PASS][40;37m[21m -> 8f23c862c4b21a2fc7196e32e60c93d6a811ed51b8dc7cab00108155bf1ab372 [0m
 [40;37m           [0m
 
-	[30m[1m(2019-10-27 git #e214e35 https://github.com/dmo9000/ansiutils.git)[21m[0m
+	[30m[1m(2019-10-28 git #3e092ff https://github.com/dmo9000/ansiutils.git)[21m[0m
 
 	[30m[1m(Linux 4.14.14-300.fc27.x86_64 x86_64)[21m[0m
                                                                                                               

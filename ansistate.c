@@ -573,20 +573,21 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
                 break;
 						case 0x0A:
 							fprintf(stderr, " 0x0A");
-               clear_ansi_flags(FLAG_ALL);
 							break;
 						case 0x0D:
 							fprintf(stderr, " 0x0D");
-               clear_ansi_flags(FLAG_ALL);
 							break;
 						case 0x1B:
 							fprintf(stderr, " 0x1B");
+               clear_ansi_flags(FLAG_ALL);
+							set_ansi_flags(FLAG_1B);
 							break;
 						case 0x5B:
 							fprintf(stderr, " 0x5B");
+               clear_ansi_flags(FLAG_ALL);
 							break;
 						case 0x32:
-							fprintf(stderr, " 0x32 ");
+							fprintf(stderr, " 0x32???");
 							break;
 							/* humor me */
             default:
