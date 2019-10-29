@@ -3,6 +3,9 @@
 #include "ansicanvas.h"
 #include "tdffont.h"
 
+
+extern bool big_endian;
+
 static int ansi_color_map[8] = {
     0, 4, 2, 6, 1, 5, 3, 7
 };
@@ -119,6 +122,7 @@ bool render_glyph(TDFFont *render_font, unsigned c)
     uint32_t glyph_offset = 0;
     int rc = 0;
 
+
     if (!render_font) {
         return false;
     }
@@ -146,6 +150,7 @@ bool render_glyph(TDFFont *render_font, unsigned c)
 
     /* check info */
 
+
     if (render_font->parent_tdf->debug_level > 2) {
         printf(" glyph ascii char: %c\n", render_font->characters[c].ascii_value);
         printf(" font data offset: %u\n", render_font->offset);
@@ -170,7 +175,15 @@ bool render_glyph(TDFFont *render_font, unsigned c)
         }
         assert (rc != -1);
         render_font->data = malloc(render_font->blocksize);
+        if (render_font->parent_tdf->debug_level > 2) {
+            printf("render_font->blocksize=%u\n", render_font->blocksize);
+            printf("render_font->data = %s\n", (render_font->blocksize ? "GOOD" : "BAD"));
+            printf("rc = fread(0x%08x, %u, 1, FH=0x%08x\n", render_font->parent_tdf->fh);
+        }
         rc = fread(render_font->data, render_font->blocksize, 1, render_font->parent_tdf->fh);
+        if (rc != 1) {
+            printf("errno = %d\n", errno);
+        }
         assert((bool)(rc == 1));
     }
 
@@ -436,13 +449,21 @@ bool display_glyph(TDFFont *tdf, uint8_t c, bool use_unicode)
         if (tdr->bytes && tdr->chardata) {
             //printf("%s", tdr->chardata);
             raster_output(tdr, false, use_unicode, false, stdout);
-            printf(" (%u,%u/%u)\n", tdr->bytes, ii+1, tdc->discovered_height);
+            if (tdf->parent_tdf->debug_level > 2) {
+                printf(" (%u,%u/%u)\n", tdr->bytes, ii+1, tdc->discovered_height);
+            } else {
+								printf("\r\n");
+						}
         } else {
             /* blank raster */
             for (jj = 0; jj < tdc->width; jj++) {
                 putchar(' ');
             }
-            printf(" (%u,%u/%u)\n", tdr->bytes, ii+1, tdc->discovered_height);
+            if (tdf->parent_tdf->debug_level > 2) {
+                printf(" (%u,%u/%u)\n", tdr->bytes, ii+1, tdc->discovered_height);
+            } else {
+								printf("\r\n");
+						}
         }
     }
 
