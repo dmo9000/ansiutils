@@ -128,7 +128,7 @@ bool canvas_output(ANSICanvas *my_canvas, bool use_unicode, char *filename)
         fprintf(fh, "\x1b\x5b""H");
     }
 
-    if (!my_canvas->debug_level) {
+    if (my_canvas->debug_level < 3) {
         for (int ii = 0; ii < my_canvas->lines ; ii++) {
             r = canvas_get_raster(my_canvas, ii);
             assert(r);
@@ -145,16 +145,17 @@ bool canvas_output(ANSICanvas *my_canvas, bool use_unicode, char *filename)
             }
             //putchar('\n');
         }
-    }
+    } else {
 
-    if (my_canvas->debug_level) {
-        for (int ii = 0; ii < my_canvas->lines ; ii++) {
-            r = canvas_get_raster(my_canvas, ii);
-            assert(r);
-            assert(r->chardata);
-            assert(r->bytes);
-            raster_output(r, true, use_unicode, false, fh);
-            fprintf(fh, "\r\n");
+        if (my_canvas->debug_level) {
+            for (int ii = 0; ii < my_canvas->lines ; ii++) {
+                r = canvas_get_raster(my_canvas, ii);
+                assert(r);
+                assert(r->chardata);
+                assert(r->bytes);
+                raster_output(r, true, use_unicode, false, fh);
+                fprintf(fh, "\r\n");
+            }
         }
     }
 
