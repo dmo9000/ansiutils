@@ -484,7 +484,8 @@ void process_Special_Keys(int key, int x, int y)
         kbbuf_append("\x1B""[C");
         break;
     default:
-        fprintf(stderr, "+++ Unhandled SPECIAL key\n");
+				/* wait, shift key is triggering this?? awww */
+        //fprintf(stderr, "+++ Unhandled SPECIAL key\n");
         break;
     }
 
