@@ -52,12 +52,12 @@
 
 	[36m[4m[1mRECENT CHANGES[24m:[21m[0m
 
+[40;37m           2028e67 * Debugging change and include ZETRAX.TDF font for testing.[0m
 [40;37m           a287f4d * Merge big endian fixes from 68K port. Cleaned up stray debugging output[0m
 [40;37m                   * in debug_level = 0[0m
 [40;37m           7960b8f * Don't hide hw cursor by default.[0m
 [40;37m           9bab717 * Switch hardware mouse cursor on/off.[0m
 [40;37m           82a457f * Hide cursor.[0m
-[40;37m           40d5f62 * Fixes to mouse handling.[0m
 
 	[36m[4m[1mLATEST TEST RESULTS[24m:[21m[0m
 
@@ -83,7 +83,7 @@
 [40;37m           timebend.ans PNG, stdin/compressed test ...       [40;32m[1m[PASS][40;37m[21m -> 8f23c862c4b21a2fc7196e32e60c93d6a811ed51b8dc7cab00108155bf1ab372 [0m
 [40;37m           [0m
 
-	[30m[1m(2019-10-30 git #a287f4d https://github.com/dmo9000/ansiutils.git)[21m[0m
+	[30m[1m(2019-10-31 git #2028e67 https://github.com/dmo9000/ansiutils.git)[21m[0m
 
 	[30m[1m(Linux 4.14.14-300.fc27.x86_64 x86_64)[21m[0m
                                                                                                               

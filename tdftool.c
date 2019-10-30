@@ -235,6 +235,8 @@ int main(int argc, char *argv[])
             new_font->name = malloc(namelen+1);
             memset(new_font->name, 0, namelen+1);
 
+            assert(new_font->name);
+
             if (fread(new_font->name, MAX_NAMELEN, 1, my_tdf.fh) != 1) {
                 printf("Error reading font name (%u bytes)\r\n\r\n", namelen);
                 exit(1);
@@ -328,7 +330,11 @@ int main(int argc, char *argv[])
                 new_font->characters[ii].parent_font = new_font;
                 new_font->characters[ii].prerendered = false;
             }
-            //printf("+ Loaded %u character references\r\n\r\n", new_font->references);
+            if (debug_level) {
+                printf("  + %-12s: %u character references\r\n",
+                       new_font->name,
+                       new_font->references);
+            }
             /* store the location of the data segment */
             new_font->offset = ftell(my_tdf.fh);
             if (!push_font(&my_tdf, new_font)) {
@@ -352,7 +358,7 @@ int main(int argc, char *argv[])
         printf("Font list:\r\n\r\n");
         for (ii = 1; ii <= my_tdf.fontcount; ii++) {
             render_font = getfont_by_id(&my_tdf, ii);
-            printf("%d) %s\r\n\r\n", ii, render_font->name);
+            printf("%d) %s\r\n", ii, render_font->name);
         }
         exit(0);
     }
@@ -376,7 +382,16 @@ int main(int argc, char *argv[])
         /* prerender all glyphs */
 
         for (ii = 33; ii <= 126; ii++) {
-            if (render_glyph(render_font, ii)) {
+            bool load_flag = false;
+            if (strchr(message, ii)) {
+                load_flag = true;
+                if (debug_level) {
+                    printf("\r\n - character [%c] is in message [%s], loading ...\r\n", ii, message);
+                }
+            } else {
+//								printf("\r\n Character [%c] is NOT in message [%s], loading ...\r\n", ii, message);
+            }
+            if (render_glyph(render_font, ii) && load_flag) {
                 /* if it was a valid glyph, add it's width to the running average */
                 running_average_width += render_font->characters[ii-33].width;
                 running_average_height += render_font->characters[ii-33].discovered_height;
@@ -385,7 +400,28 @@ int main(int argc, char *argv[])
                 }
                 /* don't trust the height value provided in the TDF file, use what we counted while pre-rendering */
                 render_font->defined_characters++;
+
+                if (debug_level) {
+                    printf("[%-12s: prerender glyph %03u:%03u '%c']\r",
+                           render_font->name,
+                           render_font->defined_characters,
+                           render_font->references,
+                           ii);
+
+                }
             }
+        }
+
+        if (debug_level) {
+            printf("[LOADED %-12s: prerender glyphs completed %03u:%03u '%c']\r\n",
+                   render_font->name,
+                   render_font->defined_characters,
+                   render_font->references,
+                   ii);
+        }
+
+        if (debug_level) {
+            printf("\r\n\r\n");
         }
 
         render_font->average_width = (uint8_t) ((uint16_t) running_average_width / render_font->defined_characters);
@@ -413,6 +449,8 @@ int main(int argc, char *argv[])
 
         my_canvas = new_canvas();
         my_canvas->debug_level = debug_level;
+        /* be explicit about this */
+        my_canvas->compress_output = false;
 
 
         for (ii = 0; ii < (int) strlen(message); ii++) {

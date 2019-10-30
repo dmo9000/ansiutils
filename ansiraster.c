@@ -188,10 +188,13 @@ bool raster_output(ANSIRaster *r, bool debug_mode, bool use_unicode, bool compre
             printf("[%u/%03u:%c:%X/%X:%s]\n", jj, r->chardata[jj],
                    r->chardata[jj], r->bgcolors[jj], r->fgcolors[jj], ((bold) ? "BOLD" : "NOBOLD"));
         } else {
-            if (compress && last_fg == fg && last_bg == bg) {
+            if (compress && ((last_fg == fg) && (last_bg == bg))) {
                 /* no color output if compression is enabled and fg/bg haven't changed */
+                //	printf("<compress>\r\n");
             } else {
-                fprintf(fh, (char *) "\x1b\x5b""%u;%um", 40 + bg, 30 + fg);
+                //		printf("<1B 5B %u ; %um>\r\n", 40+bg, 30+fg);
+                //fprintf(fh, (char *) "\x1B""\x5B""%u;%um", 40 + bg, 30 + fg);
+                printf((char *) "\x1B""\x5B""%u;%um", 40 + bg, 30 + fg);
             }
 
             if (compress) {
@@ -199,17 +202,22 @@ bool raster_output(ANSIRaster *r, bool debug_mode, bool use_unicode, bool compre
 
                 } else {
                     if (bold) {
-                        fprintf(fh, "\x1b\x5b""1m");
+                        //fprintf(fh, "\x1B""\x5B""1m");
+                        printf("\x1B""\x5B""1m");
+
                     } else {
-                        fprintf(fh, "\x1b\x5b""21m");
+                        //fprintf(fh, "\x1B""\x5B""21m");
+                        printf("\x1B""\x5B""21m");
                     }
                 }
             } else {
                 /* no compression */
                 if (bold) {
-                    fprintf(fh, "\x1b\x5b""1m");
+                    //fprintf(fh, "\x1B""\x5B""1m");
+                    printf("\x1B""\x5B""1m");
                 } else {
-                    fprintf(fh, "\x1b\x5b""21m");
+                    //fprintf(fh, "\x1B""\x5B""21m");
+                    printf("\x1B""\x5B""21m");
                 }
             }
 
@@ -217,7 +225,9 @@ bool raster_output(ANSIRaster *r, bool debug_mode, bool use_unicode, bool compre
                 if (r->chardata[jj] < 128) {
                     fputc(r->chardata[jj], fh);
                 } else {
-                    fprintf(fh, "%s", utf8_string(r->chardata[jj]));
+                    //fprintf(fh, "%s", utf8_string(r->chardata[jj]));
+                    printf("%s", utf8_string(r->chardata[jj]));
+
                 }
             } else {
                 fputc(r->chardata[jj], fh);
@@ -225,7 +235,9 @@ bool raster_output(ANSIRaster *r, bool debug_mode, bool use_unicode, bool compre
         }
     }
 
-    fprintf(fh, "\x1b\x5b""0m");
+//    fprintf(fh, "\x1b\x5b""0m");
+    printf("\x1b\x5b""0m");
+
     return true;
 
 }
@@ -235,7 +247,7 @@ void raster_extend_length_to(ANSIRaster *r, uint16_t extrabytes)
 
     assert(r);
     while (r-> bytes < extrabytes) {
-        raster_append_byte(r, ' ', 7, 0, ATTRIB_NONE, "true");
+        raster_append_byte(r, ' ', 7, 0, ATTRIB_NONE, true);
     }
 
     return;

@@ -161,7 +161,7 @@ bool render_glyph(TDFFont *render_font, unsigned c)
 
 
     if (render_font->parent_tdf->debug_level > 2) {
-        printf("      data offset: %u + %u = %u\n",
+        printf("      data offset: %u + %lu = %lu\n",
                render_font->offset, (uint32_t) render_font->characters[c].offset, glyph_offset);
     }
 
@@ -178,7 +178,7 @@ bool render_glyph(TDFFont *render_font, unsigned c)
         if (render_font->parent_tdf->debug_level > 2) {
             printf("render_font->blocksize=%u\n", render_font->blocksize);
             printf("render_font->data = %s\n", (render_font->blocksize ? "GOOD" : "BAD"));
-            printf("rc = fread(0x%08x, %u, 1, FH=0x%08x\n", render_font->parent_tdf->fh);
+            printf("rc = fread(0x%08x, %u, 1, FH=0x%08lx\n", (unsigned int) render_font->data, (unsigned int) render_font->parent_tdf->fh);
         }
         rc = fread(render_font->data, render_font->blocksize, 1, render_font->parent_tdf->fh);
         if (rc != 1) {
@@ -452,8 +452,8 @@ bool display_glyph(TDFFont *tdf, uint8_t c, bool use_unicode)
             if (tdf->parent_tdf->debug_level > 2) {
                 printf(" (%u,%u/%u)\n", tdr->bytes, ii+1, tdc->discovered_height);
             } else {
-								printf("\r\n");
-						}
+                printf("\r\n\r\n");
+            }
         } else {
             /* blank raster */
             for (jj = 0; jj < tdc->width; jj++) {
@@ -462,8 +462,8 @@ bool display_glyph(TDFFont *tdf, uint8_t c, bool use_unicode)
             if (tdf->parent_tdf->debug_level > 2) {
                 printf(" (%u,%u/%u)\n", tdr->bytes, ii+1, tdc->discovered_height);
             } else {
-								printf("\r\n");
-						}
+                printf("\r\n\r\n");
+            }
         }
     }
 

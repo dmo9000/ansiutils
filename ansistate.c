@@ -571,25 +571,25 @@ bool ansi_to_canvas(ANSICanvas *canvas, unsigned char *buf, size_t nbytes, size_
                     xterm_title_string_length = 0;
                 }
                 break;
-						case 0x0A:
-							fprintf(stderr, " 0x0A");
-							break;
-						case 0x0D:
-							fprintf(stderr, " 0x0D");
-							break;
-						case 0x1B:
-							fprintf(stderr, " 0x1B");
-               clear_ansi_flags(FLAG_ALL);
-							set_ansi_flags(FLAG_1B);
-							break;
-						case 0x5B:
-							fprintf(stderr, " 0x5B");
-               clear_ansi_flags(FLAG_ALL);
-							break;
-						case 0x32:
-							fprintf(stderr, " 0x32???");
-							break;
-							/* humor me */
+            case 0x0A:
+                fprintf(stderr, " 0x0A");
+                break;
+            case 0x0D:
+                fprintf(stderr, " 0x0D");
+                break;
+            case 0x1B:
+                fprintf(stderr, " 0x1B");
+                clear_ansi_flags(FLAG_ALL);
+                set_ansi_flags(FLAG_1B);
+                break;
+            case 0x5B:
+                fprintf(stderr, " 0x5B");
+                clear_ansi_flags(FLAG_ALL);
+                break;
+            case 0x32:
+                fprintf(stderr, " 0x32???");
+                break;
+            /* humor me */
             default:
                 fprintf(stderr, "+++ Unrecognized Operating System Command Sequence ('%02x'). Aborting.\r\n", c);
                 clear_ansi_flags(FLAG_ALL);
