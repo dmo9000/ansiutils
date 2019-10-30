@@ -391,7 +391,7 @@ int main(int argc, char *argv[])
             } else {
 //								printf("\r\n Character [%c] is NOT in message [%s], loading ...\r\n", ii, message);
             }
-            if (render_glyph(render_font, ii) && load_flag) {
+            if (load_flag && render_glyph(render_font, ii)) {
                 /* if it was a valid glyph, add it's width to the running average */
                 running_average_width += render_font->characters[ii-33].width;
                 running_average_height += render_font->characters[ii-33].discovered_height;
