@@ -318,14 +318,14 @@ int main(int argc, char *argv[])
                    Prior to 2019-10-31, empty rasters were pre-allocated for every glyph,
                 even if not needed. We now allocate them on the fly, so that
                 we save on speed and memory for smaller systems
-                */
 
                 for (jj = 0; jj < MAX_LINES; jj++) {
                     new_font->characters[ii].char_rasters[jj] = create_new_raster();
                     new_font->characters[ii].char_rasters[jj]->bytes = 0;
                     new_font->characters[ii].char_rasters[jj]->chardata = NULL;
                 }
-                */
+
+								*/
 
                 //   assert(new_font->characters[ii].offset != 0xFFFF);
 
