@@ -22,16 +22,16 @@ typedef signed char int8_t;
 
 void usage()
 {
-    printf("\r\n\r\n");
-    printf("usage: tdftool [options] <tdf-font> \"your text here\"\r\n\r\n");
-    printf("\r\n\r\n");
-    printf("    -l              list mode\r\n\r\n");
-    printf("    -d              increase debugging level (use up to four times)\r\n\r\n");
-    printf("    -v              render vertically instead of horizontally\r\n\r\n");
-    printf("    -f <n>          use specified subfont\r\n\r\n");
-    printf("    -c              render to CP437 glyphs instead of UTF-8\r\n\r\n");
-    printf("    -s              append SAUCE record\r\n\r\n");
-    printf("\r\n\r\n");
+    printf("\r\n");
+    printf("usage: tdftool [options] <tdf-font> \"your text here\"\r\n");
+    printf("\r\n");
+    printf("    -l              list mode\r\n");
+    printf("    -d              increase debugging level (use up to four times)\r\n");
+    printf("    -v              render vertically instead of horizontally\r\n");
+    printf("    -f <n>          use specified subfont\r\n");
+    printf("    -c              render to CP437 glyphs instead of UTF-8\r\n");
+    printf("    -s              append SAUCE record\r\n");
+    printf("\r\n");
     return;
 }
 

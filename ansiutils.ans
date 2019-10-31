@@ -31,33 +31,26 @@
 [40;37m          Error opening (null)[0m
 [40;37m          [0m
 [40;37m          [0m
-[40;37m          [0m
 [40;37m          usage: tdftool [options] <tdf-font> "your text here"[0m
 [40;37m          [0m
-[40;37m          [0m
-[40;37m          [0m
 [40;37m              -l              list mode[0m
-[40;37m          [0m
 [40;37m              -d              increase debugging level (use up to four times)[0m
-[40;37m          [0m
 [40;37m              -v              render vertically instead of horizontally[0m
-[40;37m          [0m
 [40;37m              -f <n>          use specified subfont[0m
-[40;37m          [0m
 [40;37m              -c              render to CP437 glyphs instead of UTF-8[0m
-[40;37m          [0m
 [40;37m              -s              append SAUCE record[0m
-[40;37m          [0m
-[40;37m          [0m
 [40;37m          [0m
 
 	[36m[4m[1mRECENT CHANGES[24m:[21m[0m
 
+[40;37m           499a4a9 * Substitute 22m for 21m as there is confusion around ECMA-48 and[0m
+[40;37m                     whether 21m[0m
+[40;37m                   * means "disable bold" or "enable double underline". Tests needed to[0m
+[40;37m                     be recaculated.[0m
 [40;37m           fd7e59d * Updates.[0m
 [40;37m           6c2eabb * Revert to old PNG page for display on github.[0m
 [40;37m           f92f29c * README.html[0m
 [40;37m           ae01fed * Use HTML README.md[0m
-[40;37m           b148428 * Updated NOTES[0m
 
 	[36m[4m[1mLATEST TEST RESULTS[24m:[21m[0m
 
@@ -70,20 +63,20 @@
 [40;37m           fruit.ans should always have 24 lines ...         [40;32m[1m[PASS][40;37m[22m -> 24[0m
 [40;37m           fruit.ans test, without compression ...           [40;32m[1m[PASS][40;37m[22m -> 923c984036d37cdd3208e9fb8fa55e79[0m
 [40;37m           fruit.ans test, with compression ...              [40;32m[1m[PASS][40;37m[22m -> f6da036e8e5266b8a92473916ace99df[0m
-[40;37m           fruit.ans PNG, direct render test ...             [40;32m[1m[PASS][40;37m[22m -> 7a056e3280526815af436cd16294d5c7b915def074635752a7cf68416bf16a31[0m
-[40;37m           fruit.ans PNG, stdin/uncompressed test ...        [40;32m[1m[PASS][40;37m[22m -> 7a056e3280526815af436cd16294d5c7b915def074635752a7cf68416bf16a31[0m
-[40;37m           fruit.ans PNG, stdin/compressed test ...          [40;32m[1m[PASS][40;37m[22m -> 7a056e3280526815af436cd16294d5c7b915def074635752a7cf68416bf16a31[0m
+[40;37m           fruit.ans PNG, direct render test ...             [40;32m[1m[PASS][40;37m[22m -> 0a2bedc1fd419f92dd73773a0f75006c[0m
+[40;37m           fruit.ans PNG, stdin/uncompressed test ...        [40;32m[1m[PASS][40;37m[22m -> 0a2bedc1fd419f92dd73773a0f75006c[0m
+[40;37m           fruit.ans PNG, stdin/compressed test ...          [40;32m[1m[PASS][40;37m[22m -> 0a2bedc1fd419f92dd73773a0f75006c[0m
 [40;37m           [0m
 [40;37m           timebend.ans should have MD5 signature  ...       [40;32m[1m[PASS][40;37m[22m -> b098be5f4529d33d835f126d704f7eb5[0m
 [40;37m           timebend.ans should always have 26 lines ...      [40;32m[1m[PASS][40;37m[22m -> 26 [0m
 [40;37m           timebend.ans test, without compression ...        [40;32m[1m[PASS][40;37m[22m -> 430c8b0ebf958ee34d671d6d27f31778 [0m
 [40;37m           timebend.ans test, with compression ...           [40;32m[1m[PASS][40;37m[22m -> 6105c3b4b077f73872df86e3744ceab9 [0m
-[40;37m           timebend.ans PNG, direct render test ...          [40;32m[1m[PASS][40;37m[22m -> 8f23c862c4b21a2fc7196e32e60c93d6a811ed51b8dc7cab00108155bf1ab372 [0m
-[40;37m           timebend.ans PNG, stdin/uncompressed test ...     [40;32m[1m[PASS][40;37m[22m -> 8f23c862c4b21a2fc7196e32e60c93d6a811ed51b8dc7cab00108155bf1ab372 [0m
-[40;37m           timebend.ans PNG, stdin/compressed test ...       [40;32m[1m[PASS][40;37m[22m -> 8f23c862c4b21a2fc7196e32e60c93d6a811ed51b8dc7cab00108155bf1ab372 [0m
+[40;37m           timebend.ans PNG, direct render test ...          [40;32m[1m[PASS][40;37m[22m -> 67618531f8e50536008a05930803f0ec [0m
+[40;37m           timebend.ans PNG, stdin/uncompressed test ...     [40;32m[1m[PASS][40;37m[22m -> 67618531f8e50536008a05930803f0ec [0m
+[40;37m           timebend.ans PNG, stdin/compressed test ...       [40;32m[1m[PASS][40;37m[22m -> 67618531f8e50536008a05930803f0ec [0m
 [40;37m           [0m
 
-	[30m[1m(2019-10-31 git #fd7e59d https://github.com/dmo9000/ansiutils.git)[21m[0m
+	[30m[1m(2019-10-31 git #499a4a9 https://github.com/dmo9000/ansiutils.git)[21m[0m
 
 	[30m[1m(Linux 4.16.6-302.fc28.x86_64 x86_64)[21m[0m
                                                                                                               

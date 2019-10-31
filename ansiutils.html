@@ -41,33 +41,26 @@
 <span style="color:white;background-color:black;">          Error opening (null)</span>
 <span style="color:white;background-color:black;">          </span>
 <span style="color:white;background-color:black;">          </span>
-<span style="color:white;background-color:black;">          </span>
 <span style="color:white;background-color:black;">          usage: tdftool [options] &lt;tdf-font&gt; &quot;your text here&quot;</span>
 <span style="color:white;background-color:black;">          </span>
-<span style="color:white;background-color:black;">          </span>
-<span style="color:white;background-color:black;">          </span>
 <span style="color:white;background-color:black;">              -l              list mode</span>
-<span style="color:white;background-color:black;">          </span>
 <span style="color:white;background-color:black;">              -d              increase debugging level (use up to four times)</span>
-<span style="color:white;background-color:black;">          </span>
 <span style="color:white;background-color:black;">              -v              render vertically instead of horizontally</span>
-<span style="color:white;background-color:black;">          </span>
 <span style="color:white;background-color:black;">              -f &lt;n&gt;          use specified subfont</span>
-<span style="color:white;background-color:black;">          </span>
 <span style="color:white;background-color:black;">              -c              render to CP437 glyphs instead of UTF-8</span>
-<span style="color:white;background-color:black;">          </span>
 <span style="color:white;background-color:black;">              -s              append SAUCE record</span>
-<span style="color:white;background-color:black;">          </span>
-<span style="color:white;background-color:black;">          </span>
 <span style="color:white;background-color:black;">          </span>
 
 	<span style="color:aqua;"></span><span style="text-decoration:underline;color:aqua;"></span><span style="text-decoration:underline;font-weight:bold;color:aqua;">RECENT CHANGES</span><span style="font-weight:bold;color:aqua;">:</span><span style="color:aqua;"></span>
 
+<span style="color:white;background-color:black;">           499a4a9 * Substitute 22m for 21m as there is confusion around ECMA-48 and</span>
+<span style="color:white;background-color:black;">                     whether 21m</span>
+<span style="color:white;background-color:black;">                   * means &quot;disable bold&quot; or &quot;enable double underline&quot;. Tests needed to</span>
+<span style="color:white;background-color:black;">                     be recaculated.</span>
 <span style="color:white;background-color:black;">           fd7e59d * Updates.</span>
 <span style="color:white;background-color:black;">           6c2eabb * Revert to old PNG page for display on github.</span>
 <span style="color:white;background-color:black;">           f92f29c * README.html</span>
 <span style="color:white;background-color:black;">           ae01fed * Use HTML README.md</span>
-<span style="color:white;background-color:black;">           b148428 * Updated NOTES</span>
 
 	<span style="color:aqua;"></span><span style="text-decoration:underline;color:aqua;"></span><span style="text-decoration:underline;font-weight:bold;color:aqua;">LATEST TEST RESULTS</span><span style="font-weight:bold;color:aqua;">:</span><span style="color:aqua;"></span>
 
@@ -80,20 +73,20 @@
 <span style="color:white;background-color:black;">           fruit.ans should always have 24 lines ...         </span><span style="color:lime;background-color:black;"></span><span style="font-weight:bold;color:lime;background-color:black;">[PASS]</span><span style="font-weight:bold;color:white;background-color:black;"></span><span style="color:white;background-color:black;"> -&gt; 24</span>
 <span style="color:white;background-color:black;">           fruit.ans test, without compression ...           </span><span style="color:lime;background-color:black;"></span><span style="font-weight:bold;color:lime;background-color:black;">[PASS]</span><span style="font-weight:bold;color:white;background-color:black;"></span><span style="color:white;background-color:black;"> -&gt; 923c984036d37cdd3208e9fb8fa55e79</span>
 <span style="color:white;background-color:black;">           fruit.ans test, with compression ...              </span><span style="color:lime;background-color:black;"></span><span style="font-weight:bold;color:lime;background-color:black;">[PASS]</span><span style="font-weight:bold;color:white;background-color:black;"></span><span style="color:white;background-color:black;"> -&gt; f6da036e8e5266b8a92473916ace99df</span>
-<span style="color:white;background-color:black;">           fruit.ans PNG, direct render test ...             </span><span style="color:lime;background-color:black;"></span><span style="font-weight:bold;color:lime;background-color:black;">[PASS]</span><span style="font-weight:bold;color:white;background-color:black;"></span><span style="color:white;background-color:black;"> -&gt; 7a056e3280526815af436cd16294d5c7b915def074635752a7cf68416bf16a31</span>
-<span style="color:white;background-color:black;">           fruit.ans PNG, stdin/uncompressed test ...        </span><span style="color:lime;background-color:black;"></span><span style="font-weight:bold;color:lime;background-color:black;">[PASS]</span><span style="font-weight:bold;color:white;background-color:black;"></span><span style="color:white;background-color:black;"> -&gt; 7a056e3280526815af436cd16294d5c7b915def074635752a7cf68416bf16a31</span>
-<span style="color:white;background-color:black;">           fruit.ans PNG, stdin/compressed test ...          </span><span style="color:lime;background-color:black;"></span><span style="font-weight:bold;color:lime;background-color:black;">[PASS]</span><span style="font-weight:bold;color:white;background-color:black;"></span><span style="color:white;background-color:black;"> -&gt; 7a056e3280526815af436cd16294d5c7b915def074635752a7cf68416bf16a31</span>
+<span style="color:white;background-color:black;">           fruit.ans PNG, direct render test ...             </span><span style="color:lime;background-color:black;"></span><span style="font-weight:bold;color:lime;background-color:black;">[PASS]</span><span style="font-weight:bold;color:white;background-color:black;"></span><span style="color:white;background-color:black;"> -&gt; 0a2bedc1fd419f92dd73773a0f75006c</span>
+<span style="color:white;background-color:black;">           fruit.ans PNG, stdin/uncompressed test ...        </span><span style="color:lime;background-color:black;"></span><span style="font-weight:bold;color:lime;background-color:black;">[PASS]</span><span style="font-weight:bold;color:white;background-color:black;"></span><span style="color:white;background-color:black;"> -&gt; 0a2bedc1fd419f92dd73773a0f75006c</span>
+<span style="color:white;background-color:black;">           fruit.ans PNG, stdin/compressed test ...          </span><span style="color:lime;background-color:black;"></span><span style="font-weight:bold;color:lime;background-color:black;">[PASS]</span><span style="font-weight:bold;color:white;background-color:black;"></span><span style="color:white;background-color:black;"> -&gt; 0a2bedc1fd419f92dd73773a0f75006c</span>
 <span style="color:white;background-color:black;">           </span>
 <span style="color:white;background-color:black;">           timebend.ans should have MD5 signature  ...       </span><span style="color:lime;background-color:black;"></span><span style="font-weight:bold;color:lime;background-color:black;">[PASS]</span><span style="font-weight:bold;color:white;background-color:black;"></span><span style="color:white;background-color:black;"> -&gt; b098be5f4529d33d835f126d704f7eb5</span>
 <span style="color:white;background-color:black;">           timebend.ans should always have 26 lines ...      </span><span style="color:lime;background-color:black;"></span><span style="font-weight:bold;color:lime;background-color:black;">[PASS]</span><span style="font-weight:bold;color:white;background-color:black;"></span><span style="color:white;background-color:black;"> -&gt; 26 </span>
 <span style="color:white;background-color:black;">           timebend.ans test, without compression ...        </span><span style="color:lime;background-color:black;"></span><span style="font-weight:bold;color:lime;background-color:black;">[PASS]</span><span style="font-weight:bold;color:white;background-color:black;"></span><span style="color:white;background-color:black;"> -&gt; 430c8b0ebf958ee34d671d6d27f31778 </span>
 <span style="color:white;background-color:black;">           timebend.ans test, with compression ...           </span><span style="color:lime;background-color:black;"></span><span style="font-weight:bold;color:lime;background-color:black;">[PASS]</span><span style="font-weight:bold;color:white;background-color:black;"></span><span style="color:white;background-color:black;"> -&gt; 6105c3b4b077f73872df86e3744ceab9 </span>
-<span style="color:white;background-color:black;">           timebend.ans PNG, direct render test ...          </span><span style="color:lime;background-color:black;"></span><span style="font-weight:bold;color:lime;background-color:black;">[PASS]</span><span style="font-weight:bold;color:white;background-color:black;"></span><span style="color:white;background-color:black;"> -&gt; 8f23c862c4b21a2fc7196e32e60c93d6a811ed51b8dc7cab00108155bf1ab372 </span>
-<span style="color:white;background-color:black;">           timebend.ans PNG, stdin/uncompressed test ...     </span><span style="color:lime;background-color:black;"></span><span style="font-weight:bold;color:lime;background-color:black;">[PASS]</span><span style="font-weight:bold;color:white;background-color:black;"></span><span style="color:white;background-color:black;"> -&gt; 8f23c862c4b21a2fc7196e32e60c93d6a811ed51b8dc7cab00108155bf1ab372 </span>
-<span style="color:white;background-color:black;">           timebend.ans PNG, stdin/compressed test ...       </span><span style="color:lime;background-color:black;"></span><span style="font-weight:bold;color:lime;background-color:black;">[PASS]</span><span style="font-weight:bold;color:white;background-color:black;"></span><span style="color:white;background-color:black;"> -&gt; 8f23c862c4b21a2fc7196e32e60c93d6a811ed51b8dc7cab00108155bf1ab372 </span>
+<span style="color:white;background-color:black;">           timebend.ans PNG, direct render test ...          </span><span style="color:lime;background-color:black;"></span><span style="font-weight:bold;color:lime;background-color:black;">[PASS]</span><span style="font-weight:bold;color:white;background-color:black;"></span><span style="color:white;background-color:black;"> -&gt; 67618531f8e50536008a05930803f0ec </span>
+<span style="color:white;background-color:black;">           timebend.ans PNG, stdin/uncompressed test ...     </span><span style="color:lime;background-color:black;"></span><span style="font-weight:bold;color:lime;background-color:black;">[PASS]</span><span style="font-weight:bold;color:white;background-color:black;"></span><span style="color:white;background-color:black;"> -&gt; 67618531f8e50536008a05930803f0ec </span>
+<span style="color:white;background-color:black;">           timebend.ans PNG, stdin/compressed test ...       </span><span style="color:lime;background-color:black;"></span><span style="font-weight:bold;color:lime;background-color:black;">[PASS]</span><span style="font-weight:bold;color:white;background-color:black;"></span><span style="color:white;background-color:black;"> -&gt; 67618531f8e50536008a05930803f0ec </span>
 <span style="color:white;background-color:black;">           </span>
 
-	<span style="color:dimgray;"></span><span style="font-weight:bold;color:dimgray;">(2019-10-31 git #fd7e59d https://github.com/dmo9000/ansiutils.git)</span><span style="color:dimgray;"></span>
+	<span style="color:dimgray;"></span><span style="font-weight:bold;color:dimgray;">(2019-10-31 git #499a4a9 https://github.com/dmo9000/ansiutils.git)</span><span style="color:dimgray;"></span>
 
 	<span style="color:dimgray;"></span><span style="font-weight:bold;color:dimgray;">(Linux 4.16.6-302.fc28.x86_64 x86_64)</span><span style="color:dimgray;"></span>
                                                                                                               
