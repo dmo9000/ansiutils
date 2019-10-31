@@ -385,9 +385,6 @@ int main(int argc, char *argv[])
             bool load_flag = false;
             if (strchr(message, ii)) {
                 load_flag = true;
-                if (debug_level) {
-                    printf("\r\n - character [%c] is in message [%s], loading ...\r\n", ii, message);
-                }
             } else {
 //								printf("\r\n Character [%c] is NOT in message [%s], loading ...\r\n", ii, message);
             }

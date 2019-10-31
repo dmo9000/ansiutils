@@ -43,6 +43,7 @@
 
 	[36m[4m[1mRECENT CHANGES[24m:[21m[0m
 
+[40;37m           98f03cc * Clean up test-regress script.[0m
 [40;37m           9321d88 * Fixes.[0m
 [40;37m           499a4a9 * Substitute 22m for 21m as there is confusion around ECMA-48 and[0m
 [40;37m                     whether 21m[0m
@@ -50,7 +51,6 @@
 [40;37m                     be recaculated.[0m
 [40;37m           fd7e59d * Updates.[0m
 [40;37m           6c2eabb * Revert to old PNG page for display on github.[0m
-[40;37m           f92f29c * README.html[0m
 
 	[36m[4m[1mLATEST TEST RESULTS[24m:[21m[0m
 
@@ -75,7 +75,7 @@
 [40;37m           timebend.ans PNG, stdin/compressed test ...       [40;32m[1m[PASS][40;37m[22m -> 67618531f8e50536008a05930803f0ec [0m
 [40;37m           [0m
 
-	[30m[1m(2019-10-31 git #9321d88 https://github.com/dmo9000/ansiutils.git)[21m[0m
+	[30m[1m(2019-10-31 git #98f03cc https://github.com/dmo9000/ansiutils.git)[21m[0m
 
-	[30m[1m(Linux 4.16.6-302.fc28.x86_64 x86_64)[21m[0m
+	[30m[1m(Linux 4.14.14-300.fc27.x86_64 x86_64)[21m[0m
                                                                                                               
