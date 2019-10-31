@@ -47,6 +47,9 @@ pthread_mutex_t gfx_mutex;
 
 uint16_t mouse_x = 0;
 uint16_t mouse_y = 0;
+float mouse_xn = 0.0;
+float mouse_yn = 0.0;
+
 
 //void (* callback)( unsigned char, int, int ) ;
 void process_Normal_Keys(unsigned char key, int x, int y);
@@ -436,13 +439,26 @@ void process_Normal_Keys(unsigned char key, int x, int y)
 void process_Mouse_Move(int x, int y)
 {
 
-    /*
-    fprintf(stderr, "process_Mouse_Move(%d,%d)\n",
-    				x/main_multiplier,
-    				y/main_multiplier);
-    */
-    mouse_x = (uint16_t) (x/2);
-    mouse_y = (uint16_t) (y/2);
+		float xn = 0.0;
+		float yn = 0.0;
+
+		
+		int mwidth = glutGet(GLUT_WINDOW_WIDTH);
+		int mheight = glutGet(GLUT_WINDOW_HEIGHT);
+
+    //fprintf(stderr, "process_Mouse_Move(%d,%d,%d,%d)\n",
+   // 				x, y, mwidth, mheight);
+
+		xn = (float) ((float) x / (float) mwidth);
+		yn = (float) ((float) y / (float) mheight);
+
+//		printf("xn = %f\n", xn);
+//		printf("yn = %f\n", yn);
+
+    mouse_x = (unsigned int) ((float) SCREEN_WIDTH * (float) xn);
+    mouse_y = (unsigned int) ((float) SCREEN_HEIGHT * (float) yn); 
+		//printf("mouse_x = %u\n", mouse_x);
+		//printf("mouse_y = %u\n", mouse_y);
     return;
 }
 

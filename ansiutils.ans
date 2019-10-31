@@ -42,11 +42,11 @@
 
 	[36m[4m[1mRECENT CHANGES[24m:[21m[0m
 
+[40;37m           4231643 * Removed unneeded debug message.[0m
+[40;37m           5fc16a1 * Minor usability fixes, fixed line endings, etc.[0m
 [40;37m           5521f6a * Fix commenting.[0m
 [40;37m           d4e8133 * Memory/speed patches for small computers! Happy Halloween.[0m
 [40;37m           8dfd1e8 * Clean up an extraneous debugging message.[0m
-[40;37m           98f03cc * Clean up test-regress script.[0m
-[40;37m           9321d88 * Fixes.[0m
 
 	[36m[4m[1mLATEST TEST RESULTS[24m:[21m[0m
 
@@ -71,7 +71,7 @@
 [40;37m           timebend.ans PNG, stdin/compressed test ...       [40;32m[1m[PASS][40;37m[22m -> 67618531f8e50536008a05930803f0ec [0m
 [40;37m           [0m
 
-	[30m[1m(2019-10-31 git #5521f6a https://github.com/dmo9000/ansiutils.git)[21m[0m
+	[30m[1m(2019-10-31 git #4231643 https://github.com/dmo9000/ansiutils.git)[21m[0m
 
 	[30m[1m(Linux 4.14.14-300.fc27.x86_64 x86_64)[21m[0m
                                                                                                               

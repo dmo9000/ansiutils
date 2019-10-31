@@ -17,7 +17,7 @@ DATE=`date +%Y-%m-%d`
 COLUMNS=80
 PADDING=`printf '%*s' 110`
 
-all: libansicanvas.a tdftool rawfont ansiread ansitext documentation #test-regress
+all: libansicanvas.a tdftool rawfont ansiread ansitext documentation test-regress
 
 test-regress:
 	./test-regress.sh
