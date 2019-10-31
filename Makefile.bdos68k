@@ -28,6 +28,7 @@ tdftool: $(TDFTOOL_OBJS) libansicanvas.a
 
 install:
 	cp -p tdftool ~/git-local/madlibc/src/tdftool/
+	/usr/local/gcc-68k/bin/m68k-elf-strip ~/git-local/madlibc/src/tdftool/tdftool
 
 clean:
 	rm -f tdftool rawfont ansiread *.o *.a *.core
