@@ -4,4 +4,9 @@ tdftool -c YAZOOX.TDF TEST | ansiread - | aha -b
 
 # send to HTML email 
 
-tdftool -c YAZOOX.TDF TEST | ansiread - | aha |     swaks -t "daniel.morriss@visionstream.com.au"                         -s localhost --add-header 'MIME-Version: 1.0'                         --add-header "Subject: git diff ${*}"                                 --add-header 'Content-Type: text/html' -s localhost --body -
+tdftool -c YAZOOX.TDF TEST | ansiread - | aha | swaks -t "<email-address>" -s localhost --add-header 'MIME-Version: 1.0' \
+	--add-header "ANSI HTML" --add-header 'Content-Type: text/html' -s localhost --body -
+
+# pushing when your TLS certifiate is being intercepted (or using self-signed cert which is unrecognized) 
+
+git -c http.sslVerify=false
