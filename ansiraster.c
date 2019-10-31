@@ -206,8 +206,8 @@ bool raster_output(ANSIRaster *r, bool debug_mode, bool use_unicode, bool compre
                         printf("\x1B""\x5B""1m");
 
                     } else {
-                        //fprintf(fh, "\x1B""\x5B""21m");
-                        printf("\x1B""\x5B""21m");
+                        //fprintf(fh, "\x1B""\x5B""22m");
+                        printf("\x1B""\x5B""22m");
                     }
                 }
             } else {
@@ -216,8 +216,8 @@ bool raster_output(ANSIRaster *r, bool debug_mode, bool use_unicode, bool compre
                     //fprintf(fh, "\x1B""\x5B""1m");
                     printf("\x1B""\x5B""1m");
                 } else {
-                    //fprintf(fh, "\x1B""\x5B""21m");
-                    printf("\x1B""\x5B""21m");
+                    //fprintf(fh, "\x1B""\x5B""22m");
+                    printf("\x1B""\x5B""22m");
                 }
             }
 

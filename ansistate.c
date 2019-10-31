@@ -1137,8 +1137,9 @@ void dispatch_ansi_text_attributes()
             if (debug_flag) {
                 printf("  * disable ATTRIB_HALFINTENSITY\n");
             }
-            printf("[ATTRIB_HALFINTENSITY OFF]\n");
+            //printf("[ATTRIB_HALFINTENSITY OFF]\n");
             attributes &= ~ATTRIB_HALFINTENSITY;
+            attributes &= ~ATTRIB_BOLD;
             goto next_parameter;
             break;
         case 24:

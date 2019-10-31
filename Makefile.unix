@@ -44,10 +44,11 @@ documentation:
 	cat ansiutils.ans.utf8 | aha -b  > ansiutils.html
 	./ansiread -c -o ansiutils.png ansiutils.ans.cp437
 	cp ansiutils.ans.utf8 ansiutils.ans
-	rm -f *.cp437
-	rm -f *.utf8
 	rm -f *.body
 	rm -f *.header
+	rm -f ansiutils-header.ans.cp437
+	rm -f ansiutils-header.ans.utf8
+
 
 sample:
 	@./tdftool -c ${TESTSAMPLE} ABC
