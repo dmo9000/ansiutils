@@ -23,6 +23,7 @@ test-regress:
 	./test-regress.sh
 
 documentation:
+	echo "${PADDING}" >> ansiutils.ans.header
 	printf "\n\n" > ansiutils.ans.body
 	./tdftool -f 1 -c THEDRAWFONTS/BOARDX.TDF ANSIUTILS | sed -e "s/^/          /" > ansiutils-header.ans.cp437
 	./tdftool -f 1 THEDRAWFONTS/BOARDX.TDF ANSIUTILS | sed -e "s/^/          /" > ansiutils-header.ans.utf8
@@ -38,14 +39,15 @@ documentation:
 	./ansitext NEWLINE TAB FG_BLACK BOLD "(${DATE} git #${GITHASH} ${GITORIGIN})" NOBOLD NONE NEWLINE >> ansiutils.ans.body
 	./ansitext NEWLINE TAB FG_BLACK BOLD "(${OSVERSION})" NOBOLD NONE NEWLINE >> ansiutils.ans.body
 	echo "${PADDING}" >> ansiutils.ans.body
-	cat ansiutils-header.ans.utf8 ansiutils.ans.body > ansiutils.ans.utf8
-	cat ansiutils-header.ans.cp437 ansiutils.ans.body > ansiutils.ans.cp437
+	cat ansiutils.ans.header ansiutils-header.ans.utf8 ansiutils.ans.body > ansiutils.ans.utf8
+	cat ansiutils.ans.header ansiutils-header.ans.cp437 ansiutils.ans.body > ansiutils.ans.cp437
 	cat ansiutils.ans.utf8 | aha -b  > ansiutils.html
 	./ansiread -c -o ansiutils.png ansiutils.ans.cp437
 	cp ansiutils.ans.utf8 ansiutils.ans
 	rm -f *.cp437
 	rm -f *.utf8
 	rm -f *.body
+	rm -f *.header
 
 sample:
 	@./tdftool -c ${TESTSAMPLE} ABC
