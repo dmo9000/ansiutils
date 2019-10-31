@@ -163,7 +163,7 @@ void display()
 
 void reshape_window(GLsizei w, GLsizei h)
 {
-    //printf("reshape_window(w=%u,h=%u)\r\n", w, h);
+    printf("reshape_window(w=%u,h=%u)\r\n", w, h);
     glClearColor(0.0f, 0.0f, 0.5f, 0.0f);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
@@ -442,15 +442,11 @@ void process_Mouse_Move(int x, int y)
 		float xn = 0.0;
 		float yn = 0.0;
 
-		
-		int mwidth = glutGet(GLUT_WINDOW_WIDTH);
-		int mheight = glutGet(GLUT_WINDOW_HEIGHT);
-
     //fprintf(stderr, "process_Mouse_Move(%d,%d,%d,%d)\n",
    // 				x, y, mwidth, mheight);
 
-		xn = (float) ((float) x / (float) mwidth);
-		yn = (float) ((float) y / (float) mheight);
+		xn = (float) ((float) x / (float) display_width);
+		yn = (float) ((float) y / (float) display_height);
 
 //		printf("xn = %f\n", xn);
 //		printf("yn = %f\n", yn);
