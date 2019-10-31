@@ -1,0 +1,7 @@
+# send to HTML
+
+tdftool -c YAZOOX.TDF TEST | ansiread - | aha -b
+
+# send to HTML email 
+
+tdftool -c YAZOOX.TDF TEST | ansiread - | aha |     swaks -t "daniel.morriss@visionstream.com.au"                         -s localhost --add-header 'MIME-Version: 1.0'                         --add-header "Subject: git diff ${*}"                                 --add-header 'Content-Type: text/html' -s localhost --body -

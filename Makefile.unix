@@ -23,20 +23,29 @@ test-regress:
 	./test-regress.sh
 
 documentation:
-	printf "\n\n" > ansiutils.ans
-	./tdftool -f 1 -c THEDRAWFONTS/BOARDX.TDF ANSIUTILS | sed -e "s/^/          /" >> ansiutils.ans
-	./ansitext NEWLINE TAB FG_CYAN UNDERLINE BOLD "ANSIREAD USAGE" NOUNDERLINE ":" NOBOLD NONE NEWLINE NEWLINE >> ansiutils.ans
-	./ansiread | sed -e "s/^/          /" | ./ansiread -z - >> ansiutils.ans 2>/dev/null
-	./ansitext NEWLINE TAB FG_CYAN UNDERLINE BOLD "TDFTOOLS USAGE" NOUNDERLINE ":" NOBOLD NONE NEWLINE NEWLINE >> ansiutils.ans
-	./tdftool | sed -e "s/^/          /" | ./ansiread -z - >> ansiutils.ans 2>/dev/null
-	./ansitext NEWLINE TAB FG_CYAN UNDERLINE BOLD "RECENT CHANGES" NOUNDERLINE ":" NOBOLD NONE NEWLINE NEWLINE >> ansiutils.ans
-	./gitxtract.sh | sed -e "s/^/           /" | ./ansiread -z - >> ansiutils.ans 2>/dev/null
-	./ansitext NEWLINE TAB FG_CYAN UNDERLINE BOLD "LATEST TEST RESULTS" NOUNDERLINE ":" NOBOLD NONE NEWLINE NEWLINE >> ansiutils.ans
-	./test-regress.sh | sed -e "s/^/           /" | ./ansiread -z - >> ansiutils.ans 2>/dev/null
-	./ansitext NEWLINE TAB FG_BLACK BOLD "(${DATE} git #${GITHASH} ${GITORIGIN})" NOBOLD NONE NEWLINE >> ansiutils.ans
-	./ansitext NEWLINE TAB FG_BLACK BOLD "(${OSVERSION})" NOBOLD NONE NEWLINE >> ansiutils.ans
-	echo "${PADDING}" >> ansiutils.ans
-	./ansiread -o ansiutils.png ansiutils.ans
+	printf "\n\n" > ansiutils.ans.body
+	./tdftool -f 1 -c THEDRAWFONTS/BOARDX.TDF ANSIUTILS | sed -e "s/^/          /" > ansiutils-header.ans.cp437
+	./tdftool -f 1 THEDRAWFONTS/BOARDX.TDF ANSIUTILS | sed -e "s/^/          /" > ansiutils-header.ans.utf8
+
+	./ansitext NEWLINE TAB FG_CYAN UNDERLINE BOLD "ANSIREAD USAGE" NOUNDERLINE ":" NOBOLD NONE NEWLINE NEWLINE >> ansiutils.ans.body
+	./ansiread | sed -e "s/^/          /" | ./ansiread -z - >> ansiutils.ans.body 2>/dev/null
+	./ansitext NEWLINE TAB FG_CYAN UNDERLINE BOLD "TDFTOOLS USAGE" NOUNDERLINE ":" NOBOLD NONE NEWLINE NEWLINE >> ansiutils.ans.body
+	./tdftool | sed -e "s/^/          /" | ./ansiread -z - >> ansiutils.ans.body 2>/dev/null
+	./ansitext NEWLINE TAB FG_CYAN UNDERLINE BOLD "RECENT CHANGES" NOUNDERLINE ":" NOBOLD NONE NEWLINE NEWLINE >> ansiutils.ans.body
+	./gitxtract.sh | sed -e "s/^/           /" | ./ansiread -z - >> ansiutils.ans.body 2>/dev/null
+	./ansitext NEWLINE TAB FG_CYAN UNDERLINE BOLD "LATEST TEST RESULTS" NOUNDERLINE ":" NOBOLD NONE NEWLINE NEWLINE >> ansiutils.ans.body
+	./test-regress.sh | sed -e "s/^/           /" | ./ansiread -z - >> ansiutils.ans.body 2>/dev/null
+	./ansitext NEWLINE TAB FG_BLACK BOLD "(${DATE} git #${GITHASH} ${GITORIGIN})" NOBOLD NONE NEWLINE >> ansiutils.ans.body
+	./ansitext NEWLINE TAB FG_BLACK BOLD "(${OSVERSION})" NOBOLD NONE NEWLINE >> ansiutils.ans.body
+	echo "${PADDING}" >> ansiutils.ans.body
+	cat ansiutils-header.ans.utf8 ansiutils.ans.body > ansiutils.ans.utf8
+	cat ansiutils-header.ans.cp437 ansiutils.ans.body > ansiutils.ans.cp437
+	cat ansiutils.ans.utf8 | aha -b  > ansiutils.html
+	./ansiread -c -o ansiutils.png ansiutils.ans.cp437
+	cp ansiutils.ans.utf8 ansiutils.ans
+	rm -f *.cp437
+	rm -f *.utf8
+	rm -f *.body
 
 sample:
 	@./tdftool -c ${TESTSAMPLE} ABC
@@ -69,6 +78,7 @@ veryclean: clean
 
 install:
 	sudo cp tdftool /usr/bin/tdftool
+	sudo cp ansiread /usr/bin/ansiread
 	sudo cp *.a /usr/lib/
 
 test: tdftool
