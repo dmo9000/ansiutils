@@ -310,13 +310,24 @@ int main(int argc, char *argv[])
 
 
                 /* setup empty rasters */
+                if (debug_level) {
+                    printf("  - setup empty rasters\r\n");
+                }
+
+                /*
+                   Prior to 2019-10-31, empty rasters were pre-allocated for every glyph,
+                even if not needed. We now allocate them on the fly, so that
+                we save on speed and memory for smaller systems
+                */
+
                 for (jj = 0; jj < MAX_LINES; jj++) {
                     new_font->characters[ii].char_rasters[jj] = create_new_raster();
                     new_font->characters[ii].char_rasters[jj]->bytes = 0;
                     new_font->characters[ii].char_rasters[jj]->chardata = NULL;
                 }
+                */
 
-//                assert(new_font->characters[ii].offset != 0xFFFF);
+                //   assert(new_font->characters[ii].offset != 0xFFFF);
 
                 if (new_font->characters[ii].offset == 0xFFFF) {
                     //printf("character %u '%c' is not defined\r\n\r\n", ii, new_font->characters[ii].ascii_value);
@@ -325,7 +336,7 @@ int main(int argc, char *argv[])
                     new_font->references++;
                 }
                 new_font->characters[ii].ascii_value = 33 + ii;
-                /* don't read font data now, we'll do it lazily when we render the glyph */
+                // don't read font data now, we'll do it lazily when we render the glyph
                 new_font->characters[ii].fontdata = NULL;
                 new_font->characters[ii].parent_font = new_font;
                 new_font->characters[ii].prerendered = false;
