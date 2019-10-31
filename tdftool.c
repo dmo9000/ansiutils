@@ -408,7 +408,7 @@ int main(int argc, char *argv[])
                 render_font->defined_characters++;
 
                 if (debug_level) {
-                    printf("[%-12s: prerender glyph %03u:%03u '%c']\r",
+                    printf("[%-12s: prerender glyph %03u:%03u '%c']\n\r",
                            render_font->name,
                            render_font->defined_characters,
                            render_font->references,
