@@ -243,7 +243,8 @@ bool prerender_glyph(TDFFont *font, unsigned char c)
         switch(type) {
         case TYPE_OUTLINE:
             //printf("+ Unhandled font_type = %d\n", type);
-            assert((bool)(type != TYPE_OUTLINE));
+					 	printf("Outline TDF fonts are not currently supported.\n\r");
+            //assert((bool)(type != TYPE_OUTLINE));
             return false;
             break;
         case TYPE_BLOCK:
@@ -251,6 +252,23 @@ bool prerender_glyph(TDFFont *font, unsigned char c)
             x++;
             //assert((bool)(y < MAX_LINES));
             assert((bool)(tdc));
+
+              /*
+                 Prior to 2019-10-31, empty rasters were pre-allocated for every glyph,
+                 even if not needed. We now allocate them on the fly, so that
+                 we save on speed and memory for smaller systems
+              */
+  
+  
+              if (! tdc->char_rasters[y]) {
+                  //printf("\n\r! tdc->char_rasters[%d]\n\r", y);
+                  for (int jj = 0; jj < MAX_LINES; jj++) {
+                      tdc->char_rasters[jj] = create_new_raster();
+                      tdc->char_rasters[jj]->bytes = 0;
+                      tdc->char_rasters[jj]->chardata = NULL;
+                  }
+              }
+
             assert((bool)(tdc->char_rasters[y]));
             r = tdc->char_rasters[y];
             assert((bool)(r));
