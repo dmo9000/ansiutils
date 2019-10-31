@@ -302,7 +302,7 @@ bool prerender_glyph(TDFFont *font, unsigned char c)
 
 
             if (! tdc->char_rasters[y]) {
-                //printf("\r\n\r\n! tdc->char_rasters[%d]\r\n\r\n", y);
+                //printf("\n\r! tdc->char_rasters[%d]\n\r", y);
                 for (int jj = 0; jj < MAX_LINES; jj++) {
                     tdc->char_rasters[jj] = create_new_raster();
                     tdc->char_rasters[jj]->bytes = 0;
@@ -470,7 +470,7 @@ bool display_glyph(TDFFont *tdf, uint8_t c, bool use_unicode)
             if (tdf->parent_tdf->debug_level > 2) {
                 printf(" (%u,%u/%u)\n", tdr->bytes, ii+1, tdc->discovered_height);
             } else {
-                printf("\r\n\r\n");
+                printf("\n\r");
             }
         } else {
             /* blank raster */
@@ -480,7 +480,7 @@ bool display_glyph(TDFFont *tdf, uint8_t c, bool use_unicode)
             if (tdf->parent_tdf->debug_level > 2) {
                 printf(" (%u,%u/%u)\n", tdr->bytes, ii+1, tdc->discovered_height);
             } else {
-                printf("\r\n\r\n");
+                printf("\n\r");
             }
         }
     }

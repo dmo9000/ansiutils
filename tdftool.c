@@ -22,16 +22,16 @@ typedef signed char int8_t;
 
 void usage()
 {
-    printf("\r\n");
-    printf("usage: tdftool [options] <tdf-font> \"your text here\"\r\n");
-    printf("\r\n");
-    printf("    -l              list mode\r\n");
-    printf("    -d              increase debugging level (use up to four times)\r\n");
-    printf("    -v              render vertically instead of horizontally\r\n");
-    printf("    -f <n>          use specified subfont\r\n");
-    printf("    -c              render to CP437 glyphs instead of UTF-8\r\n");
-    printf("    -s              append SAUCE record\r\n");
-    printf("\r\n");
+    printf("\n\r");
+    printf("usage: tdftool [options] <tdf-font> \"your text here\"\n\r");
+    printf("\n\r");
+    printf("    -l              list mode\n\r");
+    printf("    -d              increase debugging level (use up to four times)\n\r");
+    printf("    -v              render vertically instead of horizontally\n\r");
+    printf("    -f <n>          use specified subfont\n\r");
+    printf("    -c              render to CP437 glyphs instead of UTF-8\n\r");
+    printf("    -s              append SAUCE record\n\r");
+    printf("\n\r");
     return;
 }
 
@@ -96,28 +96,28 @@ int main(int argc, char *argv[])
 
         case '?':
             if (optopt == 'c') {
-                printf ("Option -%c requires an argument.\r\n\r\n", optopt);
+                printf ("Option -%c requires an argument.\n\r", optopt);
                 usage();
                 exit(1);
             }
             else if (isprint (optopt)) {
-                printf ("Unknown option `-%c'.\r\n\r\n", optopt);
+                printf ("Unknown option `-%c'.\n\r", optopt);
                 usage();
                 exit(1);
             }
             else {
-                printf ("Unknown option character `\\x%x'.\r\n\r\n",
+                printf ("Unknown option character `\\x%x'.\n\r",
                         optopt);
                 exit(1);
             }
-            printf("Shouldn't reach here.\r\n\r\n");
+            printf("Shouldn't reach here.\n\r");
             exit(1);
             break;
         case -1:
             /* END OF ARGUMENTS? */
             break;
         default:
-            printf("exiting with c= %d [%c]\r\n\r\n", c, c);
+            printf("exiting with c= %d [%c]\n\r", c, c);
             exit (1);
         }
 
@@ -148,24 +148,28 @@ int main(int argc, char *argv[])
 
     tdf_file = fopen(input_filename, "rb");
 
+		if (! (input_filename && strlen(input_filename))) {
+        usage();
+        exit(1);
+				}
 
     if (!tdf_file) {
-        printf("Error opening %s\r\n\r\n", input_filename);
+        printf("Error opening %s\n\r", input_filename);
         usage();
         exit(1);
     }
 
     rd = fread((char *) &my_tdf.tdfmagic, TDF_MAGIC_SIZE, 1, tdf_file);
     if (rd != 1) {
-        printf("couldn't read %u bytes header from %s - file truncated?\r\n\r\n", TDF_MAGIC_SIZE, input_filename);
+        printf("couldn't read %u bytes header from %s - file truncated?\n\r", TDF_MAGIC_SIZE, input_filename);
         perror("fread");
         exit(1);
     }
 
     if (memcmp(&my_tdf.tdfmagic, "\x13TheDraw FONTS file\x1a", 20) == 0) {
-//        printf("* TDF Header OK!\r\n\r\n\r\n\r\n");
+//        printf("* TDF Header OK!\n\n\r\r");
     } else {
-        printf("Bad TDF header.\r\n\r\n");
+        printf("Bad TDF header.\n\r");
         exit(1);
     }
 
@@ -189,10 +193,10 @@ int main(int argc, char *argv[])
             break;
         }
 
-        //printf("* current offset = 0x%04x/0x%04x, checking for font header\r\n\r\n", current_offset, max_offset);
+        //printf("* current offset = 0x%04x/0x%04x, checking for font header\n\r", current_offset, max_offset);
 
         if (fread((uint32_t*) &font_sequence_marker, TDF_FONTMARKER_SIZE, 1, my_tdf.fh) != 1) {
-            printf("Couldn't read font sequence marker at offset 0x%04x.\r\n\r\n", current_offset);
+            printf("Couldn't read font sequence marker at offset 0x%04x.\n\r", current_offset);
             exit(1);
         } else {
 
@@ -200,10 +204,10 @@ int main(int argc, char *argv[])
                 font_sequence_marker = __builtin_bswap32(font_sequence_marker);
             }
 
-            //printf("my_tdf.fontcount = %u\r\n\r\n", my_tdf.fontcount);
-            //printf("FSM = 0x%04x\r\n\r\n", font_sequence_marker);
+            //printf("my_tdf.fontcount = %u\n\r", my_tdf.fontcount);
+            //printf("FSM = 0x%04x\n\r", font_sequence_marker);
             my_tdf.fontcount++;
-            //printf("my_tdf.fontcount = %u\r\n\r\n", my_tdf.fontcount);
+            //printf("my_tdf.fontcount = %u\n\r", my_tdf.fontcount);
             new_font = create_new_font();
             new_font->data = NULL;
             new_font->parent_tdf = &my_tdf;
@@ -216,7 +220,7 @@ int main(int argc, char *argv[])
             assert(new_font);
 
             if (font_sequence_marker != 0x55aa00ff) {
-                printf("%s: at font %u, expect 0x55aa00ff, but got 0x%08x\r\n\r\n",
+                printf("%s: at font %u, expect 0x55aa00ff, but got 0x%08x\n\r",
                        basename(input_filename),  my_tdf.fontcount, font_sequence_marker);
                 exit(1);
             }
@@ -224,11 +228,11 @@ int main(int argc, char *argv[])
             assert(font_sequence_marker == 0x55aa00ff);
 
             if (fread((uint8_t*) &namelen, 1, 1, my_tdf.fh) != 1) {
-                printf("Couldn't read font name length.\r\n\r\n");
+                printf("Couldn't read font name length.\n\r");
                 exit(1);
             };
 
-            //printf("font name length = %u\r\n\r\n", namelen);
+            //printf("font name length = %u\n\r", namelen);
 
             assert(namelen);
 
@@ -238,49 +242,49 @@ int main(int argc, char *argv[])
             assert(new_font->name);
 
             if (fread(new_font->name, MAX_NAMELEN, 1, my_tdf.fh) != 1) {
-                printf("Error reading font name (%u bytes)\r\n\r\n", namelen);
+                printf("Error reading font name (%u bytes)\n\r", namelen);
                 exit(1);
             }
 
             if (my_tdf.debug_level > 2) {
-                printf("  %2u [%-12s]\r\n\r\n", my_tdf.fontcount, new_font->name);
+                printf("  %2u [%-12s]\n\r", my_tdf.fontcount, new_font->name);
             }
 
             if (fread(&reserved1, sizeof(uint32_t), 1, my_tdf.fh) != 1) {
-                printf("Failure reading reserved1\r\n\r\n");
+                printf("Failure reading reserved1\n\r");
                 exit(1);
             }
 
             if (reserved1) {
-                printf("%s: at font %u, expected reserved1=0x00000000, but got 0x%08x\r\n\r\n",
+                printf("%s: at font %u, expected reserved1=0x00000000, but got 0x%08x\n\r",
                        basename(input_filename),  my_tdf.fontcount, reserved1);
                 exit(1);
             }
 
             assert(!reserved1);
 
-            //printf("reserved1 ok\r\n\r\n");
+            //printf("reserved1 ok\n\r");
 
             if (fread(&new_font->type, sizeof(uint8_t), 1, my_tdf.fh) != 1) {
-                printf("couldn't read font type\r\n\r\n");
+                printf("couldn't read font type\n\r");
             }
             assert(new_font->type >= TYPE_OUTLINE);
             assert(new_font->type <= TYPE_COLOR);
-            //printf("font type = %u\r\n\r\n", new_font->type);
+            //printf("font type = %u\n\r", new_font->type);
 
             if (fread(&new_font->spacing, sizeof(uint8_t), 1, my_tdf.fh) != 1) {
-                printf("couldn't read spacing\r\n\r\n");
+                printf("couldn't read spacing\n\r");
             }
 
             assert(new_font->spacing >= 0);
             assert(new_font->spacing <= 40);
 
             if (my_tdf.debug_level > 2) {
-                printf("spacing: %u\r\n\r\n", new_font->spacing);
+                printf("spacing: %u\n\r", new_font->spacing);
             }
 
             if (fread(&new_font->blocksize, sizeof(uint16_t), 1, my_tdf.fh) != 1) {
-                printf("couldn't read blocksize\r\n\r\n");
+                printf("couldn't read blocksize\n\r");
             }
 
             /* on big_endian platforms this should be flipped */
@@ -298,7 +302,7 @@ int main(int argc, char *argv[])
                 new_font->characters[ii].ascii_value = 33 + ii;
                 new_font->characters[ii].undefined = false;
                 if (fread((uint16_t*) &new_font->characters[ii].offset, sizeof(uint16_t), 1, my_tdf.fh) != 1) {
-                    printf("failed to get character %u offset\r\n\r\n", ii);
+                    printf("failed to get character %u offset\n\r", ii);
                     exit(1);
                 }
 
@@ -311,7 +315,7 @@ int main(int argc, char *argv[])
 
                 /* setup empty rasters */
                 if (debug_level) {
-                    printf("  - setup empty rasters\r\n");
+                    printf("  - setup empty rasters\n\r");
                 }
 
                 /*
@@ -330,7 +334,7 @@ int main(int argc, char *argv[])
                 //   assert(new_font->characters[ii].offset != 0xFFFF);
 
                 if (new_font->characters[ii].offset == 0xFFFF) {
-                    //printf("character %u '%c' is not defined\r\n\r\n", ii, new_font->characters[ii].ascii_value);
+                    //printf("character %u '%c' is not defined\n\r", ii, new_font->characters[ii].ascii_value);
                     new_font->characters[ii].undefined = true;
                 } else {
                     new_font->references++;
@@ -342,34 +346,34 @@ int main(int argc, char *argv[])
                 new_font->characters[ii].prerendered = false;
             }
             if (debug_level) {
-                printf("  + %-12s: %u character references\r\n",
+                printf("  + %-12s: %u character references\n\r",
                        new_font->name,
                        new_font->references);
             }
             /* store the location of the data segment */
             new_font->offset = ftell(my_tdf.fh);
             if (!push_font(&my_tdf, new_font)) {
-                printf("! error storing font reference\r\n\r\n");
+                printf("! error storing font reference\n\r");
                 exit(1);
             }
         }
         /* seek to next font, repeat */
-        //printf("... skipping %u bytes ...\r\n\r\n", new_font->blocksize);
+        //printf("... skipping %u bytes ...\n\r", new_font->blocksize);
         fseek(my_tdf.fh, new_font->blocksize, SEEK_CUR);
     }
 
-    //printf("\r\n\r\n* %u fonts/variations found\r\n\r\n", my_tdf.fontcount);
+    //printf("\n\r* %u fonts/variations found\n\r", my_tdf.fontcount);
 
     if (!(selected_font > 0 && selected_font <= my_tdf.fontcount)) {
-        printf("Selected font number %d is invalid.\r\n\r\n", selected_font);
+        printf("Selected font number %d is invalid.\n\r", selected_font);
         exit(1);
     }
 
     if (list_mode) {
-        printf("Font list:\r\n\r\n");
+        printf("Font list:\n\r");
         for (ii = 1; ii <= my_tdf.fontcount; ii++) {
             render_font = getfont_by_id(&my_tdf, ii);
-            printf("%d) %s\r\n", ii, render_font->name);
+            printf("%d) %s\n\r", ii, render_font->name);
         }
         exit(0);
     }
@@ -378,15 +382,15 @@ int main(int argc, char *argv[])
     if (message) {
         /* render glyphs */
         if (my_tdf.debug_level > 2) {
-            printf("Message to display: %s\r\n\r\n", message);
+            printf("Message to display: %s\n\r", message);
         }
         render_font = getfont_by_id(&my_tdf, selected_font);
         if (render_font) {
             if (my_tdf.debug_level > 2) {
-                printf("Using font: %s\r\n\r\n", render_font->name);
+                printf("Using font: %s\n\r", render_font->name);
             }
         } else {
-            printf("Couldn't get font for rendering\r\n\r\n");
+            printf("Couldn't get font for rendering\n\r");
             exit(1);
         }
 
@@ -397,7 +401,7 @@ int main(int argc, char *argv[])
             if (strchr(message, ii)) {
                 load_flag = true;
             } else {
-//								printf("\r\n Character [%c] is NOT in message [%s], loading ...\r\n", ii, message);
+//								printf("\n\r Character [%c] is NOT in message [%s], loading ...\n\r", ii, message);
             }
             if (load_flag && render_glyph(render_font, ii)) {
                 /* if it was a valid glyph, add it's width to the running average */
@@ -421,7 +425,7 @@ int main(int argc, char *argv[])
         }
 
         if (debug_level) {
-            printf("[LOADED %-12s: prerender glyphs completed %03u:%03u '%c']\r\n",
+            printf("[LOADED %-12s: prerender glyphs completed %03u:%03u '%c']\n\r",
                    render_font->name,
                    render_font->defined_characters,
                    render_font->references,
@@ -429,15 +433,15 @@ int main(int argc, char *argv[])
         }
 
         if (debug_level) {
-            printf("\r\n\r\n");
+            printf("\n\r");
         }
 
         render_font->average_width = (uint8_t) ((uint16_t) running_average_width / render_font->defined_characters);
         render_font->average_height = (uint8_t) ((uint16_t) running_average_height / render_font->defined_characters);
         /*
-        printf("defined characters = %u\r\n\r\n", render_font->defined_characters);
-        printf("average_width      = %u\r\n\r\n", render_font->average_width);
-        printf("average_height      = %u\r\n\r\n", render_font->average_height);
+        printf("defined characters = %u\n\r", render_font->defined_characters);
+        printf("average_width      = %u\n\r", render_font->average_width);
+        printf("average_height      = %u\n\r", render_font->average_height);
         */
 
         /* sanity check */
@@ -462,7 +466,7 @@ int main(int argc, char *argv[])
 
 
         for (ii = 0; ii < (int) strlen(message); ii++) {
-            //printf("+++++ PUSHING GLYPH %u ['%c']\r\n\r\n", ii, message[ii]);
+            //printf("+++++ PUSHING GLYPH %u ['%c']\n\r", ii, message[ii]);
             (void) fflush(stdout);
             assert(push_glyph(my_canvas, render_font, (uint8_t) message[ii]));
         }

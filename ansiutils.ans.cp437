@@ -28,29 +28,25 @@
 
 	[36m[4m[1mTDFTOOLS USAGE[24m:[21m[0m
 
-[40;37m          Error opening (null)[0m
 [40;37m          [0m
+[40;37musage: tdftool [options] <tdf-font> "your text here"[0m
 [40;37m          [0m
-[40;37m          usage: tdftool [options] <tdf-font> "your text here"[0m
+[40;37m    -l              list mode[0m
+[40;37m    -d              increase debugging level (use up to four times)[0m
+[40;37m    -v              render vertically instead of horizontally[0m
+[40;37m    -f <n>          use specified subfont[0m
+[40;37m    -c              render to CP437 glyphs instead of UTF-8[0m
+[40;37m    -s              append SAUCE record[0m
 [40;37m          [0m
-[40;37m              -l              list mode[0m
-[40;37m              -d              increase debugging level (use up to four times)[0m
-[40;37m              -v              render vertically instead of horizontally[0m
-[40;37m              -f <n>          use specified subfont[0m
-[40;37m              -c              render to CP437 glyphs instead of UTF-8[0m
-[40;37m              -s              append SAUCE record[0m
 [40;37m          [0m
 
 	[36m[4m[1mRECENT CHANGES[24m:[21m[0m
 
+[40;37m           5521f6a * Fix commenting.[0m
 [40;37m           d4e8133 * Memory/speed patches for small computers! Happy Halloween.[0m
 [40;37m           8dfd1e8 * Clean up an extraneous debugging message.[0m
 [40;37m           98f03cc * Clean up test-regress script.[0m
 [40;37m           9321d88 * Fixes.[0m
-[40;37m           499a4a9 * Substitute 22m for 21m as there is confusion around ECMA-48 and[0m
-[40;37m                     whether 21m[0m
-[40;37m                   * means "disable bold" or "enable double underline". Tests needed to[0m
-[40;37m                     be recaculated.[0m
 
 	[36m[4m[1mLATEST TEST RESULTS[24m:[21m[0m
 
@@ -75,7 +71,7 @@
 [40;37m           timebend.ans PNG, stdin/compressed test ...       [40;32m[1m[PASS][40;37m[22m -> 67618531f8e50536008a05930803f0ec [0m
 [40;37m           [0m
 
-	[30m[1m(2019-10-31 git #d4e8133 https://github.com/dmo9000/ansiutils.git)[21m[0m
+	[30m[1m(2019-10-31 git #5521f6a https://github.com/dmo9000/ansiutils.git)[21m[0m
 
 	[30m[1m(Linux 4.14.14-300.fc27.x86_64 x86_64)[21m[0m
                                                                                                               
