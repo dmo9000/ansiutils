@@ -312,12 +312,6 @@ int main(int argc, char *argv[])
                         __builtin_bswap16(new_font->characters[ii].offset);
                 }
 
-
-                /* setup empty rasters */
-                if (debug_level) {
-                    printf("  - setup empty rasters\n\r");
-                }
-
                 /*
                    Prior to 2019-10-31, empty rasters were pre-allocated for every glyph,
                 even if not needed. We now allocate them on the fly, so that
