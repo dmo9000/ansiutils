@@ -43,6 +43,7 @@
 
 	[36m[4m[1mRECENT CHANGES[24m:[21m[0m
 
+[40;37m           9321d88 * Fixes.[0m
 [40;37m           499a4a9 * Substitute 22m for 21m as there is confusion around ECMA-48 and[0m
 [40;37m                     whether 21m[0m
 [40;37m                   * means "disable bold" or "enable double underline". Tests needed to[0m
@@ -50,11 +51,9 @@
 [40;37m           fd7e59d * Updates.[0m
 [40;37m           6c2eabb * Revert to old PNG page for display on github.[0m
 [40;37m           f92f29c * README.html[0m
-[40;37m           ae01fed * Use HTML README.md[0m
 
 	[36m[4m[1mLATEST TEST RESULTS[24m:[21m[0m
 
-[40;37m           IDENTIFY=/usr/bin/identify[0m
 [40;37m           [0m
 [40;37m           TDFTool UTF8 rendering test (BOARDX) ...          [40;32m[1m[PASS][40;37m[22m -> 573727da4dd42a6edeff1f8bf251805a[0m
 [40;37m           TDFTool CP437 rendering test (BOARDX) ...         [40;32m[1m[PASS][40;37m[22m -> 8059e156bc874feff6b61a12e0eb6e88[0m
@@ -76,7 +75,7 @@
 [40;37m           timebend.ans PNG, stdin/compressed test ...       [40;32m[1m[PASS][40;37m[22m -> 67618531f8e50536008a05930803f0ec [0m
 [40;37m           [0m
 
-	[30m[1m(2019-10-31 git #499a4a9 https://github.com/dmo9000/ansiutils.git)[21m[0m
+	[30m[1m(2019-10-31 git #9321d88 https://github.com/dmo9000/ansiutils.git)[21m[0m
 
 	[30m[1m(Linux 4.16.6-302.fc28.x86_64 x86_64)[21m[0m
                                                                                                               
