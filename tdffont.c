@@ -161,7 +161,7 @@ bool render_glyph(TDFFont *render_font, unsigned c)
 
 
     if (render_font->parent_tdf->debug_level > 2) {
-        printf("      data offset: %u + %lu = %lu\n",
+        printf("      data offset: %u + %u = %u\n",
                render_font->offset, (uint32_t) render_font->characters[c].offset, glyph_offset);
     }
 
@@ -178,7 +178,7 @@ bool render_glyph(TDFFont *render_font, unsigned c)
         if (render_font->parent_tdf->debug_level > 2) {
             printf("render_font->blocksize=%u\n", render_font->blocksize);
             printf("render_font->data = %s\n", (render_font->blocksize ? "GOOD" : "BAD"));
-            printf("rc = fread(0x%08x, %u, 1, FH=0x%08lx\n", (unsigned int) render_font->data, (unsigned int) render_font->parent_tdf->fh);
+            //printf("rc = fread(0x%08lx, %lu, 1, FH=0x%08x\n", (unsigned long) render_font->data, (unsigned long) render_font->parent_tdf->fh);
         }
         rc = fread(render_font->data, render_font->blocksize, 1, render_font->parent_tdf->fh);
         if (rc != 1) {

@@ -48,7 +48,7 @@ int main(int argc, char *argv[])
     uint8_t namelen = 0;
     uint32_t reserved1 = 0;
     uint32_t current_offset = 0;
-    int ii = 0, jj = 0;
+    int ii = 0;
     bool all_fonts_loaded = false;
     int selected_font = 1;
     bool use_unicode = true;

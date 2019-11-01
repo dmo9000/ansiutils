@@ -29,8 +29,8 @@ ANSICommand commands[] = {
     { "TAB", "\t" },
     { "NEWLINE", "\n" },
     { NULL, NULL },
-    NULL
-} ;
+    NULL 
+};
 
 
 char *ansi_command(char *msg)

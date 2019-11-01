@@ -1,5 +1,6 @@
 #include <stdint.h>
 #include <stdbool.h>
+#include <unistd.h>
 #include "ansicanvas.h"
 #include "rawfont.h"
 

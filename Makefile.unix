@@ -1,7 +1,7 @@
 CC=gcc
 HARDEN_CFLAGS=-O2 -D_FORTIFY_SOURCE=2 -fPIE -fstack-protector-strong -Wl,-z,noexecstack -Wl,-z,relro -Wl,-z,now  #-fstack-clash-protection #-pie
 
-CFLAGS = -Wall --std=gnu99 -g -ggdb -I/usr/X11R6/include/ -I/usr/local/include -D_POSIX_C_SOURCE=199309L $(HARDEN_CFLAGS)
+CFLAGS = -Wall -Wno-missing-braces --std=gnu99 -g -ggdb -I/usr/X11R6/include/ -I/usr/local/include -D_POSIX_C_SOURCE=199309L $(HARDEN_CFLAGS)
 
 LDFLAGS=-L/usr/X11R6/lib -L/usr/local/lib -lGL -lGLU -lglut -lm -pthread
 
@@ -29,9 +29,9 @@ documentation:
 	./tdftool -f 1 THEDRAWFONTS/BOARDX.TDF ANSIUTILS | sed -e "s/^/          /" > ansiutils-header.ans.utf8
 
 	./ansitext NEWLINE TAB FG_CYAN UNDERLINE BOLD "ANSIREAD USAGE" NOUNDERLINE ":" NOBOLD NONE NEWLINE NEWLINE >> ansiutils.ans.body
-	./ansiread | sed -e "s/^/          /" | ./ansiread -z - >> ansiutils.ans.body 2>/dev/null
+	./ansiread | sed -s "s/^\r/        /" | ./ansiread -z - >> ansiutils.ans.body 2>/dev/null
 	./ansitext NEWLINE TAB FG_CYAN UNDERLINE BOLD "TDFTOOLS USAGE" NOUNDERLINE ":" NOBOLD NONE NEWLINE NEWLINE >> ansiutils.ans.body
-	./tdftool | sed -e "s/^/          /" | ./ansiread -z - >> ansiutils.ans.body 2>/dev/null
+	./tdftool | sed -s "s/^\r/        /" | ./ansiread -z - >> ansiutils.ans.body 2>/dev/null
 	./ansitext NEWLINE TAB FG_CYAN UNDERLINE BOLD "RECENT CHANGES" NOUNDERLINE ":" NOBOLD NONE NEWLINE NEWLINE >> ansiutils.ans.body
 	./gitxtract.sh | sed -e "s/^/           /" | ./ansiread -z - >> ansiutils.ans.body 2>/dev/null
 	./ansitext NEWLINE TAB FG_CYAN UNDERLINE BOLD "LATEST TEST RESULTS" NOUNDERLINE ":" NOBOLD NONE NEWLINE NEWLINE >> ansiutils.ans.body
