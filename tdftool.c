@@ -31,7 +31,7 @@ void usage()
     printf("\n\r");
     printf("    -l              list mode\n\r");
     printf("    -d              increase debugging level (use up to four times)\n\r");
-    printf("    -\\|             render vertically instead of horizontally\n\r");
+    printf("    -|              render vertically instead of horizontally\n\r");
     printf("    -f <n>          use specified subfont\n\r");
     printf("    -c              render to CP437 glyphs instead of UTF-8\n\r");
     printf("    -s              append SAUCE record\n\r");
