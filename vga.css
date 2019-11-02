@@ -1,0 +1,8 @@
+@font-face {
+  font-family: 'MyWebFont';
+  src: url('TTF/vga437.ttf')  format('truetype'), /* Safari, Android, iOS */
+}
+
+*{
+  font-family: MyWebFont;
+}
