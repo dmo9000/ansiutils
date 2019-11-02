@@ -12,6 +12,10 @@
 #include "ansicanvas.h"
 #include "osdep.h"
 
+#define TDFTOOL_VER_MAJOR		0
+#define	TDFTOOL_VER_MINOR		3	
+#define TDFTOOL_VER_PATCH 	1
+
 #define EXIT_FAILURE	1
 
 bool big_endian = false;
@@ -27,10 +31,11 @@ void usage()
     printf("\n\r");
     printf("    -l              list mode\n\r");
     printf("    -d              increase debugging level (use up to four times)\n\r");
-    printf("    -v              render vertically instead of horizontally\n\r");
+    printf("    -\\|             render vertically instead of horizontally\n\r");
     printf("    -f <n>          use specified subfont\n\r");
     printf("    -c              render to CP437 glyphs instead of UTF-8\n\r");
     printf("    -s              append SAUCE record\n\r");
+    printf("    -v              show version information\n\r");
     printf("\n\r");
     return;
 }
@@ -64,9 +69,17 @@ int main(int argc, char *argv[])
     bool sauce = false;
 
 
-    while ((c = getopt (argc, argv, "f:co:dvls")) != -1) {
+    while ((c = getopt (argc, argv, "f:co:dvls|")) != -1) {
         switch (c)
         {
+				case 'C':
+						printf("WTF going on1\n\r");
+						exit(1);
+						break;
+				case 'D':
+						printf("WTF going on2\n\r");
+						exit(1);
+						break;
         case 's':
             /* append sauce record */
             sauce = true;
@@ -79,7 +92,11 @@ int main(int argc, char *argv[])
                 debug_level++;
             }
             break;
-        case 'v':
+				case 'v':
+						printf("tdftool version %d.%d.%d\n\r", TDFTOOL_VER_MAJOR, TDFTOOL_VER_MINOR, TDFTOOL_VER_PATCH);
+						exit(0);
+						break;
+        case '|':
             vertical = true;
             break;
         case 'f':
@@ -95,29 +112,28 @@ int main(int argc, char *argv[])
 //            break;
 
         case '?':
-            if (optopt == 'c') {
-                printf ("Option -%c requires an argument.\n\r", optopt);
-                usage();
-                exit(1);
-            }
-            else if (isprint (optopt)) {
+            if (isprint (optopt)) {
                 printf ("Unknown option `-%c'.\n\r", optopt);
-                usage();
+								printf("\n\r");
                 exit(1);
             }
             else {
                 printf ("Unknown option character `\\x%x'.\n\r",
                         optopt);
+								printf("\n\r");
+								usage();
                 exit(1);
             }
             printf("Shouldn't reach here.\n\r");
             exit(1);
             break;
         case -1:
+						printf("end of arguments, c = -1\r\n");
+								printf("\n\r");
             /* END OF ARGUMENTS? */
             break;
         default:
-            printf("exiting with c= %d [%c]\n\r", c, c);
+						printf("Valid option '-%c' specified, but no handler.\n\r", c);
             exit (1);
         }
 

@@ -18,10 +18,10 @@ PADDING=`printf '%*s' 110`
 
 all: libansicanvas.a tdftool 
 
-libansicanvas.a: $(LIBANSICANVAS_OBJS)
+libansicanvas.a: $(LIBANSICANVAS_OBJS) /usr/local/madlibc/lib/libmadlibc.a
 	ar cru libansicanvas.a $(LIBANSICANVAS_OBJS)
 
-tdftool: $(TDFTOOL_OBJS) libansicanvas.a
+tdftool: $(TDFTOOL_OBJS) libansicanvas.a /usr/local/madlibc/lib/libmadlibc.a
 	#$(CC) -o tdftool $(TDFTOOL_OBJS) -L. -lansicanvas -lm
 	/usr/local/gcc-68k/bin/m68k-elf-ld -T bdos68k/uspace.lds -o tdftool --gc-sections --defsym=_start=_start -Ttext=0x100100 -e _start  /usr/local/madlibc/crt0.o   \
     $(TDFTOOL_OBJS) libansicanvas.a /usr/local/madlibc/lib/libmadlibc.a /usr/local/gcc-68k/lib/gcc/m68k-elf/8.2.0/m68000/libgcc.a 
