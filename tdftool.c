@@ -111,6 +111,10 @@ int main(int argc, char *argv[])
         //output_filename = strdup((char *) optarg);
 //            break;
 
+				case ':':
+					printf("option '-%c' requires a parameter\n\r", optopt);
+					exit(1);
+					break;
         case '?':
             if (isprint (optopt)) {
                 printf ("unknown option '-%c'\n\r", optopt);

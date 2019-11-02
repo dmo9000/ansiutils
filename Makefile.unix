@@ -27,8 +27,10 @@ documentation:
 	printf "\n\n" > ansiutils.ans.header
 #	./tdftool -f 1 -c THEDRAWFONTS/BOARDX.TDF ANSIUTILS | sed -e "s/^/          /" > ansiutils-header.ans.cp437
 #	./tdftool -f 1 THEDRAWFONTS/BOARDX.TDF ANSIUTILS | sed -e "s/^/          /" > ansiutils-header.ans.utf8
-	./tdftool -f 3 -c THEDRAWFONTS/CYBERWX.TDF ANSIUTILS | sed -e "s/^/          /" > ansiutils-header.ans.cp437
-	./tdftool -f 3 THEDRAWFONTS/CYBERWX.TDF ANSIUTILS | sed -e "s/^/          /" > ansiutils-header.ans.utf8
+#	./tdftool -f 3 -c THEDRAWFONTS/CYBERWX.TDF ANSIUTILS | sed -e "s/^/          /" > ansiutils-header.ans.cp437
+#	./tdftool -f 3 THEDRAWFONTS/CYBERWX.TDF ANSIUTILS | sed -e "s/^/          /" > ansiutils-header.ans.utf8
+	./tdftool -f 2 -c THEDRAWFONTS/GREEDX.TDF ANSIUTILS | sed -e "s/^/    /" |sed -e 's/$$/   /g' > ansiutils-header.ans.cp437
+	./tdftool -f 2 THEDRAWFONTS/GREEDX.TDF ANSIUTILS | sed -e "s/^/    /" -e 's/$$/   /g' > ansiutils-header.ans.utf8
 
 	./ansitext TAB FG_CYAN UNDERLINE BOLD "ANSIREAD USAGE" NOUNDERLINE ":" NOBOLD NONE NEWLINE NEWLINE >> ansiutils.ans.body
 	./ansiread | sed -s "s/^\r/        /" | ./ansiread -z - >> ansiutils.ans.body 2>/dev/null
