@@ -24,11 +24,13 @@ test-regress:
 
 documentation:
 	echo "${PADDING}" >> ansiutils.ans.header
-	printf "\n\n" > ansiutils.ans.body
-	./tdftool -f 1 -c THEDRAWFONTS/BOARDX.TDF ANSIUTILS | sed -e "s/^/          /" > ansiutils-header.ans.cp437
-	./tdftool -f 1 THEDRAWFONTS/BOARDX.TDF ANSIUTILS | sed -e "s/^/          /" > ansiutils-header.ans.utf8
+	printf "\n\n" > ansiutils.ans.header
+#	./tdftool -f 1 -c THEDRAWFONTS/BOARDX.TDF ANSIUTILS | sed -e "s/^/          /" > ansiutils-header.ans.cp437
+#	./tdftool -f 1 THEDRAWFONTS/BOARDX.TDF ANSIUTILS | sed -e "s/^/          /" > ansiutils-header.ans.utf8
+	./tdftool -f 3 -c THEDRAWFONTS/CYBERWX.TDF ANSIUTILS | sed -e "s/^/          /" > ansiutils-header.ans.cp437
+	./tdftool -f 3 THEDRAWFONTS/CYBERWX.TDF ANSIUTILS | sed -e "s/^/          /" > ansiutils-header.ans.utf8
 
-	./ansitext NEWLINE TAB FG_CYAN UNDERLINE BOLD "ANSIREAD USAGE" NOUNDERLINE ":" NOBOLD NONE NEWLINE NEWLINE >> ansiutils.ans.body
+	./ansitext TAB FG_CYAN UNDERLINE BOLD "ANSIREAD USAGE" NOUNDERLINE ":" NOBOLD NONE NEWLINE NEWLINE >> ansiutils.ans.body
 	./ansiread | sed -s "s/^\r/        /" | ./ansiread -z - >> ansiutils.ans.body 2>/dev/null
 	./ansitext NEWLINE TAB FG_CYAN UNDERLINE BOLD "TDFTOOLS USAGE" NOUNDERLINE ":" NOBOLD NONE NEWLINE NEWLINE >> ansiutils.ans.body
 	./tdftool -v | sed -s "s/^/        /" | ./ansiread -z - >> ansiutils.ans.body 2>/dev/null
