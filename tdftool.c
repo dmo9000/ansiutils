@@ -93,7 +93,7 @@ int main(int argc, char *argv[])
             }
             break;
 				case 'v':
-						printf("tdftool version %d.%d.%d\n\r", TDFTOOL_VER_MAJOR, TDFTOOL_VER_MINOR, TDFTOOL_VER_PATCH);
+						printf("\r\ntdftool version %d.%d.%d\n\r", TDFTOOL_VER_MAJOR, TDFTOOL_VER_MINOR, TDFTOOL_VER_PATCH);
 						exit(0);
 						break;
         case '|':
@@ -113,12 +113,12 @@ int main(int argc, char *argv[])
 
         case '?':
             if (isprint (optopt)) {
-                printf ("Unknown option `-%c'.\n\r", optopt);
+                printf ("unknown option '-%c'\n\r", optopt);
 								printf("\n\r");
                 exit(1);
             }
             else {
-                printf ("Unknown option character `\\x%x'.\n\r",
+                printf ("unknown option character '\\x%02x'\n\r",
                         optopt);
 								printf("\n\r");
 								usage();

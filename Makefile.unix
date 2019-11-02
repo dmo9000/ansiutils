@@ -31,6 +31,7 @@ documentation:
 	./ansitext NEWLINE TAB FG_CYAN UNDERLINE BOLD "ANSIREAD USAGE" NOUNDERLINE ":" NOBOLD NONE NEWLINE NEWLINE >> ansiutils.ans.body
 	./ansiread | sed -s "s/^\r/        /" | ./ansiread -z - >> ansiutils.ans.body 2>/dev/null
 	./ansitext NEWLINE TAB FG_CYAN UNDERLINE BOLD "TDFTOOLS USAGE" NOUNDERLINE ":" NOBOLD NONE NEWLINE NEWLINE >> ansiutils.ans.body
+	./tdftool -v | sed -s "s/^/        /" | ./ansiread -z - >> ansiutils.ans.body 2>/dev/null
 	./tdftool | sed -s "s/^\r/        /" | ./ansiread -z - >> ansiutils.ans.body 2>/dev/null
 	./ansitext NEWLINE TAB FG_CYAN UNDERLINE BOLD "RECENT CHANGES" NOUNDERLINE ":" NOBOLD NONE NEWLINE NEWLINE >> ansiutils.ans.body
 	./gitxtract.sh | sed -e "s/^/           /" | ./ansiread -z - >> ansiutils.ans.body 2>/dev/null
