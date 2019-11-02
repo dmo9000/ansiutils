@@ -50,11 +50,11 @@
 
 	[33m[4m[1mRECENT CHANGES[24m:[21m[0m
 
+[40;37m           [40;31m5152c74[40;37m * I think it pops now.[0m
 [40;37m           [40;31m8c0a859[40;37m * Change of colour.[0m
 [40;37m           [40;31m43a926b[40;37m * New banner.[0m
 [40;37m           [40;31m0f0b44b[40;37m * Use CSS style to specify font for the HTML file.[0m
 [40;37m           [40;31mc1ec51e[40;37m * TTF font and CSS.[0m
-[40;37m           [40;31m339d371[40;37m * Fixups to git summaries.[0m
 
 	[33m[4m[1mLATEST TEST RESULTS[24m:[21m[0m
 
@@ -79,7 +79,7 @@
 [40;37m           timebend.ans PNG, stdin/compressed test ...       [40;32m[1m[PASS][40;37m[22m -> 67618531f8e50536008a05930803f0ec [0m
 [40;37m           [0m
 
-	[30m[1m(2019-11-02 git #8c0a859 https://github.com/dmo9000/ansiutils.git)[21m[0m
+	[30m[1m(2019-11-02 git #5152c74 https://github.com/dmo9000/ansiutils.git)[21m[0m
 
 	[30m[1m(Linux 4.14.14-300.fc27.x86_64 x86_64)[21m[0m
                                                                                                               
