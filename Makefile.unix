@@ -45,6 +45,7 @@ documentation:
 	cat ansiutils.ans.header ansiutils-header.ans.utf8 ansiutils.ans.body > ansiutils.ans.utf8
 	cat ansiutils.ans.header ansiutils-header.ans.cp437 ansiutils.ans.body > ansiutils.ans.cp437
 	cat ansiutils.ans.utf8 | aha -b  > ansiutils.html
+	patch < vga-font.patch
 	./ansiread -c -o ansiutils.png ansiutils.ans.cp437
 	cp ansiutils.ans.utf8 ansiutils.ans
 	rm -f *.body
