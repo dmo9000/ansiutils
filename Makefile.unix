@@ -29,10 +29,11 @@ documentation:
 #	./tdftool -f 1 THEDRAWFONTS/BOARDX.TDF ANSIUTILS | sed -e "s/^/          /" > ansiutils-header.ans.utf8
 #	./tdftool -f 3 -c THEDRAWFONTS/CYBERWX.TDF ANSIUTILS | sed -e "s/^/          /" > ansiutils-header.ans.cp437
 #	./tdftool -f 3 THEDRAWFONTS/CYBERWX.TDF ANSIUTILS | sed -e "s/^/          /" > ansiutils-header.ans.utf8
-	./tdftool -f 5 -c THEDRAWFONTS/GREEDX.TDF ANSIUTILS | sed -e "s/^/    /" |sed -e 's/$$/   /g' > ansiutils-header.ans.cp437
-	./tdftool -f 5 THEDRAWFONTS/GREEDX.TDF ANSIUTILS | sed -e "s/^/    /" -e 's/$$/   /g' > ansiutils-header.ans.utf8
-
-	./ansitext TAB FG_YELLOW UNDERLINE BOLD "ANSIREAD USAGE" NOUNDERLINE ":" NOBOLD NONE NEWLINE NEWLINE >> ansiutils.ans.body
+#	./tdftool -f 3 -c THEDRAWFONTS/DSKTDWNX.TDF ANSIUTILS | sed -e "s/^/        /" |sed -e 's/$$/   /g' > ansiutils-header.ans.cp437
+#	./tdftool -f 3  THEDRAWFONTS/DSKTDWNX.TDF ANSIUTILS | sed -e "s/^/        /" -e 's/$$/   /g' > ansiutils-header.ans.utf8
+	( tdftool -f 3 -c THEDRAWFONTS/DSKTDWNX.TDF ANSIUTILS | head -n 4 ; tdftool -f 5 -c THEDRAWFONTS/DSKTDWNX.TDF ANSIUTILS | tail -n 5 ) | sed -e "s/^/        /" |sed -e 's/$$/   /g' > ansiutils-header.ans.cp437 
+	( tdftool -f 3 THEDRAWFONTS/DSKTDWNX.TDF ANSIUTILS | head -n 4 ; tdftool -f 5 THEDRAWFONTS/DSKTDWNX.TDF ANSIUTILS | tail -n 5 ) | sed -e "s/^/        /" |sed -e 's/$$/   /g' > ansiutils-header.ans.utf8
+	./ansitext NEWLINE NEWLINE TAB FG_YELLOW UNDERLINE BOLD "ANSIREAD USAGE" NOUNDERLINE ":" NOBOLD NONE NEWLINE NEWLINE >> ansiutils.ans.body
 	./ansiread | sed -s "s/^\r/        /" | ./ansiread -z - >> ansiutils.ans.body 2>/dev/null
 	./ansitext NEWLINE TAB FG_YELLOW UNDERLINE BOLD "TDFTOOL USAGE" NOUNDERLINE ":" NOBOLD NONE NEWLINE NEWLINE >> ansiutils.ans.body
 	./tdftool -v | sed -s "s/^/        /" | ./ansiread -z - >> ansiutils.ans.body 2>/dev/null
