@@ -37,7 +37,7 @@
 [40;37m        [0m
 [40;37m            -l              list mode[0m
 [40;37m            -d              increase debugging level (use up to four times)[0m
-[40;37m            -\|             render vertically instead of horizontally[0m
+[40;37m            -|              render vertically instead of horizontally[0m
 [40;37m            -f <n>          use specified subfont[0m
 [40;37m            -c              render to CP437 glyphs instead of UTF-8[0m
 [40;37m            -s              append SAUCE record[0m
@@ -47,11 +47,14 @@
 
 	[36m[4m[1mRECENT CHANGES[24m:[21m[0m
 
+[40;37m           ad24b8a * Don't escape pipe in usage(). If people are so smart, they will figure[0m
+[40;37m                     it out they need[0m
+[40;37m           to escape it[0m
+[40;37m                   * on some platforms.[0m
+[40;37m           56e0d49 * A new look.[0m
 [40;37m           316714a * Minor cleanups.[0m
 [40;37m           e17a091 * Fixes for option handling and some updates.[0m
 [40;37m           9cf74b5 * Minor tidy up.[0m
-[40;37m           6d5cda2 * Add lazy initialization code for TYPE_BLOCK fonts.[0m
-[40;37m           1a4cd46 * Debug clean up.[0m
 
 	[36m[4m[1mLATEST TEST RESULTS[24m:[21m[0m
 
@@ -76,7 +79,7 @@
 [40;37m           timebend.ans PNG, stdin/compressed test ...       [40;32m[1m[PASS][40;37m[22m -> 67618531f8e50536008a05930803f0ec [0m
 [40;37m           [0m
 
-	[30m[1m(2019-11-02 git #316714a https://github.com/dmo9000/ansiutils.git)[21m[0m
+	[30m[1m(2019-11-02 git #ad24b8a https://github.com/dmo9000/ansiutils.git)[21m[0m
 
 	[30m[1m(Linux 4.14.14-300.fc27.x86_64 x86_64)[21m[0m
                                                                                                               
