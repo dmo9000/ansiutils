@@ -54,6 +54,12 @@ float mouse_yn = 0.0;
 //void (* callback)( unsigned char, int, int ) ;
 void process_Normal_Keys(unsigned char key, int x, int y);
 
+void timer( int value )
+{
+    glutTimerFunc( 16, timer, 0 );
+    glutPostRedisplay();
+}
+
 uint16_t gfx_opengl_getwidth()
 {
     fprintf(stderr, "gfx_opengl_getwidth() = %u\n", gfx_opengl_width);
@@ -535,6 +541,7 @@ int gfx_opengl_main(ANSICanvas *c, uint16_t xsize, uint16_t ysize, int multiplie
     glutMouseFunc(process_Mouse_Input);
     glutMotionFunc(process_Mouse_Move);
     glutPassiveMotionFunc(process_Mouse_Move);
+		glutTimerFunc( 0, timer, 0 );
     assert(c);
     myCanvas = c;
 
