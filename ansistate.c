@@ -1504,8 +1504,25 @@ void dispatch_ansi_command(ANSICanvas *canvas, unsigned char c)
         /* apparently this is "report cursor position". At least vim uses this  */
         snprintf((char *) &response, 256, "%d;%dR", current_y+1, current_x+1);
         /* FIXME: error checking  - also this belongs in ansitty.c */
-        assert(write(process_fd, "\x1b\x5b", 2) == 2);
-        assert(write(process_fd, response, strlen(response)) == strlen(response));
+
+        printf("CURSOR LOCATION QUERY: response=[%s]\n", response);
+        if (process_fd == -1) {
+            /* not running in client mode - characters need to go to the root terminal */
+            printf("FIXME!! %s,%d\n", __FILE__, __LINE__);
+            //output_character('\x1b');
+            //output_character('\x5b');
+            int i = 0;
+            for (i = 0; i < strlen(response); i++) {
+                //output_character(response[i]);
+            }
+        } else {
+            int n = write(process_fd, "\x1b\x5b", 2);
+            printf("processfd=%d, n = %d\n", process_fd, n);
+            assert(n == 2);
+            n = write(process_fd, response, strlen(response));
+            printf("CPR processfd=%d, n = %d, response=[%s]\n", process_fd, n, response);
+            assert (n == strlen(response));
+        }
         clear_ansi_flags(FLAG_ALL);
         break;
     case 'J':
