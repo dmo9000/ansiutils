@@ -56,9 +56,14 @@ void process_Normal_Keys(unsigned char key, int x, int y);
 
 void timer( int value )
 {
-		printf("timer()\n");
-    glutTimerFunc( 16, timer, 0 );
-    glutPostRedisplay();
+//		printf("timer()\n");
+    if (myCanvas) {
+			myCanvas->is_dirty = true;
+			}
+    glutTimerFunc( 100, timer, 0 );
+
+    //glutPostOverlayRedisplay();
+    //display();
 }
 
 uint16_t gfx_opengl_getwidth()
@@ -533,7 +538,6 @@ int gfx_opengl_main(ANSICanvas *c, uint16_t xsize, uint16_t ysize, int multiplie
     glutInitWindowSize(display_width*multiplier, display_height*multiplier);
 //    glutInitWindowPosition(320, 320);
     glutCreateWindow(WindowTitle);
-
     glutDisplayFunc(display);
     glutIdleFunc(display);
     glutReshapeFunc(reshape_window);
@@ -542,7 +546,11 @@ int gfx_opengl_main(ANSICanvas *c, uint16_t xsize, uint16_t ysize, int multiplie
     glutMouseFunc(process_Mouse_Input);
     glutMotionFunc(process_Mouse_Move);
     glutPassiveMotionFunc(process_Mouse_Move);
+#ifdef __MINGW__
+    /* for some reason, it's not repainting on window raise for me 
+       properly on Windows, so we run a timer function to update display */
 		glutTimerFunc( 0, timer, 0 );
+#endif /* __MINGW__ */
     assert(c);
     myCanvas = c;
 
