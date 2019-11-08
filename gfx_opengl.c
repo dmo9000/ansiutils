@@ -56,6 +56,7 @@ void process_Normal_Keys(unsigned char key, int x, int y);
 
 void timer( int value )
 {
+		printf("timer()\n");
     glutTimerFunc( 16, timer, 0 );
     glutPostRedisplay();
 }
