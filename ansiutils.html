@@ -22,51 +22,72 @@
         <span style="color:white;background-color:black;">                                                                                                      </span>   
 
 
+	<span style="color:yellow;"></span><span style="text-decoration:underline;color:yellow;"></span><span style="text-decoration:underline;font-weight:bold;color:yellow;">WHAT IS IT?</span><span style="font-weight:bold;color:yellow;"></span><span style="color:yellow;"></span>
+
+           
+           ansiutils is a collection of utilities designed to make working with ANSI art
+           a little easier, and includes: 
+           
+             * tdftool  - a tool for rendering &quot;TheDraw&quot; (TDF) fonts to the terminal, either
+                          in CP437 or UTF-8 format
+           
+             * ansiread - an ANSI framebuffer that can render ANSI art files and output them 
+                          either with attribute compression or without. 
+           
+             * ansitext - a simple tool for generating text with embedded ANSI attributes, eg. 
+                          colors, underline, bold etc. 
+           
+           ansiutils is a work in progress, so there are still many bugs waiting to be squashed
+           and several planned features that are still missing. 
+           
+
+
 	<span style="color:yellow;"></span><span style="text-decoration:underline;color:yellow;"></span><span style="text-decoration:underline;font-weight:bold;color:yellow;">ANSIREAD USAGE</span><span style="font-weight:bold;color:yellow;">:</span><span style="color:yellow;"></span>
 
-<span style="color:white;background-color:black;">                                                                                                  </span>
-<span style="color:white;background-color:black;">        usage: ansiread [options] &lt;input-filename&gt;</span>
-<span style="color:white;background-color:black;">        </span>
-<span style="color:white;background-color:black;">            (use &quot;-&quot; character for &lt;input-filename&gt; to read from stdin)</span>
-<span style="color:white;background-color:black;">        </span>
-<span style="color:white;background-color:black;">            -c              output in CP437 rather than UTF-8 (default)</span>
-<span style="color:white;background-color:black;">            -f &lt;output&gt;     write output to file instead of stdout</span>
-<span style="color:white;background-color:black;">            -g              enable (OpenGL) preview mode</span>
-<span style="color:white;background-color:black;">            -o &lt;output&gt;     write PNG output to &lt;output-png-filename&gt; (not supported on Windows)</span>
-<span style="color:white;background-color:black;">            -p              enable line padding (to 80 characters)</span>
-<span style="color:white;background-color:black;">            -r              set enable-clear-mode (allow ANSI control codes that clear the canvas)</span>
-<span style="color:white;background-color:black;">            -w              set enable-auto-line-wrap (for input that assumes tty is 80 columns)</span>
-<span style="color:white;background-color:black;">            -z              enable compressed color codes for stdout or file output</span>
-<span style="color:white;background-color:black;">            -d              enable debug mode</span>
-<span style="color:white;background-color:black;">        </span>
-<span style="color:white;background-color:black;">        </span>
+<span style="color:white;background-color:black;">                                                                                                     </span>
+<span style="color:white;background-color:black;">           usage: ansiread [options] &lt;input-filename&gt;</span>
+<span style="color:white;background-color:black;">           </span>
+<span style="color:white;background-color:black;">               (use &quot;-&quot; character for &lt;input-filename&gt; to read from stdin)</span>
+<span style="color:white;background-color:black;">           </span>
+<span style="color:white;background-color:black;">               -c              output in CP437 rather than UTF-8 (default)</span>
+<span style="color:white;background-color:black;">               -f &lt;output&gt;     write output to file instead of stdout</span>
+<span style="color:white;background-color:black;">               -g              enable (OpenGL) preview mode</span>
+<span style="color:white;background-color:black;">               -o &lt;output&gt;     write PNG output to &lt;output-png-filename&gt; (not supported on Windows)</span>
+<span style="color:white;background-color:black;">               -p              enable line padding (to 80 characters)</span>
+<span style="color:white;background-color:black;">               -r              set enable-clear-mode (allow ANSI control codes that clear the canvas)</span>
+<span style="color:white;background-color:black;">               -w              set enable-auto-line-wrap (for input that assumes tty is 80 columns)</span>
+<span style="color:white;background-color:black;">               -z              enable compressed color codes for stdout or file output</span>
+<span style="color:white;background-color:black;">               -d              enable debug mode</span>
+<span style="color:white;background-color:black;">           </span>
+<span style="color:white;background-color:black;">           </span>
 
 	<span style="color:yellow;"></span><span style="text-decoration:underline;color:yellow;"></span><span style="text-decoration:underline;font-weight:bold;color:yellow;">TDFTOOL USAGE</span><span style="font-weight:bold;color:yellow;">:</span><span style="color:yellow;"></span>
 
-<span style="color:white;background-color:black;">        </span>
-<span style="color:white;background-color:black;">        tdftool version 0.3.1</span>
-<span style="color:white;background-color:black;">        </span>
-<span style="color:white;background-color:black;">                                                                           </span>
-<span style="color:white;background-color:black;">        usage: tdftool [options] &lt;tdf-font&gt; &quot;your text here&quot;</span>
-<span style="color:white;background-color:black;">        </span>
-<span style="color:white;background-color:black;">            -l              list mode</span>
-<span style="color:white;background-color:black;">            -d              increase debugging level (use up to four times)</span>
-<span style="color:white;background-color:black;">            -|              render vertically instead of horizontally</span>
-<span style="color:white;background-color:black;">            -f &lt;n&gt;          use specified subfont</span>
-<span style="color:white;background-color:black;">            -c              render to CP437 glyphs instead of UTF-8</span>
-<span style="color:white;background-color:black;">            -s              append SAUCE record</span>
-<span style="color:white;background-color:black;">            -v              show version information</span>
-<span style="color:white;background-color:black;">        </span>
-<span style="color:white;background-color:black;">        </span>
+<span style="color:white;background-color:black;">           </span>
+<span style="color:white;background-color:black;">           tdftool version 0.3.1</span>
+<span style="color:white;background-color:black;">           </span>
+<span style="color:white;background-color:black;">                                                                              </span>
+<span style="color:white;background-color:black;">           usage: tdftool [options] &lt;tdf-font&gt; &quot;your text here&quot;</span>
+<span style="color:white;background-color:black;">           </span>
+<span style="color:white;background-color:black;">               -l              list mode</span>
+<span style="color:white;background-color:black;">               -d              increase debugging level (use up to four times)</span>
+<span style="color:white;background-color:black;">               -|              render vertically instead of horizontally</span>
+<span style="color:white;background-color:black;">               -f &lt;n&gt;          use specified subfont</span>
+<span style="color:white;background-color:black;">               -c              render to CP437 glyphs instead of UTF-8</span>
+<span style="color:white;background-color:black;">               -s              append SAUCE record</span>
+<span style="color:white;background-color:black;">               -v              show version information</span>
+<span style="color:white;background-color:black;">           </span>
+<span style="color:white;background-color:black;">           </span>
 
 	<span style="color:yellow;"></span><span style="text-decoration:underline;color:yellow;"></span><span style="text-decoration:underline;font-weight:bold;color:yellow;">RECENT CHANGES</span><span style="font-weight:bold;color:yellow;">:</span><span style="color:yellow;"></span>
 
+<span style="color:white;background-color:black;">           </span><span style="color:red;background-color:black;">465fbfd</span><span style="color:white;background-color:black;"> * Visual results audit; about 1000+ working, around 90 not rendering correctly.</span>
+<span style="color:white;background-color:black;">           </span><span style="color:red;background-color:black;">77770e8</span><span style="color:white;background-color:black;"> * WIP work on ANSI CPR (cursor position report) - need to think about how to implement</span>
+<span style="color:white;background-color:black;">                     this for clients.</span>
 <span style="color:white;background-color:black;">           </span><span style="color:red;background-color:black;">e253587</span><span style="color:white;background-color:black;"> * Fix timer() callback which seems to be required on Windows to repaint the window when</span>
 <span style="color:white;background-color:black;">                     it is raised.</span>
 <span style="color:white;background-color:black;">           </span><span style="color:red;background-color:black;">bc6b774</span><span style="color:white;background-color:black;"> * timer() debug.</span>
 <span style="color:white;background-color:black;">           </span><span style="color:red;background-color:black;">2eb9d6e</span><span style="color:white;background-color:black;"> * Try and ensure repaint after exposing the GLUT window on Windows, with a timer.</span>
-<span style="color:white;background-color:black;">           </span><span style="color:red;background-color:black;">fc354f1</span><span style="color:white;background-color:black;"> * More fonts.</span>
-<span style="color:white;background-color:black;">           </span><span style="color:red;background-color:black;">13a8732</span><span style="color:white;background-color:black;"> * Updates.</span>
 
 	<span style="color:yellow;"></span><span style="text-decoration:underline;color:yellow;"></span><span style="text-decoration:underline;font-weight:bold;color:yellow;">LATEST TEST RESULTS</span><span style="font-weight:bold;color:yellow;">:</span><span style="color:yellow;"></span>
 
@@ -91,7 +112,7 @@
 <span style="color:white;background-color:black;">           timebend.ans PNG, stdin/compressed test ...       </span><span style="color:lime;background-color:black;"></span><span style="font-weight:bold;color:lime;background-color:black;">[PASS]</span><span style="font-weight:bold;color:white;background-color:black;"></span><span style="color:white;background-color:black;"> -&gt; 67618531f8e50536008a05930803f0ec </span>
 <span style="color:white;background-color:black;">           </span>
 
-	<span style="color:dimgray;"></span><span style="font-weight:bold;color:dimgray;">(2019-11-09 git #e253587 https://github.com/dmo9000/ansiutils.git)</span><span style="color:dimgray;"></span>
+	<span style="color:dimgray;"></span><span style="font-weight:bold;color:dimgray;">(2019-11-09 git #465fbfd https://github.com/dmo9000/ansiutils.git)</span><span style="color:dimgray;"></span>
 
 	<span style="color:dimgray;"></span><span style="font-weight:bold;color:dimgray;">(Linux 4.14.14-300.fc27.x86_64 x86_64)</span><span style="color:dimgray;"></span>
                                                                                                               

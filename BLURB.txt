@@ -1,0 +1,16 @@
+
+ansiutils is a collection of utilities designed to make working with ANSI art
+a little easier, and includes: 
+
+  * tdftool  - a tool for rendering "TheDraw" (TDF) fonts to the terminal, either
+               in CP437 or UTF-8 format
+
+  * ansiread - an ANSI framebuffer that can render ANSI art files and output them 
+               either with attribute compression or without. 
+
+  * ansitext - a simple tool for generating text with embedded ANSI attributes, eg. 
+               colors, underline, bold etc. 
+
+ansiutils is a work in progress, so there are still many bugs waiting to be squashed
+and several planned features that are still missing. 
+

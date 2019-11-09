@@ -11,51 +11,72 @@
         [40;37m[22m [40;37m[22m [40;37m[22m [40;37m[22m [40;37m[22m [40;37m[22m [40;37m[22m [40;37m[22m [40;37m[22m [40;37m[22m [40;37m[22m [40;37m[22m [40;37m[22m [40;37m[22m [40;37m[22m [40;37m[22m [40;37m[22m [40;37m[22m [40;37m[22m [40;37m[22m [40;37m[22m [40;37m[22m [40;37m[22m [40;37m[22m [40;37m[22m [40;37m[22m [40;37m[22m [40;37m[22m [40;37m[22m [40;37m[22m [40;37m[22m [40;37m[22m [40;37m[22m [40;37m[22m [40;37m[22m [40;37m[22m [40;37m[22m [40;37m[22m [40;37m[22m [40;37m[22m [40;37m[22m [40;37m[22m [40;37m[22m [40;37m[22m [40;37m[22m [40;37m[22m [40;37m[22m [40;37m[22m [40;37m[22m [40;37m[22m [40;37m[22m [40;37m[22m [40;37m[22m [40;37m[22m [40;37m[22m [40;37m[22m [40;37m[22m [40;37m[22m [40;37m[22m [40;37m[22m [40;37m[22m [40;37m[22m [40;37m[22m [40;37m[22m [40;37m[22m [40;37m[22m [40;37m[22m [40;37m[22m [40;37m[22m [40;37m[22m [40;37m[22m [40;37m[22m [40;37m[22m [40;37m[22m [40;37m[22m [40;37m[22m [40;37m[22m [40;37m[22m [40;37m[22m [40;37m[22m [40;37m[22m [40;37m[22m [40;37m[22m [40;37m[22m [40;37m[22m [40;37m[22m [40;37m[22m [40;37m[22m [40;37m[22m [40;37m[22m [40;37m[22m [40;37m[22m [40;37m[22m [40;37m[22m [40;37m[22m [40;37m[22m [40;37m[22m [40;37m[22m [40;37m[22m [40;37m[22m [40;37m[22m [40;37m[22m [0m   
 
 
+	[33m[4m[1mWHAT IS IT?[24m[21m[0m
+
+           
+           ansiutils is a collection of utilities designed to make working with ANSI art
+           a little easier, and includes: 
+           
+             * tdftool  - a tool for rendering "TheDraw" (TDF) fonts to the terminal, either
+                          in CP437 or UTF-8 format
+           
+             * ansiread - an ANSI framebuffer that can render ANSI art files and output them 
+                          either with attribute compression or without. 
+           
+             * ansitext - a simple tool for generating text with embedded ANSI attributes, eg. 
+                          colors, underline, bold etc. 
+           
+           ansiutils is a work in progress, so there are still many bugs waiting to be squashed
+           and several planned features that are still missing. 
+           
+
+
 	[33m[4m[1mANSIREAD USAGE[24m:[21m[0m
 
-[40;37m                                                                                                  [0m
-[40;37m        usage: ansiread [options] <input-filename>[0m
-[40;37m        [0m
-[40;37m            (use "-" character for <input-filename> to read from stdin)[0m
-[40;37m        [0m
-[40;37m            -c              output in CP437 rather than UTF-8 (default)[0m
-[40;37m            -f <output>     write output to file instead of stdout[0m
-[40;37m            -g              enable (OpenGL) preview mode[0m
-[40;37m            -o <output>     write PNG output to <output-png-filename> (not supported on Windows)[0m
-[40;37m            -p              enable line padding (to 80 characters)[0m
-[40;37m            -r              set enable-clear-mode (allow ANSI control codes that clear the canvas)[0m
-[40;37m            -w              set enable-auto-line-wrap (for input that assumes tty is 80 columns)[0m
-[40;37m            -z              enable compressed color codes for stdout or file output[0m
-[40;37m            -d              enable debug mode[0m
-[40;37m        [0m
-[40;37m        [0m
+[40;37m                                                                                                     [0m
+[40;37m           usage: ansiread [options] <input-filename>[0m
+[40;37m           [0m
+[40;37m               (use "-" character for <input-filename> to read from stdin)[0m
+[40;37m           [0m
+[40;37m               -c              output in CP437 rather than UTF-8 (default)[0m
+[40;37m               -f <output>     write output to file instead of stdout[0m
+[40;37m               -g              enable (OpenGL) preview mode[0m
+[40;37m               -o <output>     write PNG output to <output-png-filename> (not supported on Windows)[0m
+[40;37m               -p              enable line padding (to 80 characters)[0m
+[40;37m               -r              set enable-clear-mode (allow ANSI control codes that clear the canvas)[0m
+[40;37m               -w              set enable-auto-line-wrap (for input that assumes tty is 80 columns)[0m
+[40;37m               -z              enable compressed color codes for stdout or file output[0m
+[40;37m               -d              enable debug mode[0m
+[40;37m           [0m
+[40;37m           [0m
 
 	[33m[4m[1mTDFTOOL USAGE[24m:[21m[0m
 
-[40;37m        [0m
-[40;37m        tdftool version 0.3.1[0m
-[40;37m        [0m
-[40;37m                                                                           [0m
-[40;37m        usage: tdftool [options] <tdf-font> "your text here"[0m
-[40;37m        [0m
-[40;37m            -l              list mode[0m
-[40;37m            -d              increase debugging level (use up to four times)[0m
-[40;37m            -|              render vertically instead of horizontally[0m
-[40;37m            -f <n>          use specified subfont[0m
-[40;37m            -c              render to CP437 glyphs instead of UTF-8[0m
-[40;37m            -s              append SAUCE record[0m
-[40;37m            -v              show version information[0m
-[40;37m        [0m
-[40;37m        [0m
+[40;37m           [0m
+[40;37m           tdftool version 0.3.1[0m
+[40;37m           [0m
+[40;37m                                                                              [0m
+[40;37m           usage: tdftool [options] <tdf-font> "your text here"[0m
+[40;37m           [0m
+[40;37m               -l              list mode[0m
+[40;37m               -d              increase debugging level (use up to four times)[0m
+[40;37m               -|              render vertically instead of horizontally[0m
+[40;37m               -f <n>          use specified subfont[0m
+[40;37m               -c              render to CP437 glyphs instead of UTF-8[0m
+[40;37m               -s              append SAUCE record[0m
+[40;37m               -v              show version information[0m
+[40;37m           [0m
+[40;37m           [0m
 
 	[33m[4m[1mRECENT CHANGES[24m:[21m[0m
 
+[40;37m           [40;31m465fbfd[40;37m * Visual results audit; about 1000+ working, around 90 not rendering correctly.[0m
+[40;37m           [40;31m77770e8[40;37m * WIP work on ANSI CPR (cursor position report) - need to think about how to implement[0m
+[40;37m                     this for clients.[0m
 [40;37m           [40;31me253587[40;37m * Fix timer() callback which seems to be required on Windows to repaint the window when[0m
 [40;37m                     it is raised.[0m
 [40;37m           [40;31mbc6b774[40;37m * timer() debug.[0m
 [40;37m           [40;31m2eb9d6e[40;37m * Try and ensure repaint after exposing the GLUT window on Windows, with a timer.[0m
-[40;37m           [40;31mfc354f1[40;37m * More fonts.[0m
-[40;37m           [40;31m13a8732[40;37m * Updates.[0m
 
 	[33m[4m[1mLATEST TEST RESULTS[24m:[21m[0m
 
@@ -80,7 +101,7 @@
 [40;37m           timebend.ans PNG, stdin/compressed test ...       [40;32m[1m[PASS][40;37m[22m -> 67618531f8e50536008a05930803f0ec [0m
 [40;37m           [0m
 
-	[30m[1m(2019-11-09 git #e253587 https://github.com/dmo9000/ansiutils.git)[21m[0m
+	[30m[1m(2019-11-09 git #465fbfd https://github.com/dmo9000/ansiutils.git)[21m[0m
 
 	[30m[1m(Linux 4.14.14-300.fc27.x86_64 x86_64)[21m[0m
                                                                                                               
