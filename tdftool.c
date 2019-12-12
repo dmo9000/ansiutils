@@ -439,11 +439,10 @@ int main(int argc, char *argv[])
         }
 
         if (debug_level) {
-            printf("[LOADED %-12s: prerender glyphs completed %03u:%03u '%c']\n\r",
+            printf("[Loaded %-12s: prerender glyphs completed %03u:%03u]\n\r",
                    render_font->name,
                    render_font->defined_characters,
-                   render_font->references,
-                   ii);
+                   render_font->references);
         }
 
         if (debug_level) {
