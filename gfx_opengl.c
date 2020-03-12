@@ -175,7 +175,7 @@ void display()
 
 void reshape_window(GLsizei w, GLsizei h)
 {
-    printf("reshape_window(w=%u,h=%u)\r\n", w, h);
+    //printf("reshape_window(w=%u,h=%u)\r\n", w, h);
     glClearColor(0.0f, 0.0f, 0.5f, 0.0f);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
@@ -473,8 +473,8 @@ void process_Mouse_Move(int x, int y)
 void process_Mouse_Input(int button, int state, int x, int y)
 {
 
-    fprintf(stderr, "process_Mouse_Input(%d,%d,%d,%d)\n",
-            button, state, x, y);
+//    fprintf(stderr, "process_Mouse_Input(%d,%d,%d,%d)\n",
+//            button, state, x, y);
     return;
 }
 

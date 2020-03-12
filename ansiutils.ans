@@ -70,13 +70,11 @@
 
 	[33m[4m[1mRECENT CHANGES[24m:[21m[0m
 
+[40;37m           [40;31maee87dd[40;37m * Strip the .ANS suffix from the test result filenames.[0m
+[40;37m           [40;31m75bfaf1[40;37m * Capitalize file names for easier life.[0m
+[40;37m           [40;31m0ab068b[40;37m * Minor tidy.[0m
+[40;37m           [40;31md84500c[40;37m * Added a blurb that describes what this all does.[0m
 [40;37m           [40;31m465fbfd[40;37m * Visual results audit; about 1000+ working, around 90 not rendering correctly.[0m
-[40;37m           [40;31m77770e8[40;37m * WIP work on ANSI CPR (cursor position report) - need to think about how to implement[0m
-[40;37m                     this for clients.[0m
-[40;37m           [40;31me253587[40;37m * Fix timer() callback which seems to be required on Windows to repaint the window when[0m
-[40;37m                     it is raised.[0m
-[40;37m           [40;31mbc6b774[40;37m * timer() debug.[0m
-[40;37m           [40;31m2eb9d6e[40;37m * Try and ensure repaint after exposing the GLUT window on Windows, with a timer.[0m
 
 	[33m[4m[1mLATEST TEST RESULTS[24m:[21m[0m
 
@@ -101,7 +99,7 @@
 [40;37m           timebend.ans PNG, stdin/compressed test ...       [40;32m[1m[PASS][40;37m[22m -> 67618531f8e50536008a05930803f0ec [0m
 [40;37m           [0m
 
-	[30m[1m(2019-11-09 git #465fbfd https://github.com/dmo9000/ansiutils.git)[21m[0m
+	[30m[1m(2020-03-12 git #aee87dd https://dmo9000@github.com/dmo9000/ansiutils.git)[21m[0m
 
 	[30m[1m(Linux 4.14.14-300.fc27.x86_64 x86_64)[21m[0m
                                                                                                               
